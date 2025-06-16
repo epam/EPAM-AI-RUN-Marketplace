@@ -1,0 +1,3 @@
+codemie-nats-auth-callout:
+  image:
+    repository: %%IMAGE_REPOSITORY%%/codemie-nats-auth-callout

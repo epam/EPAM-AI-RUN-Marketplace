@@ -1,0 +1,11 @@
+kibana:
+
+  imageTag: "8.14.2"
+
+  ingress:
+    enabled: true
+    pathtype: ImplementationSpecific
+    hosts:
+      - host: kibana.%%DOMAIN%%
+        paths:
+          - path: /

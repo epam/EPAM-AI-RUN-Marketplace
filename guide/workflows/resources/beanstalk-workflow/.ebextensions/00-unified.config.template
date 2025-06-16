@@ -1,0 +1,24 @@
+Resources:
+  AWSEBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EB Security Group - Corporate Compliant
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourcePrefixListId: pl-xxxxxxxxxxxxx
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+option_settings:
+  aws:autoscaling:launchconfiguration:
+    EC2KeyName: ""
+    InstanceType: t2.micro
+
+  aws:elasticbeanstalk:application:environment:
+    PORT: 8000
+    SERVER_PORT: 8000
+    # Spring profile to use PostgreSQL - will be set by deploy script
+    # Environment variables for DB connection will be injected by deploy script

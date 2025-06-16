@@ -1,0 +1,12 @@
+apiVersion: v2
+name: codemie-mcp-connect-service
+description: A Helm chart for AI/Run MCP Connect service
+
+version: %%IMAGE_VERSION%%
+
+appVersion: "%%IMAGE_VERSION%%"
+
+dependencies:
+- name: codemie-mcp-connect-service
+  version: %%IMAGE_VERSION%%
+  repository: oci://%%IMAGE_REPOSITORY%%/helm-charts

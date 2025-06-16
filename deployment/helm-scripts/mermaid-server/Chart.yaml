@@ -1,0 +1,12 @@
+apiVersion: v2
+name: mermaid-server
+description: A Helm chart for AI/Run mermaid server.
+
+version: %%IMAGE_VERSION%%
+
+appVersion: "%%IMAGE_VERSION%%"
+
+dependencies:
+- name: mermaid-server
+  version: %%IMAGE_VERSION%%
+  repository: oci://%%IMAGE_REPOSITORY%%/helm-charts

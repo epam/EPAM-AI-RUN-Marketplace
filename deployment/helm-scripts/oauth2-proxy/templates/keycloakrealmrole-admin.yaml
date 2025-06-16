@@ -1,0 +1,12 @@
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmRole
+metadata:
+  name: admin
+  annotations:
+    edp.epam.com/preserve-resources-on-deletion: "true"
+spec:
+  description: admin role for CodeMie
+  name: admin
+  realmRef:
+    kind: KeycloakRealm
+    name: codemie-prod

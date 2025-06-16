@@ -1,0 +1,11 @@
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealm
+metadata:
+  name: codemie-prod
+  annotations:
+    edp.epam.com/preserve-resources-on-deletion: "true"
+spec:
+  keycloakRef:
+    kind: Keycloak
+    name: keycloak
+  realmName: codemie-prod

@@ -1,0 +1,11 @@
+codemie-ui:
+  image:
+    # -- Repository to use for the AI/Run UI.
+    repository: %%IMAGE_REPOSITORY%%/codemie-ui
+
+  # -- AI/Run UI API URL
+  viteApiUrl: https://codemie.%%DOMAIN%%/code-assistant-api
+
+  # AI/Run UI ingress configuration
+  ingress:
+    host: codemie.%%DOMAIN%%

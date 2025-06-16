@@ -1,0 +1,121 @@
+#!/bin/bash
+# A "best-effort" cleanup script that attempts all steps and reports errors at the end.
+
+# Default values
+STACK_NAME="${STACK_NAME:-eb-vpn-infrastructure}"
+ENV_NAME="${ENV_NAME:-my-eb-env}"
+REGION="${AWS_REGION:-eu-central-1}"
+errors_found=0
+
+# Color codes
+YELLOW='\033[1;33m'
+GREEN='\033[1;32m'
+RED='\033[1;31m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_color() {
+    color=$1
+    message=$2
+    echo -e "${color}${message}${NC}"
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --stack-name)
+            STACK_NAME="$2"
+            shift 2
+            ;;
+        --env-name)
+            ENV_NAME="$2"
+            shift 2
+            ;;
+        --region)
+            REGION="$2"
+            shift 2
+            ;;
+        -h|--help)
+            echo "Usage: $0 [--stack-name STACK_NAME] [--env-name ENV_NAME] [--region REGION]"
+            echo "  --stack-name: CloudFormation stack name (e.g.
+            eb-vpn-infrastructure)"
+            echo "  --env-name: Elastic Beanstalk environment name (e.g. my-eb-env)"
+            echo "  --region: AWS region (e.g. eu-central-1)"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use -h or --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+print_color "$YELLOW" "Starting best-effort cleanup for '$ENV_NAME' in region '$REGION'..."
+
+# Step 1: Terminate the Elastic Beanstalk environment
+print_color "$YELLOW" "\n[1/3] Attempting to terminate Elastic Beanstalk environment..."
+if aws elasticbeanstalk describe-environments --environment-names "$ENV_NAME" --region "$REGION" >/dev/null 2>&1; then
+    aws elasticbeanstalk terminate-environment --environment-name "$ENV_NAME" --region "$REGION"
+    if [ $? -eq 0 ]; then
+        print_color "$YELLOW" "Waiting for environment to terminate completely..."
+        aws elasticbeanstalk wait environment-terminated --environment-names "$ENV_NAME" --region "$REGION"
+        if [ $? -eq 0 ]; then
+            print_color "$GREEN" "✓ Environment '$ENV_NAME' terminated successfully."
+        else
+            print_color "$RED" "✗ Environment '$ENV_NAME' failed to terminate cleanly."
+            errors_found=$((errors_found + 1))
+        fi
+    else
+        print_color "$RED" "✗ Failed to issue terminate command for environment '$ENV_NAME'."
+        errors_found=$((errors_found + 1))
+    fi
+else
+    print_color "$GREEN" "✓ Environment '$ENV_NAME' does not exist. Skipping."
+fi
+
+# Step 2: Delete the CloudFormation stack
+print_color "$YELLOW" "\n[2/3] Attempting to delete CloudFormation stack..."
+if aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$REGION" >/dev/null 2>&1; then
+    aws cloudformation delete-stack --stack-name "$STACK_NAME" --region "$REGION"
+    if [ $? -eq 0 ]; then
+        print_color "$YELLOW" "Waiting for stack to delete completely..."
+        aws cloudformation wait stack-delete-complete --stack-name "$STACK_NAME" --region "$REGION"
+        if [ $? -eq 0 ]; then
+            print_color "$GREEN" "✓ Stack '$STACK_NAME' deleted successfully."
+        else
+            print_color "$RED" "✗ Stack '$STACK_NAME' failed to delete cleanly. Check CloudFormation console for details."
+            errors_found=$((errors_found + 1))
+        fi
+    else
+        print_color "$RED" "✗ Failed to issue delete command for stack '$STACK_NAME'."
+        errors_found=$((errors_found + 1))
+    fi
+else
+    print_color "$GREEN" "✓ Stack '$STACK_NAME' does not exist. Skipping."
+fi
+
+# Step 3: Remove local configuration and artifacts
+print_color "$YELLOW" "\n[3/3] Removing local configuration and logs..."
+if [ -d ".elasticbeanstalk" ]; then
+    rm -rf .elasticbeanstalk
+    print_color "$GREEN" "✓ .elasticbeanstalk folder removed"
+fi
+if [ -f "deploy.log" ]; then
+    rm -f deploy.log
+    print_color "$GREEN" "✓ deploy.log removed"
+fi
+if [ -f "cleanup.log" ]; then
+    rm -f cleanup.log
+    print_color "$GREEN" "✓ cleanup.log removed"
+fi
+
+# Final status report
+echo ""
+if [ $errors_found -eq 0 ]; then
+    print_color "$GREEN" "Cleanup complete! All resources removed successfully."
+    exit 0
+else
+    print_color "$RED" "Cleanup finished with ${errors_found} error(s). Please review the logs above."
+    exit 1
+fi

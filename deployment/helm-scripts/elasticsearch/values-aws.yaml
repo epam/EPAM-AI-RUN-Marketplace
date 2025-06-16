@@ -1,0 +1,50 @@
+elasticsearch:
+  replicas: 2
+
+  # Permit co-located instances for solitary minikube virtual machines.
+  antiAffinity: "soft"
+
+  # Shrink default JVM heap.
+  esJavaOpts: "-Xmx1024m -Xms1024m"
+
+  imageTag: "8.14.2"
+
+  protocol: https
+
+  # Allocate smaller chunks of memory per pod.
+  resources:
+    requests:
+      cpu: "2"
+      memory: "3Gi"
+    limits:
+      cpu: "2"
+      memory: "3Gi"
+
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    storageClassName: "gp3"
+    resources:
+      requests:
+        storage: 30Gi
+
+  readinessProbe:
+    failureThreshold: 6
+    initialDelaySeconds: 20
+    periodSeconds: 20
+    successThreshold: 1
+    timeoutSeconds: 15
+
+  clusterHealthCheckParams: "wait_for_status=yellow&timeout=50s"
+
+  extraEnvs:
+    - name: http.max_content_length
+      value: 400mb
+    - name: ELASTIC_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elasticsearch-master-credentials
+          key: password
+
+  secret:
+    enabled: false
+  createCert: true

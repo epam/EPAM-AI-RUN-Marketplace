@@ -1,0 +1,22 @@
+mermaid-server:
+  replicaCount: 1
+
+  image:
+    repository: %%IMAGE_REPOSITORY%%/mermaid-server
+    pullPolicy: IfNotPresent
+    tag: ""
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  livenessProbe:
+    tcpSocket:
+      port: http
+  readinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 20
+
+  autoscaling:
+    enabled: false
