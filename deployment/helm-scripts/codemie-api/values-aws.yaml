@@ -18,7 +18,7 @@ fullnameOverride: "codemie"
 
 extraEnv:
   - name: MODELS_ENV
-    value: "aws"
+    value: "amnaairn"
   - name: ENV
     value: "prod"
   - name: IDP_PROVIDER
@@ -102,8 +102,23 @@ extraEnv:
       secretKeyRef:
         name: codemie-postgresql
         key: password
+  - name: POSTGRES_USER
+    valueFrom:
+      secretKeyRef:
+        name: codemie-postgresql
+        key: user
+  - name: POSTGRES_HOST
+    valueFrom:
+      secretKeyRef:
+        name: codemie-postgresql
+        key: db-url
+  - name: POSTGRES_DB
+    valueFrom:
+      secretKeyRef:
+        name: codemie-postgresql
+        key: db-name
   - name: PG_URL
-    value: "postgresql://admin:$(POSTGRES_PASSWORD)@codemie-postgresql:5432/codemie"
+    value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):5432/$(POSTGRES_DB)"
 
 # Add extra environment variables that extend and/or override extraEnv
 # -- Use this to add or override environment variables
@@ -232,6 +247,9 @@ extraVolumeMounts: |
     mountPath: /codemie-ui
   - name: codemie-customer-config
     mountPath: /app/config/customer
+  - name: codemie-llm-customer-config
+    mountPath: /app/config/llms/llm-amnaairn-config.yaml
+    subPath: llm-amnaairn-config.yaml
 
 extraVolumes: |
   - name: codemie-ui
@@ -239,6 +257,9 @@ extraVolumes: |
   - name: codemie-customer-config
     configMap:
       name: codemie-customer-config
+  - name: codemie-llm-customer-config
+    configMap:
+      name: codemie-llm-customer-config
 
 codemieuiProvider:
   enabled: false
@@ -247,14 +268,35 @@ dynamicMode:
   enabled: false
 
 # -- Array of extra K8s manifests to deploy
-extraObjects: []
-  # - apiVersion: external-secrets.io/v1beta1
-  #   kind: ExternalSecret
-  #   metadata:
-  #     name: example-secret-1
-  #   spec:
-  #     data:
-  #       - remoteRef:
-  #           key: /example/deploy-secrets
-  #           property: example-secret-1.username
-  #         secretKey: username
+extraObjects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: codemie-llm-customer-config
+    data:
+      llm-amnaairn-config.yaml: |
+        llm_models:
+          - base_name: "mistral"
+            deployment_name: "mistral.mistral-7b-instruct-v0:2"
+            label: "Mistral 7b - Instruct"
+            multimodal: false
+            enabled: true
+            default: true
+            provider: "aws_bedrock"
+            features:
+              system_prompt: false
+              max_tokens: false
+            cost:
+              input: 0.0000025
+              output: 0.000011
+  
+        embeddings_models:
+          - base_name: "titan"
+            deployment_name: "amazon.titan-embed-text-v1"
+            label: "Titan Embeddings G1 - Text"
+            enabled: true
+            default: true
+            provider: "aws_bedrock"
+            cost:
+              input: 0.0000001
+              output: 0
