@@ -229,7 +229,13 @@ replace_domain_placeholders() {
     fi
 
     log_message "info" "Replacing placeholders with values"
-    sed -i '.backup' "s|%%DOMAIN%%|${domain_value}|g" "${values_file}"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+           # macOS/BSD sed syntax (requires backup extension)
+        sed -i '.backup' "s|%%DOMAIN%%|${domain_value}|g" "${values_file}"
+    else
+           # GNU sed (Linux syntax; doesn't require extension)
+        sed -i.backup "s|%%DOMAIN%%|${domain_value}|g" "${values_file}"
+    fi
 }
 
 replace_aws_placeholders() {
@@ -249,15 +255,28 @@ replace_aws_placeholders() {
         rm -f "$backup_file"
     fi
 
+    # macOS vs Linux 'sed' syntax compatibility
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS/BSD sed: create backup file with extension
+        sed -i '.aws.backup' "
+            s|%%AWS_DEFAULT_REGION%%|${aws_default_region}|g;
+            s|%%EKS_AWS_ROLE_ARN%%|${aws_eks_role_arn}|g;
+            s|%%AWS_KMS_KEY_ID%%|${aws_kms_key_id}|g;
+            s|%%AWS_S3_BUCKET_NAME%%|${aws_s3_bucket_name}|g;
+            s|%%AWS_S3_REGION%%|${aws_s3_region}|g;
+        " "${values_file}"
+    else
+        # GNU sed (Linux): create backup file with .aws.backup extension
+        sed -i.aws.backup "
+            s|%%AWS_DEFAULT_REGION%%|${aws_default_region}|g;
+            s|%%EKS_AWS_ROLE_ARN%%|${aws_eks_role_arn}|g;
+            s|%%AWS_KMS_KEY_ID%%|${aws_kms_key_id}|g;
+            s|%%AWS_S3_BUCKET_NAME%%|${aws_s3_bucket_name}|g;
+            s|%%AWS_S3_REGION%%|${aws_s3_region}|g;
+        " "${values_file}"
+    fi
 
-    log_message "info" "Replacing placeholders with values"
-    sed -i '.aws.backup' "
-        s|%%AWS_DEFAULT_REGION%%|${aws_default_region}|g;
-        s|%%EKS_AWS_ROLE_ARN%%|${aws_eks_role_arn}|g;
-        s|%%AWS_KMS_KEY_ID%%|${aws_kms_key_id}|g;
-        s|%%AWS_S3_BUCKET_NAME%%|${aws_s3_bucket_name}|g;
-        s|%%AWS_S3_REGION%%|${aws_s3_region}|g;
-    " "${values_file}"
+    log_message "info" "Placeholders replaced successfully in ${values_file}"
 }
 
 load_deployment_env() {
