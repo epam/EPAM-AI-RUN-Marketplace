@@ -1,0 +1,115 @@
+fluent-bit:
+  testFramework:
+    enabled: false
+  env:
+    - name: ES_SUPERUSER_USER
+      valueFrom:
+        secretKeyRef:
+          name: elasticsearch-master-credentials
+          key: username
+    - name: ES_SUPERUSER_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elasticsearch-master-credentials
+          key: password
+  podAnnotations:
+    fluentbit.io/exclude: "true"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+  config:
+    inputs: |
+      [INPUT]
+          Name             tail
+          Tag              kube.codemie-infra.*
+          Path             /var/log/containers/*_codemie_*.log,/var/log/containers/*_oauth2-proxy_*.log,/var/log/containers/*_security_*.log,/var/log/containers/*_elastic_*.log,/var/log/containers/*_ingress-nginx_*.log
+          Exclude_Path     /var/log/containers/*_fluent-bit*.log
+          Parser           cri
+          multiline.parser cri
+          Mem_Buf_Limit    5MB
+          Skip_Long_Lines  On
+
+      [INPUT]
+          Name             tail
+          Tag              kube.codemie-metrics.*
+          Path             /var/log/containers/codemie-*_codemie_codemie-*.log
+          Parser           cri
+          multiline.parser cri
+          Mem_Buf_Limit    5MB
+          Skip_Long_Lines  On
+    filters: |
+      [FILTER]
+          Name                kubernetes
+          Buffer_Size         512k
+          Match               kube.codemie-infra.*
+          Merge_Log           On
+          Keep_Log            Off
+          Kube_Tag_Prefix     kube.codemie-infra.var.log.containers.
+          K8S-Logging.Parser  On
+          K8S-Logging.Exclude On
+          Labels              Off
+          Annotations         Off
+
+      [FILTER]
+          Name        modify
+          Match       kube.codemie-infra.*
+          Hard_rename log message
+
+      [FILTER]
+          Name                kubernetes
+          Buffer_Size         512k
+          Match               kube.codemie-metrics.*
+          Merge_Log           On
+          Keep_Log            Off
+          Kube_Tag_Prefix     kube.codemie-metrics.var.log.containers.
+          K8S-Logging.Parser  On
+          K8S-Logging.Exclude On
+          Labels              Off
+          Annotations         Off
+
+      [FILTER]
+          Name         parser
+          Match        kube.codemie-metrics.*
+          Key_Name     message
+          Reserve_Data True
+          Parser       json
+
+      [FILTER]
+          Name  grep
+          Match kube.codemie-metrics.*
+          Regex metric_name .*
+    outputs: |
+      [OUTPUT]
+          Name               es
+          Match              kube.codemie-infra.*
+          Host               elasticsearch-master.elastic.svc.cluster.local
+          Port               9200
+          HTTP_User          ${ES_SUPERUSER_USER}
+          HTTP_Passwd        ${ES_SUPERUSER_PASSWORD}
+          Logstash_Format    On
+          Logstash_Prefix    codemie_infra_logs
+          Time_Key           @timestamp
+          Replace_Dots       On
+          Retry_Limit        False
+          Trace_Error        Off
+          Suppress_Type_Name On
+          tls                On
+          tls.verify         Off
+
+      [OUTPUT]
+          Name               es
+          Match              kube.codemie-metrics.*
+          Host               elasticsearch-master.elastic.svc.cluster.local
+          Port               9200
+          HTTP_User          ${ES_SUPERUSER_USER}
+          HTTP_Passwd        ${ES_SUPERUSER_PASSWORD}
+          Index              codemie_metrics_logs
+          Replace_Dots       On
+          Suppress_Type_Name On
+          tls                On
+          tls.verify         Off

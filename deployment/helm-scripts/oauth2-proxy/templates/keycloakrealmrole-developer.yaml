@@ -1,0 +1,12 @@
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmRole
+metadata:
+  name: developer
+  annotations:
+    edp.epam.com/preserve-resources-on-deletion: "true"
+spec:
+  description: User role for CodeMie. Allow to access codemie application
+  name: developer
+  realmRef:
+    kind: KeycloakRealm
+    name: codemie-prod

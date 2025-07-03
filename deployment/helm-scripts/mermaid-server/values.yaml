@@ -1,0 +1,24 @@
+replicaCount: 1
+
+image:
+  repository: europe-west3-docker.pkg.dev/or2-msq-epmd-edp-anthos-t1iylu/prod/mermaid-server
+  pullPolicy: IfNotPresent
+  tag: ""
+
+service:
+  type: ClusterIP
+  port: 8000
+
+livenessProbe:
+  tcpSocket:
+    port: http
+readinessProbe:
+  tcpSocket:
+    port: http
+  initialDelaySeconds: 20
+
+imagePullSecrets:
+  - name: gcp-artifact-registry
+
+autoscaling:
+  enabled: false

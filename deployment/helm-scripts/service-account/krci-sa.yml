@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: krci-sa
+  namespace: codemie
+---
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/service-account-token
+metadata:
+  name: krci-sa-secret
+  namespace: codemie
+  annotations:
+    kubernetes.io/service-account.name: krci-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-sa-binding
+subjects:
+  - kind: ServiceAccount
+    name: krci-sa
+    namespace: codemie
+  - kind: User
+    name: cmtr-yh2d7r49
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io

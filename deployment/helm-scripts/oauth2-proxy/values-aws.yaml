@@ -1,0 +1,178 @@
+keycloak:
+  secret: "keycloak-admin"
+  url: http://keycloakx-http # keycloakx-http is a Kubernetes service of Keycloak
+codemie:
+  url: https://codemie.%%DOMAIN%%
+
+oauth2-proxy:
+  config:
+    configFile: |-
+      allowed_roles = ["developer", "admin"]
+      backend_logout_url="https://keycloak.%%DOMAIN%%/auth/realms/codemie-prod/protocol/openid-connect/logout?id_token_hint={id_token}&post_logout_redirect_uri=https://codemie.%%DOMAIN%%/oauth2/sign_in"
+      code_challenge_method="S256"
+      cookie_csrf_expire="5m"
+      cookie_csrf_per_request="true"
+      cookie_domains = ["codemie.%%DOMAIN%%"]
+      cookie_secure = "true"
+      custom_templates_dir = "/data/custom-templates"
+      email_domains = [ "*" ]
+      insecure_oidc_allow_unverified_email = "true"
+      oidc_issuer_url = "https://keycloak.%%DOMAIN%%/auth/realms/codemie-prod"
+      pass_access_token = "true"
+      pass_authorization_header = "true"
+      pass_basic_auth = "false"
+      pass_user_headers = "true"
+      provider = "keycloak-oidc"
+      redirect_url = "https://codemie.%%DOMAIN%%/oauth2/callback"
+      reverse_proxy = "true"
+      set_authorization_header = "true"
+      set_xauthrequest = "true"
+      silence_ping_logging = "true"
+      skip_jwt_bearer_tokens = "true"
+      skip_oidc_discovery = "true"
+      oidc_jwks_url = "https://keycloak.%%DOMAIN%%/auth/realms/codemie-prod/protocol/openid-connect/certs"
+      skip_provider_button = "false"
+      ssl_insecure_skip_verify = "true"
+      whitelist_domains = ".%%DOMAIN%%"
+      login_url = "https://keycloak.%%DOMAIN%%/auth/realms/codemie-prod/protocol/openid-connect/auth"
+      redeem_url = "https://keycloak.%%DOMAIN%%/auth/realms/codemie-prod/protocol/openid-connect/token"
+
+    existingSecret: oauth2-proxy
+
+  ingress:
+    enabled: true
+    hosts:
+      - codemie.%%DOMAIN%%
+    tls: []
+    path: /oauth2
+
+  extraVolumes:
+    - name: custom-templates
+      configMap:
+        name: oauth2-proxy-custom-templates
+
+  extraVolumeMounts:
+    - name: custom-templates
+      mountPath: "/data/custom-templates"
+      readOnly: true
+
+  extraObjects:
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: oauth2-proxy-custom-templates
+      data:
+        sign_in.html: |
+          <!DOCTYPE html>
+          <html lang="en" charset="utf-8">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+              <title>Sign In</title>
+              <link rel="stylesheet" href="static/css/bulma.min.css">
+
+              <style>
+                body {
+                  height: 100vh;
+                }
+                .sign-in-box {
+                  max-width: 400px;
+                  margin: 1.25rem auto;
+                }
+                .logo-box {
+                  margin: 1.5rem 3rem;
+                }
+                .alert {
+                  padding: 5px;
+                  background-color: #f44336; /* Red */
+                  color: white;
+                  margin-bottom: 5px;
+                  border-radius: 5px
+                }
+                /* The close button */
+                .closebtn {
+                  margin-left: 10px;
+                  color: white;
+                  font-weight: bold;
+                  float: right;
+                  font-size: 22px;
+                  line-height: 20px;
+                  cursor: pointer;
+                  transition: 0.3s;
+                }
+                /* When moving the mouse over the close button */
+                .closebtn:hover {
+                  color: black;
+                }
+                footer a {
+                  text-decoration: underline;
+                }
+              </style>
+            </head>
+            <body class="has-background-light">
+            <section class="section has-background-light">
+              <div class="box block sign-in-box has-text-centered">
+
+                <form method="GET" action="/oauth2/start">
+                  <input type="hidden" name="rd" value="/">
+                    <p class="block">Message: "Welcome to CodeMie, your GenAI agent studio! Sign in to start creating and exploring."</p>
+                    <button type="submit" class="button block is-primary">Sign in</button>
+                </form>
+
+              </div>
+            </section>
+            </body>
+          </html>
+        error.html: |
+          <!DOCTYPE html>
+          <html lang="en" charset="utf-8">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+            <title>403 Forbidden</title>
+          <link rel="stylesheet" href="static/css/bulma.min.css">
+          <link rel="stylesheet" href="static/css/all.min.css">
+
+          <style>
+            body {
+              height: 100vh;
+            }
+            .error-box {
+              margin: 1.25rem auto;
+              max-width: 600px;
+            }
+            .status-code {
+              font-size: 12rem;
+              font-weight: 600;
+            }
+            #more-info.card {
+              border: 1px solid #f0f0f0;
+            }
+            footer a {
+              text-decoration: underline;
+            }
+          </style>
+          </head>
+          <body class="has-background-light">
+          <section class="section">
+            <div class="box block error-box has-text-centered">
+              <div class="block">
+                <h1 class="subtitle is-1">Access Denied</h1>
+              </div>
+
+              <div id="more-info" class="block card is-fullwidth is-shadowless">
+                <header class="card-header is-shadowless">
+                  <p class="card-header-title">More Info</p>
+                </header>
+                <div class="card-content has-text-left">
+                  <div class="content">
+                      We're sorry, but it seems you don't have the necessary permissions to access this resource. If you believe this is an error, please contact our support team for assistance.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          </body>
+          </html>
