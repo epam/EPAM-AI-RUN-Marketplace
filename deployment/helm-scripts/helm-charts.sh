@@ -668,7 +668,7 @@ deploy_codemie_api() {
     local cloud_provider="$1"
     local domain_value="$2"
     local values_file="./codemie-api/values-${cloud_provider}.yaml"
-    local chart_file="./codemie-api/values-${cloud_provider}.yaml"
+    local chart_file="./codemie-api/Chart.yaml"
     local image_repository="$3"
     local ai_run_version="$4"
 
