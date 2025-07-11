@@ -1,302 +1,300 @@
 # Default values for codemie.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+codemie:
+  replicaCount: 1
 
-replicaCount: 1
+  image:
+    repository: %%IMAGE_REPOSITORY%%/codemie
 
-image:
-  repository: europe-west3-docker.pkg.dev/or2-msq-epmd-edp-anthos-t1iylu/prod/code-assistant
+  # Use Argo Rollouts for deployment
+  argoRollout:
+    enabled: false
 
-# Use Argo Rollouts for deployment
-argoRollout:
-  enabled: false
+  nameOverride: "codemie"
+  fullnameOverride: "codemie"
 
-imagePullSecrets:
-  - name: gcp-artifact-registry
-nameOverride: "codemie"
-fullnameOverride: "codemie"
+  extraEnv:
+    - name: MODELS_ENV
+      value: "amnaairn"
+    - name: ENV
+      value: "prod"
+    - name: IDP_PROVIDER
+      value: 'keycloak'
+    - name: ENCRYPTION_TYPE
+      value: "aws"
+    - name: API_ROOT_PATH
+      value: "/code-assistant-api"
+    - name: FILES_STORAGE_TYPE
+      value: "aws"
+    - name: TRIGGER_ENGINE_ENABLED
+      value: "false"
+    - name: NATS_PLUGIN_KEY_CHECK_ENABLED
+      value: "true"
+    - name: NATS_SKIP_TLS_VERIFY
+      value: "false"
+    - name: NATS_CLIENT_CONNECT_URI
+      value: "tls://codemie-nats.%%DOMAIN%%:30422"
+    - name: NATS_SERVERS_URI
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: NATS_URL
+    - name: NATS_USER
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: CODEMIE_USERNAME
+    - name: NATS_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: CODEMIE_PASSWORD
 
-extraEnv:
-  - name: MODELS_ENV
-    value: "amnaairn"
-  - name: ENV
-    value: "prod"
-  - name: IDP_PROVIDER
-    value: 'keycloak'
-  - name: ENCRYPTION_TYPE
-    value: "aws"
-  - name: API_ROOT_PATH
-    value: "/code-assistant-api"
-  - name: FILES_STORAGE_TYPE
-    value: "aws"
-  - name: TRIGGER_ENGINE_ENABLED
-    value: "false"
-  - name: NATS_PLUGIN_KEY_CHECK_ENABLED
-    value: "true"
-  - name: NATS_SKIP_TLS_VERIFY
-    value: "false"
-  - name: NATS_CLIENT_CONNECT_URI
-    value: "tls://codemie-nats.%%DOMAIN%%:30422"
-  - name: NATS_SERVERS_URI
-    valueFrom:
-      secretKeyRef:
-        name: codemie-nats-secrets
-        key: NATS_URL
-  - name: NATS_USER
-    valueFrom:
-      secretKeyRef:
-        name: codemie-nats-secrets
-        key: CODEMIE_USERNAME
-  - name: NATS_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: codemie-nats-secrets
-        key: CODEMIE_PASSWORD
+  # AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used to access AWS services if the 'eks.amazonaws.com/role-arn' annotation is not set in the service account (serviceAccount.annotations).
+  #  - name: AWS_ACCESS_KEY_ID
+  #    valueFrom:
+  #      secretKeyRef:
+  #        name: %%AWS_SECRET_NAME%%
+  #        key: aws_access_key_id
+  #  - name: AWS_SECRET_ACCESS_KEY
+  #    valueFrom:
+  #      secretKeyRef:
+  #        name: %%AWS_SECRET_NAME%%
+  #        key: aws_secret_access_key
+    - name: AWS_DEFAULT_REGION
+      value: "%%AWS_DEFAULT_REGION%%"
+    - name: AWS_KMS_KEY_ID
+      value: "%%AWS_KMS_KEY_ID%%"
+  # AWS_S3_BUCKET_NAME is used to store files in S3 if the 'FILES_STORAGE_TYPE' is set to 'aws'.
+    - name: AWS_S3_BUCKET_NAME
+      value: "%%AWS_S3_BUCKET_NAME%%"
+    - name: AWS_S3_REGION
+      value: "%%AWS_S3_REGION%%"
 
-# AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used to access AWS services if the 'eks.amazonaws.com/role-arn' annotation is not set in the service account (serviceAccount.annotations).
-#  - name: AWS_ACCESS_KEY_ID
-#    valueFrom:
-#      secretKeyRef:
-#        name: %%AWS_SECRET_NAME%%
-#        key: aws_access_key_id
-#  - name: AWS_SECRET_ACCESS_KEY
-#    valueFrom:
-#      secretKeyRef:
-#        name: %%AWS_SECRET_NAME%%
-#        key: aws_secret_access_key
-  - name: AWS_DEFAULT_REGION
-    value: "%%AWS_DEFAULT_REGION%%"
-  - name: AWS_KMS_KEY_ID
-    value: "%%AWS_KMS_KEY_ID%%"
-# AWS_S3_BUCKET_NAME is used to store files in S3 if the 'FILES_STORAGE_TYPE' is set to 'aws'.
-  - name: AWS_S3_BUCKET_NAME
-    value: "%%AWS_S3_BUCKET_NAME%%"
-  - name: AWS_S3_REGION
-    value: "%%AWS_S3_REGION%%"
+    - name: GITHUB_IDENTIFIERS
+      value: '["github"]'
+    - name: GITLAB_IDENTIFIERS
+      value: '["gitlab", "gitbud", "git.epam.com", "git.garage.epam.com"]'
+    - name: BITBUCKET_IDENTIFIERS
+      value: '["bitbucket"]'
 
-  - name: GITHUB_IDENTIFIERS
-    value: '["github"]'
-  - name: GITLAB_IDENTIFIERS
-    value: '["gitlab", "gitbud", "git.epam.com", "git.garage.epam.com"]'
-  - name: BITBUCKET_IDENTIFIERS
-    value: '["bitbucket"]'
+    # MCP_CONNECT_ENABLED is used to enable/disable the MCP Connect functionality.
+    - name: MCP_CONNECT_ENABLED
+      value: "true"
+    # MCP_CONNECT_BUCKETS_COUNT is used to set the number of buckets for MCP Connect. It is equal to the number of codemie-mcp-connect-service pods.
+    - name: MCP_CONNECT_BUCKETS_COUNT
+      value: "1"
+    - name: MCP_CONNECT_URL
+      value: "http://codemie-mcp-connect-service-{MCP_CONNECT_BUCKET}.codemie-mcp-connect-service-headless:3000"
+    - name: MCP_CLIENT_TIMEOUT
+      value: "600.0"
+    - name: MERMAID_USE_MERMAID_INC
+      value: "false"
+    - name: MERMAID_SERVER_URL
+      value: "http://mermaid-server:8000"
+    - name: USE_POSTGRES
+      value: "true"
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: codemie-postgresql
+          key: password
+    - name: POSTGRES_USER
+      valueFrom:
+        secretKeyRef:
+          name: codemie-postgresql
+          key: user
+    - name: POSTGRES_HOST
+      valueFrom:
+        secretKeyRef:
+          name: codemie-postgresql
+          key: db-url
+    - name: POSTGRES_DB
+      valueFrom:
+        secretKeyRef:
+          name: codemie-postgresql
+          key: db-name
+    - name: PG_URL
+      value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):5432/$(POSTGRES_DB)"
 
-  # MCP_CONNECT_ENABLED is used to enable/disable the MCP Connect functionality.
-  - name: MCP_CONNECT_ENABLED
-    value: "true"
-  # MCP_CONNECT_BUCKETS_COUNT is used to set the number of buckets for MCP Connect. It is equal to the number of codemie-mcp-connect-service pods.
-  - name: MCP_CONNECT_BUCKETS_COUNT
-    value: "1"
-  - name: MCP_CONNECT_URL
-    value: "http://codemie-mcp-connect-service-{MCP_CONNECT_BUCKET}.codemie-mcp-connect-service-headless:3000"
-  - name: MCP_CLIENT_TIMEOUT
-    value: "600.0"
-  - name: MERMAID_USE_MERMAID_INC
-    value: "false"
-  - name: MERMAID_SERVER_URL
-    value: "http://mermaid-server:8000"
-  - name: USE_POSTGRES
-    value: "true"
-  - name: POSTGRES_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: codemie-postgresql
-        key: password
-  - name: POSTGRES_USER
-    valueFrom:
-      secretKeyRef:
-        name: codemie-postgresql
-        key: user
-  - name: POSTGRES_HOST
-    valueFrom:
-      secretKeyRef:
-        name: codemie-postgresql
-        key: db-url
-  - name: POSTGRES_DB
-    valueFrom:
-      secretKeyRef:
-        name: codemie-postgresql
-        key: db-name
-  - name: PG_URL
-    value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):5432/$(POSTGRES_DB)"
+  # Add extra environment variables that extend and/or override extraEnv
+  # -- Use this to add or override environment variables
+  customEnv:
+    - name: 'ELASTIC_USERNAME'
+      valueFrom:
+        secretKeyRef:
+          name: elasticsearch-master-credentials
+          key: username
+    - name: 'ELASTIC_PASSWORD'
+      valueFrom:
+        secretKeyRef:
+          name: elasticsearch-master-credentials
+          key: password
+    - name: 'ELASTIC_URL'
+      value: "https://elasticsearch-master.elastic.svc.cluster.local:9200"
+    - name: 'KEYCLOAK_LOGOUT_URL'
+      value: 'https://codemie.%%DOMAIN%%/oauth2/sign_out?rd=/oauth2/sign_in'
 
-# Add extra environment variables that extend and/or override extraEnv
-# -- Use this to add or override environment variables
-customEnv:
-  - name: 'ELASTIC_USERNAME'
-    valueFrom:
-      secretKeyRef:
-        name: elasticsearch-master-credentials
-        key: username
-  - name: 'ELASTIC_PASSWORD'
-    valueFrom:
-      secretKeyRef:
-        name: elasticsearch-master-credentials
-        key: password
-  - name: 'ELASTIC_URL'
-    value: "https://elasticsearch-master.elastic.svc.cluster.local:9200"
-  - name: 'KEYCLOAK_LOGOUT_URL'
-    value: 'https://codemie.%%DOMAIN%%/oauth2/sign_out?rd=/oauth2/sign_in'
+  externalSecrets:
+    enabled: false
 
-externalSecrets:
-  enabled: false
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Annotations to add to the service account
+    annotations:
+      eks.amazonaws.com/role-arn: "%%EKS_AWS_ROLE_ARN%%"
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations:
-    eks.amazonaws.com/role-arn: "%%EKS_AWS_ROLE_ARN%%"
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  podAnnotations: {}
 
-podAnnotations: {}
+  podSecurityContext: {}
+    # fsGroup: 2000
 
-podSecurityContext: {}
-  # fsGroup: 2000
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 8080
-
-ingress:
-  enabled: true
-  ingressClassName: nginx
-  annotations:
-    nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Access-Token,Authorization
-    nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
-    nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.oauth2-proxy.svc.cluster.local:80/oauth2/auth
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-    nginx.ingress.kubernetes.io/proxy-body-size: 900m
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
-  pathType: ImplementationSpecific
-  host: codemie.%%DOMAIN%%
-  path: "/code-assistant-api/(.*)"
-  tls: []
-
-ingressSwagger:
-  annotations: {}
-
-ingressWebHooks:
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /v1/webhooks/$1
-
-# Is used to avoid pod restarts when the pod is starting when we are executing the migration script.
-# Pod has 600 seconds to start and execute the migration script.
-# failureThreshold * periodSeconds = 60 * 10 = 600 seconds = 10 minutes
-startupProbe:
-  httpGet:
-    path: /v1/healthcheck
+  service:
+    type: ClusterIP
     port: 8080
-  initialDelaySeconds: 20
-  failureThreshold: 60
-  periodSeconds: 10
 
-livenessProbe:
-  httpGet:
-    path: /v1/healthcheck
-    port: 8080
-  failureThreshold: 3
-  initialDelaySeconds: 20
-  periodSeconds: 30
-  successThreshold: 1
-  timeoutSeconds: 1
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Access-Token,Authorization
+      nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
+      nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.oauth2-proxy.svc.cluster.local:80/oauth2/auth
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+      nginx.ingress.kubernetes.io/proxy-body-size: 900m
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
+    pathType: ImplementationSpecific
+    host: codemie.%%DOMAIN%%
+    path: "/code-assistant-api/(.*)"
+    tls: []
 
-readinessProbe:
-  httpGet:
-    path: /v1/healthcheck
-    port: 8080
-  failureThreshold: 3
-  initialDelaySeconds: 20
-  periodSeconds: 30
-  successThreshold: 1
-  timeoutSeconds: 1
+  ingressSwagger:
+    annotations: {}
 
-resources:
-  limits:
-    cpu: 2
-    memory: 2048Mi
-  requests:
-    cpu: 1
-    memory: 2048Mi
+  ingressWebHooks:
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /v1/webhooks/$1
 
-# hostAliases is a list of aliases to be added to /etc/hosts for network name resolution
-hostAliases: []
+  # Is used to avoid pod restarts when the pod is starting when we are executing the migration script.
+  # Pod has 600 seconds to start and execute the migration script.
+  # failureThreshold * periodSeconds = 60 * 10 = 600 seconds = 10 minutes
+  startupProbe:
+    httpGet:
+      path: /v1/healthcheck
+      port: 8080
+    initialDelaySeconds: 20
+    failureThreshold: 60
+    periodSeconds: 10
 
-# -- Priority class for the pod
-priorityClassName: ""
+  livenessProbe:
+    httpGet:
+      path: /v1/healthcheck
+      port: 8080
+    failureThreshold: 3
+    initialDelaySeconds: 20
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 1
 
-nodeSelector: {}
+  readinessProbe:
+    httpGet:
+      path: /v1/healthcheck
+      port: 8080
+    failureThreshold: 3
+    initialDelaySeconds: 20
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 1
 
-tolerations: []
+  resources:
+    limits:
+      cpu: 2
+      memory: 2048Mi
+    requests:
+      cpu: 1
+      memory: 2048Mi
 
-affinity: {}
+  # hostAliases is a list of aliases to be added to /etc/hosts for network name resolution
+  hostAliases: []
 
-extraVolumeMounts: |
-  - name: codemie-ui
-    mountPath: /codemie-ui
-  - name: codemie-customer-config
-    mountPath: /app/config/customer
-  - name: codemie-llm-customer-config
-    mountPath: /app/config/llms/llm-amnaairn-config.yaml
-    subPath: llm-amnaairn-config.yaml
+  # -- Priority class for the pod
+  priorityClassName: ""
 
-extraVolumes: |
-  - name: codemie-ui
-    emptyDir: {}
-  - name: codemie-customer-config
-    configMap:
-      name: codemie-customer-config
-  - name: codemie-llm-customer-config
-    configMap:
-      name: codemie-llm-customer-config
+  nodeSelector: {}
 
-codemieuiProvider:
-  enabled: false
+  tolerations: []
 
-dynamicMode:
-  enabled: false
+  affinity: {}
 
-# -- Array of extra K8s manifests to deploy
-extraObjects:
-  - apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: codemie-llm-customer-config
-    data:
-      llm-amnaairn-config.yaml: |
-        llm_models:
-          - base_name: "mistral"
-            deployment_name: "mistral.mistral-7b-instruct-v0:2"
-            label: "Mistral 7b - Instruct"
-            multimodal: false
-            enabled: true
-            default: true
-            provider: "aws_bedrock"
-            features:
-              system_prompt: false
-              max_tokens: false
-            cost:
-              input: 0.0000025
-              output: 0.000011
-  
-        embeddings_models:
-          - base_name: "titan"
-            deployment_name: "amazon.titan-embed-text-v1"
-            label: "Titan Embeddings G1 - Text"
-            enabled: true
-            default: true
-            provider: "aws_bedrock"
-            cost:
-              input: 0.0000001
-              output: 0
+  extraVolumeMounts: |
+    - name: codemie-ui
+      mountPath: /codemie-ui
+    - name: codemie-customer-config
+      mountPath: /app/config/customer
+    - name: codemie-llm-customer-config
+      mountPath: /app/config/llms/llm-amnaairn-config.yaml
+      subPath: llm-amnaairn-config.yaml
+
+  extraVolumes: |
+    - name: codemie-ui
+      emptyDir: {}
+    - name: codemie-customer-config
+      configMap:
+        name: codemie-customer-config
+    - name: codemie-llm-customer-config
+      configMap:
+        name: codemie-llm-customer-config
+
+  codemieuiProvider:
+    enabled: false
+
+  dynamicMode:
+    enabled: false
+
+  # -- Array of extra K8s manifests to deploy
+  extraObjects:
+      - apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: codemie-llm-customer-config
+        data:
+          llm-amnaairn-config.yaml: |
+            llm_models:
+              - base_name: "mistral"
+                deployment_name: "mistral.mistral-7b-instruct-v0:2"
+                label: "Mistral 7b - Instruct"
+                multimodal: false
+                enabled: true
+                default: true
+                provider: "aws_bedrock"
+                features:
+                  system_prompt: false
+                  max_tokens: false
+                cost:
+                  input: 0.0000025
+                  output: 0.000011
+      
+            embeddings_models:
+              - base_name: "titan"
+                deployment_name: "amazon.titan-embed-text-v1"
+                label: "Titan Embeddings G1 - Text"
+                enabled: true
+                default: true
+                provider: "aws_bedrock"
+                cost:
+                  input: 0.0000001
+                  output: 0

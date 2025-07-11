@@ -203,9 +203,6 @@ verify_aws_login() {
     current_account=$(aws sts get-caller-identity --query "Account" --output text)
     current_user=$(aws sts get-caller-identity --query "Arn" --output text)
 
-#    AWS_CURRENT_USER_ARN=$current_user
-#    export AWS_CURRENT_USER_ARN
-
     log_message "info" "Current AWS account:"
     log_message "info" "Account ID: $current_account"
     log_message "info" "User ARN: $current_user"
@@ -421,12 +418,12 @@ main() {
     verify_aws_login
 
     deploy_iam_role
-    sleep 10
+    sleep 20
     deploy_terraform_backend_storage
-    sleep 10
+    sleep 20
     deploy_core_infrastructure
-    sleep 10
-    if [ "$AWS_RDS_ENABLE" -eq 0 ]; then
+    sleep 20
+    if [ "$AWS_RDS_ENABLE" -eq 0 ]; then # DB instance class and version - to check
         deploy_rds
     fi
 

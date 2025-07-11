@@ -1,10 +1,11 @@
-# -- AI/Run UI API URL
-viteApiUrl: https://codemie.%%DOMAIN%%/code-assistant-api
+codemie-ui:
+  image:
+    # -- Repository to use for the AI/Run UI.
+    repository: %%IMAGE_REPOSITORY%%/codemie-ui
 
-# -- Secrets with credentials to pull images from a private registry.
-imagePullSecrets:
-  - name: gcp-artifact-registry
+  # -- AI/Run UI API URL
+  viteApiUrl: https://codemie.%%DOMAIN%%/code-assistant-api
 
-# AI/Run UI ingress configuration
-ingress:
-  host: codemie.%%DOMAIN%%
+  # AI/Run UI ingress configuration
+  ingress:
+    host: codemie.%%DOMAIN%%

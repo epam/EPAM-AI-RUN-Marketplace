@@ -22,14 +22,14 @@ resource "aws_db_subnet_group" "db_subnet_group" {
 
 module "db" {
   source = "terraform-aws-modules/rds/aws"
-  identifier = "codemie"
+  identifier = "${var.platform_name}-rds"
 
   engine                   = "postgres"
   engine_version           = "17.4"
   engine_lifecycle_support = "open-source-rds-extended-support-disabled"
   family                   = "postgres17"
   major_engine_version     = "17.4"
-  instance_class           = "db.t4g.micro"
+  instance_class           = var.pg_instance_class
 
   allocated_storage        = 20
   max_allocated_storage    = 30

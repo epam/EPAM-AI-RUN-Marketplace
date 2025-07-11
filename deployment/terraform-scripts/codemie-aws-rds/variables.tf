@@ -41,3 +41,9 @@ variable "backend_lock_dynamodb_table" {
   type        = string
   default     = "" # Optional if not using locking
 }
+
+variable "pg_instance_class" {
+  description = "Postgres Instance Class"
+  type = string
+  default = "db.c6gd.medium"
+}

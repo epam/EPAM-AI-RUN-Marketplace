@@ -8,7 +8,6 @@ AWS_RDS_ENABLE=1 # 0 means true for wider compatibility
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 LOG_FILE="$SCRIPT_DIR/logs/codemie_helm_deployment_$(date +%Y-%m-%d-%H%M%S).log"
 CODEMIE_NAMESPACE="codemie"
-HELM_CHART_REGISTRY="oci://europe-west3-docker.pkg.dev/or2-msq-epmd-edp-anthos-t1iylu/helm-charts"
 
 if [ ! -d "$SCRIPT_DIR/logs" ]; then
     mkdir "$SCRIPT_DIR/logs"
@@ -47,19 +46,6 @@ display_usage() {
     exit 1
 }
 
-check_gcloud() {
-    if ! hash gcloud; then
-        log_message "fail" "gcloud is not installed"
-        log_message "info" "Install gcloud by running the following commands:"
-        log_message "info" ""
-        log_message "info" "curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg"
-        log_message "info" "echo \"deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main\" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list"
-        log_message "info" "sudo apt-get update && sudo apt-get install google-cloud-cli -y"
-        log_message "info" ""
-        exit 1
-    fi
-}
-
 check_nsc() {
     if ! hash nsc; then
         log_message "fail" "nsc is not installed"
@@ -89,48 +75,28 @@ check_helm(){
     fi
 }
 
-fetch_oci_helm_chart() {
-    local chart_url="$1"
-    local version="$2"
-
-    log_message "info" "Authenticating with OCI registry..."
-    if ! gcloud auth application-default print-access-token &> /dev/null; then
-        log_message "fail" "Failed to authenticate with Google Cloud."
-        log_message "info" "Provide the key.json file to authenticate to GCP."
-        log_message "info" ""
-        log_message "info" "export GOOGLE_APPLICATION_CREDENTIALS=key.json"
-        log_message "info" ""
-        exit 1
-    fi
-
-    log_message "info"  "Fetching Helm chart from: $chart_url (version: $version)"
-    if ! helm show all "$chart_url" --version "$version" &> /dev/null; then
-        log_message "fail" "Failed to fetch the Helm chart. Please check the chart URL, version, and your permissions."
-        log_message "info" "Run the following commands to authenticate with the OCI registry:"
-        log_message "info" ""
-        log_message "info" "gcloud auth application-default print-access-token | helm registry login -u oauth2accesstoken --password-stdin https://europe-west3-docker.pkg.dev"
-        log_message "info" ""
-        exit 1
-    fi
-}
-
 verify_inputs() {
     ai_run_version=""
+    image_repository=""
 
     # Parse arguments
-    for arg in "$@"
+    while [[ $# -gt 0 ]]
     do
-        case $arg in
+        case $1 in
             version=*)
-                ai_run_version="${arg#*=}"
+                ai_run_version="${1#*=}"
                 shift
                 ;;
             --rds-enable)
                 AWS_RDS_ENABLE=0
                 shift
                 ;;
+            --image-repository)
+                image_repository="$2"
+                shift 2
+                ;;
             *)
-                log_message "fail" "Unknown option: $arg"
+                log_message "fail" "Unknown option: $1"
                 display_usage
                 ;;
         esac
@@ -138,6 +104,11 @@ verify_inputs() {
 
     if [[ -z "$ai_run_version" ]]; then
         log_message "fail" "version is not set."
+        display_usage
+    fi
+
+    if [[ -z "$image_repository" ]]; then
+        log_message "fail" "image repository is not set."
         display_usage
     fi
 }
@@ -277,6 +248,28 @@ replace_aws_placeholders() {
     fi
 
     log_message "info" "Placeholders replaced successfully in ${values_file}"
+}
+
+replace_image_repository_placeholders() {
+    local values_file="$1"
+    local image_repository="$2"
+    local backup_file="${values_file}.img.backup"
+
+    if [[ -f "$backup_file" ]]; then
+        log_message "info" "Restoring ${values_file} from backup"
+        mv "$backup_file" "$values_file"
+        log_message "info" "Deleting leftover backup file"
+        rm -f "$backup_file"
+    fi
+
+    log_message "info" "Replacing placeholders with values"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+           # macOS/BSD sed syntax (requires backup extension)
+        sed -i '.img.backup' "s|%%IMAGE_REPOSITORY%%|${image_repository}|g" "${values_file}"
+    else
+           # GNU sed (Linux syntax; doesn't require extension)
+        sed -i.img.backup "s|%%IMAGE_REPOSITORY%%|${image_repository}|g" "${values_file}"
+    fi
 }
 
 load_deployment_env() {
@@ -611,26 +604,55 @@ deploy_oauth2_proxy() {
     fi
 }
 
+deploy_fluent_bit() {
+    local namespace="fluent-bit"
+    local cloud_provider="$1"
+    local values_file="./fluent-bit/values-${cloud_provider}.yaml"
+
+    log_message "info" "Starting FluentBit deployment"
+    check_and_create_namespace "$namespace"
+
+    helm upgrade --install fluent-bit fluent-bit/. \
+      --namespace "$namespace" \
+      -f "${values_file}" \
+      --wait \
+      --timeout 180s > /dev/null
+
+    # shellcheck disable=SC2181
+    if [ $? -eq 0 ]; then
+        log_message "success" "FluentBit deployment completed"
+    else
+        log_message "fail" "Failed to deploy FluentBit."
+        exit 1
+    fi
+
+}
+
 deploy_codemie_ui() {
     local namespace="codemie"
     local cloud_provider="$1"
     local domain_value="$2"
     local values_file="./codemie-ui/values-${cloud_provider}.yaml"
-    local helm_chart_registry="$3"
+    local chart_file="./codemie-ui/Chart.yaml"
+    local image_repository="$3"
     local ai_run_version="$4"
 
     log_message "info" "Starting AI/Run UI deployment"
 
     check_and_create_namespace "$namespace"
+
     replace_domain_placeholders "$values_file" "$domain_value"
+    replace_image_repository_placeholders "${values_file}" "${image_repository}"
+    replace_image_repository_placeholders "${chart_file}" "${image_repository}"
 
     log_message "info" "Deploying AI/Run UI Helm Chart ..."
-    helm upgrade --install codemie-ui "${helm_chart_registry}/codemie-ui" \
+    helm upgrade --install codemie-ui codemie-ui/. \
       --version "${ai_run_version}" \
       --namespace "$namespace" \
       -f "${values_file}" \
       --wait \
-      --timeout 180s > /dev/null
+      --timeout 180s \
+      --dependency-update > /dev/null
 
     # shellcheck disable=SC2181
     if [ $? -eq 0 ]; then
@@ -646,7 +668,8 @@ deploy_codemie_api() {
     local cloud_provider="$1"
     local domain_value="$2"
     local values_file="./codemie-api/values-${cloud_provider}.yaml"
-    local helm_chart_registry="$3"
+    local chart_file="./codemie-api/values-${cloud_provider}.yaml"
+    local image_repository="$3"
     local ai_run_version="$4"
 
     log_message "info" "Starting AI/Run API deployment"
@@ -665,16 +688,18 @@ deploy_codemie_api() {
     fi
 
     replace_domain_placeholders "$values_file" "$domain_value"
-
     replace_aws_placeholders "$values_file" "${AWS_DEFAULT_REGION}" "${EKS_AWS_ROLE_ARN}" "${AWS_KMS_KEY_ID}" "${AWS_S3_BUCKET_NAME}" "${AWS_DEFAULT_REGION}"
+    replace_image_repository_placeholders "${values_file}" "${image_repository}"
+    replace_image_repository_placeholders "${chart_file}" "${image_repository}"
 
     log_message "info" "Deploying AI/Run API Helm Chart ..."
-    helm upgrade --install codemie-api "${helm_chart_registry}/codemie" \
+    helm upgrade --install codemie-api codemie-api/. \
       --version "${ai_run_version}" \
       --namespace "$namespace" \
       -f "${values_file}" \
       --wait \
-      --timeout 600s > /dev/null
+      --timeout 600s \
+      --dependency-update > /dev/null
 
     # shellcheck disable=SC2181
     if [ $? -eq 0 ]; then
@@ -788,12 +813,18 @@ deploy_nats() {
 
 deploy_codemie_nats_callout() {
     local cloud_provider="$1"
-    local helm_chart_registry="$2"
-    local ai_run_version="$3"
+    local ai_run_version="$2"
+    local image_repository="$3"
+    local values_file="codemie-nats-auth-callout/values-${cloud_provider}.yaml"
+    local chart_file="codemie-nats-auth-callout/Chart.yaml"
+
     local namespace="codemie"
     local secret_name="codemie-nats-secrets"
 
     log_message "info" "Starting CodeMie NATS Callout deployment."
+
+    replace_image_repository_placeholders "${values_file}" "${image_repository}"
+    replace_image_repository_placeholders "${chart_file}" "${image_repository}"
 
     check_and_create_namespace "$namespace"
 
@@ -803,12 +834,13 @@ deploy_codemie_nats_callout() {
     fi
 
     log_message "info" "Deploying CodeMie NATS Callout Helm Chart ..."
-    helm upgrade --install codemie-nats-auth-callout "${helm_chart_registry}/codemie-nats-auth-callout" \
+    helm upgrade --install codemie-nats-auth-callout codemie-nats-auth-callout/. \
       --version "${ai_run_version}" \
       --namespace "$namespace" \
-      -f "./codemie-nats-auth-callout/values-${cloud_provider}.yaml" \
+      -f "${values_file}" \
       --wait \
-      --timeout 600s > /dev/null
+      --timeout 600s \
+      --dependency-update > /dev/null
 
     # shellcheck disable=SC2181
     if [ $? -eq 0 ]; then
@@ -821,21 +853,28 @@ deploy_codemie_nats_callout() {
 
 deploy_codemie_mcp_connect_service() {
     local cloud_provider="$1"
-    local helm_chart_registry="$2"
-    local ai_run_version="$3"
+    local ai_run_version="$2"
+    local image_repository="$3"
+    local values_file="./codemie-mcp-connect-service/values.yaml"
+    local chart_file="./codemie-mcp-connect-service/Chart.yaml"
+
     local namespace="codemie"
 
     log_message "info" "Starting CodeMie MCP Connect Service deployment."
 
+    replace_image_repository_placeholders "${values_file}" "${image_repository}"
+    replace_image_repository_placeholders "${chart_file}" "${image_repository}"
+
     check_and_create_namespace "$namespace"
 
     log_message "info" "Deploying CodeMie MCP Connect Service Helm Chart ..."
-    helm upgrade --install codemie-mcp-connect-service "${helm_chart_registry}/codemie-mcp-connect-service" \
+    helm upgrade --install codemie-mcp-connect-service codemie-mcp-connect-service/. \
       --version "${ai_run_version}" \
       --namespace "$namespace" \
-      -f "./codemie-mcp-connect-service/values.yaml" \
+      -f "${values_file}" \
       --wait \
-      --timeout 600s > /dev/null
+      --timeout 600s \
+      --dependency-update > /dev/null
 
     # shellcheck disable=SC2181
     if [ $? -eq 0 ]; then
@@ -848,21 +887,27 @@ deploy_codemie_mcp_connect_service() {
 
 deploy_mermaid_server() {
     local cloud_provider="$1"
-    local helm_chart_registry="$2"
-    local ai_run_version="$3"
+    local ai_run_version="$2"
+    local image_repository="$3"
+    local values_file="./mermaid-server/values.yaml"
+    local chart_file="./mermaid-server/Chart.yaml"
+
     local namespace="codemie"
 
     log_message "info" "Starting Mermaid Server deployment."
+    replace_image_repository_placeholders "${values_file}" "${image_repository}"
+    replace_image_repository_placeholders "${chart_file}" "${image_repository}"
 
     check_and_create_namespace "$namespace"
 
     log_message "info" "Deploying Mermaid Server Helm Chart ..."
-    helm upgrade --install mermaid-server "${helm_chart_registry}/mermaid-server" \
+    helm upgrade --install mermaid-server mermaid-server/. \
       --version "${ai_run_version}" \
       --namespace "$namespace" \
-      -f "./mermaid-server/values.yaml" \
+      -f "${values_file}" \
       --wait \
-      --timeout 600s > /dev/null
+      --timeout 600s \
+      --dependency-update > /dev/null
 
     # shellcheck disable=SC2181
     if [ $? -eq 0 ]; then
@@ -874,7 +919,6 @@ deploy_mermaid_server() {
 
 deploy_codemie_postgresql() {
     local cloud_provider="$1"
-    local helm_chart_registry="$2"
     local namespace="codemie"
     local postgres_secret_name="codemie-postgresql"
 
@@ -952,16 +996,13 @@ main() {
     log_message "info" ""
     log_message "info" "version is set to '$ai_run_version'"
     log_message "info" ""
-    check_gcloud
     check_helm
-    fetch_oci_helm_chart "${HELM_CHART_REGISTRY}/codemie" "$ai_run_version"
     load_deployment_env
     load_configuration
 
     check_nsc
     check_htpasswd
     configure_kubectl
-    deploy_codemie_docker_registry_secret "$CODEMIE_NAMESPACE" "gcp-artifact-registry"
     deploy_nginx_ingress_controller "aws"
     deploy_storage_class "aws"
     deploy_elasticsearch "aws"
@@ -972,18 +1013,18 @@ main() {
     deploy_keycloak "aws" "${TF_VAR_platform_domain_name}"
     deploy_oauth2_proxy "aws" "${TF_VAR_platform_domain_name}"
     deploy_nats "aws"
-    deploy_codemie_nats_callout "aws" "$HELM_CHART_REGISTRY" "$ai_run_version"
-    deploy_codemie_mcp_connect_service "aws" "$HELM_CHART_REGISTRY" "$ai_run_version"
-    deploy_mermaid_server "aws" "$HELM_CHART_REGISTRY" "$ai_run_version"
+    deploy_codemie_nats_callout "aws" "$ai_run_version" "$image_repository"
+    deploy_codemie_mcp_connect_service "aws" "$ai_run_version" "$image_repository"
+    deploy_mermaid_server "aws" "$ai_run_version" "$image_repository"
 
     if [ "$AWS_RDS_ENABLE" -eq 0 ]; then
         deploy_codemie_aws_rds
     else
-        deploy_codemie_postgresql "aws" "$HELM_CHART_REGISTRY"
+        deploy_codemie_postgresql "aws"
     fi
 
-    deploy_codemie_ui "aws" "${TF_VAR_platform_domain_name}" "$HELM_CHART_REGISTRY" "$ai_run_version"
-    deploy_codemie_api "aws" "${TF_VAR_platform_domain_name}" "$HELM_CHART_REGISTRY" "$ai_run_version"
+    deploy_codemie_ui "aws" "${TF_VAR_platform_domain_name}" "$image_repository" "$ai_run_version"
+    deploy_codemie_api "aws" "${TF_VAR_platform_domain_name}" "$image_repository" "$ai_run_version"
     print_summary
 
 }

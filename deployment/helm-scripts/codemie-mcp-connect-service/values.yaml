@@ -1,2 +1,3 @@
-imagePullSecrets:
-  - name: gcp-artifact-registry
+codemie-mcp-connect-service:
+  image:
+    repository: %%IMAGE_REPOSITORY%%/codemie-mcp-connect-service
