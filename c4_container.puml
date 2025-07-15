@@ -1,0 +1,47 @@
+@startuml "amnaairun_container"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include c4_context_participants.puml
+!include c4_container_participants.puml
+
+LAYOUT_TOP_DOWN()
+'LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+Rel(product_user, web_app, "Uses AI/Run for AWS Platform", "User interaction", $tags="interactions")
+Rel(product_admin_user, web_app, "Manages AI/Run for AWS Platform", "User interaction", $tags="interactions")
+Rel(product_admin_user, kibana, "Monitors AI/Run logs and metrics", "User interaction", $tags="interactions")
+Rel(web_app, oauth2, "Redirects users for authorization", "REST API", $tags="interactions")
+Rel(oauth2, keycloak, "Handles user authorization", "REST API", $tags="security")
+
+Rel(product_admin_user, keycloak, "Administrates user access for the platform", "User interaction", $tags="interactions")
+
+Rel(web_app, backend, "Invokes platform API services", "REST API", $tags="sync")
+Rel(backend, llm_providers, "Interacts with external LLM APIs", "REST API", $tags="optional")
+Rel(backend, mcp, "Connects to MCP for processing", "JSON RPC-2.0", $tags="async")
+Rel(backend, nats_callout, "Handles Authentication and Authorization", "NATS", $tags="async")
+Rel(nats_callout, nats, "Sends authentication messages", "NATS", $tags="async")
+Rel(plugins, nats, "Publishes to message broker", "NATS", $tags="async")
+Rel(plugins, local, "Reads and writes to local storage", "stdio", $tags="sync")
+Rel(backend, mcp_connector, "Connects to the MCP system", "HTTPS", $tags="sync")
+
+Rel(backend, mermaid, "Requests visualization data", "REST API", $tags="async")
+Rel(mermaid, web_app, "Provides graphical workflow visualization", "REST API", $tags="async")
+Rel(mcp_connector, mcp, "Accesses MCP locally", "stdio", $tags="async")
+
+Rel(backend, rel_db, "Manages relational data for the platform", "JDBC", $tags="sync")
+Rel(backend, nosql_db, "Stores indexed data for the platform", "REST API", $tags="sync")
+
+'Logging and Monitoring
+Rel(fluentbit1, backend, "Collects logs from platform components", $tags="async")
+Rel(fluentbit2, web_app, "Collects web app logs", $tags="async")
+Rel(fluentbit1, nosql_db, "Publishes metrics", "REST API", $tags="sync")
+Rel(fluentbit2, nosql_db, "Publishes metrics", "REST API", $tags="sync")
+Rel(kibana, nosql_db, "Visualizes indexed platform data", "REST API", $tags="sync")
+
+'AI/Run Platform and AWS relationships
+Rel(fluentbit1, monitor, "Feeds monitoring metrics to AWS services", "AWS SDK", $tags="analytics")
+Rel(fluentbit2, monitor, "Feeds monitoring metrics to AWS services", "AWS SDK", $tags="analytics")
+Rel(backend, bedrock, "Invokes Bedrock AI APIs", "REST | AWS SDK", $tags="sync")
+Rel(plugins, aws_services, "Communicates with AWS services", "AWS SDK", $tags="sync")
+
+@enduml

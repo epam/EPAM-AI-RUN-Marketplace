@@ -1,0 +1,40 @@
+@startuml "amnaairun_container_participants"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include c4_context_participants.puml
+
+LAYOUT_TOP_DOWN()
+'LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+
+
+AddBoundaryTag("airun_system", $bgColor="white", $fontColor="grey", $borderColor="grey", $shape=RoundedBoxShape())
+
+System_Boundary(ai_run_for_aws, "AI/Run for AWS Platform", $tags="airun_system") {
+Container_Boundary(web_app_b, "AI/Run for AWS Web Application") {
+   Container(web_app, "Web Application", "ReactJS", "Provides AI/Run for AWS full functionality via their web browser")
+   Container(fluentbit2, "Lightweight agent", "3d party application", "Enables logs and metrics collection from AI/Run for AWS platform")
+ }
+ Container_Boundary(backend_b, "AI/Run for AWS API") {
+   Container(backend, "AI/Run for AWS API", "Python 3.x", "Exposes API for AI/Run for AWS platform functionality")
+   Container(fluentbit1, "Lightweight agent", "3d party application", "Enables logs and metrics collection from AI/Run for AWS platform")
+}
+    Container(keycloak, "OIDC Provider", "3d party application", "Provides authentication and authorization mechanism for AI/Run for AWS platform users")
+    Container(oauth2, "Oauth2 OIDC Proxy", "3d party application", "Proxies authentication and authorization mechanism for AI/Run for AWS platform users")
+    Container(kibana, "Data visualization tool", "Kibana | 3d party application", "Visualize data for AI/Run for AWS platform users")
+    Container(nats, "NATS Server", "3d party application", "Message broker for AI/Run for AWS platform")
+    Container(nats_callout, "NATS Auth Callout", "Go 1.2x.x", "Authorization component of AI/Run for AWS Plugin Engine")
+    Container(mermaid, "Mermaid Server", "Python 3.x | JS", "Workflow visualization Server of AI/Run for AWS platform")
+     Container(plugins, "AI/Run for AWS plugins", "Interacts with AI/Run for AWS toolkits and MCP servers")
+    Container(mcp_connector,  "MCP connector bridge", "NodeJS","Enables AI/Run for AWS platform to communicate with local Model Context Protocol (MCP) servers")
+    ContainerDb(rel_db, "Relational Database", "AWS RDS | Postgres", "Stores AI/Run for AWS data: assistants, workflows, settings, etc.")
+    ContainerDb(nosql_db, "NoSQL Storage optimized for search", "ElasticSearch | 3d party application", "Stores AI/Run for AWS index data, logs, etc.")
+}
+
+Boundary(aws, "AWS Platform", $tags="aws_system") {
+Container(bedrock, "AWS Bedrock", "AWS Bedrock Capabilities: LLMs, agents, flows, knowledge bases, guardrails, etc", $techn="Container", $tags="container")
+Container(monitor, "AWS CloudWatch", "AWS Monitoring Service to collect, store, analyze adn visualize AI/Run for AWS platform logs", $techn="Container", $tags="container")
+Container(aws_services, "AWS Services", "AWS Services AI/Run for AWS platform interacts with: Lambda, API Gateway, Beanstalk, RDS, etc", $techn="Container", $tags="container")
+}
+
+@enduml

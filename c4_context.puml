@@ -1,0 +1,24 @@
+@startuml "amnaairn_context"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include c4_context_participants.puml
+
+LAYOUT_TOP_DOWN()
+LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+System(ai_run_for_aws, "AI/Run for AWS Platform", "AI-powered Software Development Life Cycle (SDLC) platform ", $tags="softwaresys")
+
+Rel(product_user, ai_run_for_aws, "Uses AI/Run for AWS Platform", "User interaction", $tags="interactions")
+Rel(product_admin_user, ai_run_for_aws, "Administrates AI/Run for AWS Platform", "User interaction", $tags="interactions")
+
+Rel(ai_run_for_aws, aws, "Exposes metrics", "AWS SDK", $tags="async")
+Rel(ai_run_for_aws, aws, "Invokes Bedrock APIs", "REST | AWS SDK", $tags="sync")
+Rel(ai_run_for_aws, aws, "Invokes AWS APIs", "AWS SDK",$tags = "sync")
+Rel(ai_run_for_aws, llm_providers, "Invokes LLM APIs", "REST API", $tags="optional")
+Rel( ai_run_for_aws, mcp, "Connects to external MCP", "MCP | JSON RPC-2.0", $tags="async")
+Rel(ai_run_for_aws, local, "Executes commands", "stdio", $tags = "async")
+
+SHOW_LEGEND()
+
+@enduml

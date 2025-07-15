@@ -1,0 +1,29 @@
+@startuml "amnaairn_context_participants"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+LAYOUT_TOP_DOWN()
+LAYOUT_WITH_LEGEND()
+
+AddRelTag("non_existing_interactions", $textColor="red", $lineColor="red", $lineStyle=DashedLine())
+
+AddElementTag("component", $bgColor="63BEF2", $fontColor="white", $borderColor="63BEF2")
+AddBoundaryTag("aws_system", $bgColor="999999", $fontColor="white", $borderColor="999999")
+AddRelTag("sync", $textColor=$ARROW_FONT_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=Line())
+AddRelTag("optional", $textColor=$ARROW_FONT_COLOR, $lineColor="CCCCCC", $lineStyle=Line())
+AddRelTag("async", $textColor=$ARROW_FONT_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DashedLine())
+AddRelTag("interactions", $textColor=$ARROW_FONT_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DottedLine())
+AddElementTag("bolded_component", $bgColor="438DD5", $fontColor="white", $borderColor="green", $borderThickness="5")
+SHOW_PERSON_OUTLINE()
+
+Person(product_user, "AI/Run for AWS End User", "Person, who wants to accelerate SDLC processes by using AI/Run for AWS", $tags="user")
+Person(product_admin_user, "AI/Run for AWS Admin End User", "Person, who administrates  AI/Run for AWS platform", $tags="user")
+
+
+System_Ext(llm_providers, "LLM providers", "Enables access to other large language models (LLMs) through APIs and other platforms", $type="Software System", $tags="softwaresys")
+System_Ext(mcp, "MCP Servers", "      Integrates external tools       \nwith  AI/Run for AWS assistants ", $type="Software System", $tags="softwaresys")
+System_Ext(local, "Remote Runtime Environment", "    Plugin uses for performing actions on local filesystem     ", $type="Software System", $tags="softwaresys")
+
+System_Ext(aws, "Amazon Web Services", "Set of AWS Service that provides different functionality for AI/Run for AWS platform", $type="Software System", $tags="aws_system")
+
+
+@enduml
