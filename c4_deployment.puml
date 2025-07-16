@@ -1,0 +1,127 @@
+@startuml
+  !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+title Deployment Diagram
+AddRelTag("async", $textColor=$ARROW_FONT_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DashedLine())
+' Internet Entry Point
+Deployment_Node(internet, "Internet", "External Environment") {
+    Container(browser, "Web Browser", "Chrome/Mozilla/Edge/Siri")
+}
+
+' AWS Cloud Boundary
+Deployment_Node(aws_cloud, "AWS Cloud", "AWS Services") {
+    Deployment_Node(route53, "AWS Route53", "DNS Service") {
+        Container(route53_dns, "AWS Route53", "DNS Service", "Routes traffic to cloud resources.")
+    }
+
+    Deployment_Node(aws_region, "AWS Region", "AWS Region") {
+        Deployment_Node(vpc, "Virtual Private Cloud (VPC)", "AWS Networking") {
+
+            Deployment_Node(public_subnet, "Public Subnet", "Accessible from the Internet: set of subnets within VPC") {
+                Container(gateway, "Intenet Gateway", "AWS VPC Gateway", "Enables internet access for VPC resources.")
+                Deployment_Node(alb, "Application Load Balancer (ALB)", "HTTP/HTTPS Traffic Routing") {
+                    Container(alb_node, "ALB", "Networking", "Routes HTTP/HTTPS traffic to applications.")
+                }
+                Deployment_Node(nlb, "Network Load Balancer (NLB)", "TCP/UDP Traffic Routing") {
+                    Container(nlb_node, "NLB", "Networking", "Routes TCP/UDP traffic to services.")
+                }
+            }
+
+            Deployment_Node(private_subnet, "Private Subnet", "Isolated Environment: set of subnets within VPC") {
+                Container(nat, "NAT Gateway", "AWS VPC NAT Gateway", "Allows private subnet resources to access the internet.")
+                Deployment_Node(postgres_db, "PostgreSQL DB", "AWS RDS"){
+                   Container(postgres_db_, "PostgreSQL DB", "AWS RDS", "Stores platform data.")
+                }
+                Deployment_Node(compute, "Compute Resources", "AWS EC2 worker group") {
+                        Container(ec2_1, "AWS EC2 Instance \nAL2023_x86_64_STANDARD", "amazon-linux-2023/x86_64/standard")
+                        Container(ec2_2, "AWS EC2 Instance \nAL2023_x86_64_STANDARD", "amazon-linux-2023/x86_64/standard")
+
+                    Deployment_Node(eks_cluster, "AWS EKS Cluster", "Managed Kubernetes Environment") {
+
+                        Deployment_Node(nginx, "Ingress namespace", "Kubernetes Namespace") {
+                            Container(ingress_nginx, "Ingress Nginx", "Kubernetes Ingress Controller", "Routes HTTP/HTTPS traffic to services based on rules.")
+                            Container(ingress_nginx_backend, "Ingress Nginx Backend", "Kubernetes Ingress Controller Backend")
+                       }
+
+                        Deployment_Node(codemie_namespace, "AI/Run for AWS Namespace", "Kubernetes Namespace") {
+                            Container(ai_run_ui, "AI/Run UI", "ReactJS", "Provides web interface for AI/Run.")
+                            Container(backend_api, "AI/Run Backend API", "Python", "Exposes APIs for platform functionality.")
+                            Container(mermaid_server, "Mermaid Server", "Python | JS", "Renders workflow visualizations.")
+                            Container(nats_server, "NATS", "Message Broker", "Handles message-driven workflows.")
+                            Container(nats_auth_callout, "NATS Auth Callout", "GoLang", "Handles authentication for NATS.")
+                            Container(mcp_connect, "MCP Connect", "NodeJS", "Facilitates integration with MCP systems.")
+                         }
+
+                        Deployment_Node(security_namespace, "Security Namespace", "Manages security") {
+                            Container(keycloak, "OIDC Keycloak Provider", "3d party application", "Handles user authentication.")
+                            Container(keycloak_operator, "OIDC Keycloak Provider DB Operator", "3d party application", "Handles user authentication.")
+                            Container(keycloak_repo0, "OIDC Keycloak Provider Component", "3d party application", "Handles user authentication.")
+                            Container(keycloak_repo1, "OIDC Keycloak Provider Component", "3d party application", "Handles user authentication.")
+                            Container(keycloak_repo2, "OIDC Keycloak Provider Component", "3d party application", "Handles user authentication.")
+                            Container(keycloak_repo3, "OIDC Keycloak Provider Component", "3d party application", "Handles user authentication.")
+                            Container(keycloak_postgres1, "OIDC Keycloak Provider DB Master", "3d party application", "Handles user authentication.")
+                            Container(keycloak_postgres2, "OIDC Keycloak Provider DB Replica", "3d party application", "Handles user authentication.")
+                        }
+
+                        Deployment_Node(postgre_operator, "Postgres Operator Namespace", "Manages DB operations for OIDC Provider") {
+                            Container(postgre_operator_, "Postgres Operator", "3rd Party Application", "Proxies DB operations for OIDC Provider")
+                        }
+                        Deployment_Node(oauth_2, "OAUTH2 Namespace", "Manages security proxy") {
+                            Container(oauth2_proxy, "OAuth2 Proxy", "3rd Party Application", "Proxies OAuth2 authentication requests.")
+                        }
+
+                        Deployment_Node(elastic, "Elastic Namespace", "ElK namespace") {
+                            Container(elastic_search_db_1, "ElasticSearch DB Master", "3d party application", "Optimized for search data.")
+                            Container(elastic_search_db_2, "ElasticSearch DB Replica", "3d party application", "Optimized for search data.")
+                            Container(kibana, "Kibana Application", "3d party application", "Publishes logs and metrics to monitoring services.")
+                        }
+                        Deployment_Node(fluentbit, "Fluentbit Namespace", "Fluentbit namespace") {
+                            Container(fluentbit_ui, "Fluentbit Exporter", "3d party application", "Publishes logs and metrics to monitoring services.")
+                            Container(fluentbit_api, "Fluentbit Exporter", "3d party application", "Publishes logs and metrics to monitoring services.")
+                        }
+                    }
+                }
+            }
+
+      Container(bedrock, "AWS Bedrock", "AI Services", "Provides LLM-based workflows, guardrails, and agents.")
+      Container(monitoring_service, "AWS CloudWatch", "Monitoring Service", "Analyzes logs and metrics.")
+      Container(storage_service, "AWS S3", "Object Storage", "Host for platform configurations and files.")
+      Container(iam_service, "AWS IAM", "Identity Management", "Manages permissions and roles.")
+      Container(kms_service, "AWS KMS", "Key Management", "Encrypts platform secrets.")
+    }
+}
+}
+
+Deployment_Node(local, "Remote Runtime Environment", "External Environment") {
+    Container(plugin, "AI/Run for AWS Plugin", "Python", "Handles AI/Run for AWS plugin functionality.")
+    Container(nats_client, "NATS client", "NATS Client", "Handles NATS messaging for plugins.")
+    Container(mcp, "MCP Server", "Model Context Protocol Server", "Model Context Protocol (MCP) servers.")
+}
+
+'System_Ext(local, "Remote Runtime Environment", "    Plugin uses for performing actions on local filesystem     ", $type="Software System", $tags="softwaresys")
+
+' Relationships
+Rel(browser, route53_dns, "Routes traffic using DNS", "HTTP/HTTPS")
+Rel(route53_dns, gateway, "Directs  Ingress traffic", "HTTP/HTTPS | TCP")
+Rel(gateway, alb, "Directs HTTP traffic via ALB", "HTTP/HTTPS")
+Rel(gateway, nlb, "Directs TCP traffic via NLB", "TCP")
+Rel(alb, nginx, "Routes HTTP traffic", "HTTP/HTTPS")
+Rel(nginx, codemie_namespace, "Routes HTTP traffic to AI/Run UI", "HTTP/HTTPS")
+Rel(nlb, nats_server, "Routes TCP traffic to NATS", "TCP")
+BiRel(nats_auth_callout, nats_server, "Authenticate requests", "TCP")
+BiRel(backend_api, nats_server, "Message exchange", $tags="async")
+Rel(nats_server, nat, "Message exchange", $tags="async")
+Rel(codemie_namespace, postgres_db, "Stores relational data", "PostgreSQL")
+BiRel(codemie_namespace, elastic, "Manages indexed logs and search data", "REST API")
+Rel(oauth_2, security_namespace, "Proxies OAuth2 authentication", "REST API")
+Rel(codemie_namespace, oauth_2, "Initiates authentication flow", "HTTP/HTTPS")
+Rel(fluentbit, elastic, "Publishes backend logs", "REST API")
+Rel(elastic_search_db_1, kibana, "Visualize data")
+BiRel(elastic_search_db_1, elastic_search_db_2, "Synchronizes data", $tags="async")
+Rel( security_namespace, postgre_operator,"Manages OIDC DB operations", "PostgreSQL")
+Rel(security_namespace, nat, "Authentication callback", "HTTP/HTTPS")
+BiRel(plugin, nats_client, "Message exchange", $tags="async")
+BiRel(plugin, mcp, "Message exchange","stdio")
+Rel(nats_client, route53_dns, "Message exchange", "TCP", $tags="async")
+Rel(nat, nats_client, "Message exchange", "TCP", $tags="async")
+Rel(nat, browser, "Authentication callback")
+@enduml
