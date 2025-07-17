@@ -61,7 +61,7 @@ variable "ssl_policy" {
 variable "cluster_version" {
   description = "EKS cluster version"
   type        = string
-  default     = "1.32"
+  default     = "1.33"
 }
 
 variable "role_permissions_boundary_arn" {
@@ -173,3 +173,10 @@ variable "enable_codemie_s3_file_storage" {
   type        = bool
   default     = true
 }
+
+variable "ami_type" {
+  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for valid values"
+  type        = string
+  default     = "AL2023_x86_64_STANDARD"
+}
+

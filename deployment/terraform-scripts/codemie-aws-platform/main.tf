@@ -304,6 +304,7 @@ module "eks" {
       min_size     = var.spot_min_nodes_count
       max_size     = var.spot_max_nodes_count
       desired_size = var.spot_desired_nodes_count
+      ami_type     = var.ami_type
 
       iam_role_use_name_prefix      = false
       iam_role_permissions_boundary = var.role_permissions_boundary_arn
@@ -342,7 +343,7 @@ module "eks" {
       min_size     = var.demand_min_nodes_count
       max_size     = var.demand_max_nodes_count
       desired_size = var.demand_desired_nodes_count
-
+      ami_type     = var.ami_type
       iam_role_use_name_prefix      = false
       iam_role_permissions_boundary = var.role_permissions_boundary_arn
 
