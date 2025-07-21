@@ -233,9 +233,6 @@ deploy_iam_role() {
     log_message "info" "IAM Deployer role Name: $AWS_DEPLOYER_ROLE_NAME"
     log_message "info" "IAM Deployer role ARN: $AWS_DEPLOYER_ROLE_ARN"
     log_message "success" "IAM Deployer role creation deployment completed."
-
-#    export AWS_DEPLOYER_ROLE_ARN
-#    export AWS_DEPLOYER_ROLE_NAME
 }
 
 deploy_terraform_backend_storage() {
@@ -281,10 +278,18 @@ deploy_core_infrastructure() {
         -backend-config="dynamodb_table=${BACKEND_LOCK_DYNAMODB_TABLE}" \
         -backend-config="encrypt=true"
 
-    terraform plan \
-      -var="role_arn=${AWS_DEPLOYER_ROLE_ARN}" \
-      -var="eks_admin_role_arn=${current_user}" \
-      -out=tfplan
+    if [ -z "${TF_VAR_eks_admin_role_arn:-}" ]; then
+        terraform plan \
+          -var="role_arn=${AWS_DEPLOYER_ROLE_ARN}" \
+          -var="eks_admin_role_arn=${current_user}" \
+          -out=tfplan
+    else
+        terraform plan \
+          -var="role_arn=${AWS_DEPLOYER_ROLE_ARN}" \
+          -var="eks_admin_role_arn=${TF_VAR_eks_admin_role_arn}" \
+          -out=tfplan
+    fi
+
     terraform apply -auto-approve tfplan
 
     local outputs=(
