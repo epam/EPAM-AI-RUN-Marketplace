@@ -76,6 +76,13 @@ variable "add_userdata" {
   default     = ""
 }
 
+variable "ebs_encrypt" {
+  description = "Specifies whether the EBS volume should be encrypted."
+  type        = bool
+  default     = false
+
+}
+
 # Variables for spot pool
 variable "spot_instance_types" {
   description = "AWS instance type to build nodes for spot pool"

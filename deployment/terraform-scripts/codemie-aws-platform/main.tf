@@ -287,7 +287,7 @@ module "eks" {
           volume_type           = "gp3"
           iops                  = 3000
           throughput            = 150
-          encrypted             = false
+          encrypted             = var.ebs_encrypt
           delete_on_termination = true
         }
       }
