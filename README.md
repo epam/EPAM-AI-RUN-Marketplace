@@ -3,7 +3,7 @@
 
 This project provides ....
 ## AI/Run™ for AWS Architecture overview 
-
+<img src="assets/AI_Run_For_AWS.drawio.svg" alt="Platform Architecture" width="1200">
 
 ## Installation
 
