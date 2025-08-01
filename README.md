@@ -53,8 +53,8 @@ There are pre-created ....:
 
 |AI/Run™ for AWS Object |
 |-----------------------|
-| Assistants            |
-| Workflows             |
+| [Assistants](https://github.com/epam/EPAM-AI-RUN-Marketplace/blob/Deployment-scripts/guide/assistants/README.md)|
+| [Workflows](https://github.com/epam/EPAM-AI-RUN-Marketplace/blob/Deployment-scripts/guide/workflows/README.md)  |
 | Datasources           |
 
 ....
