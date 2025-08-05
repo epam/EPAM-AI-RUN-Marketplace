@@ -98,8 +98,9 @@ Before installing AI/Run CodeMini, carefully review the prerequisites and requir
 # 3. AI/Run CodeMie deployment architecture
 
 The diagram below depicts the AI/Run CodeMie infrastructure deployment in one region (AZ) of the AWS public cloud environment.
-
-![Diagram](guide/images/deployment-guide/architecture.png)
+## AI/Run™ for AWS Architecture overview
+<img src="assets/AI_Run_For_AWS.drawio.svg" alt="Platform Architecture" width="1200">
+[Diagram](guide/images/deployment-guide/architecture.png)
 
 Container Resources Requirements
 
@@ -1163,7 +1164,6 @@ Choose the service(s) based on your needs and use the corresponding links for se
 9. Click on "Create Integration" button
 
 ## 10.2. Import entity
-This project provides ....
-## AI/Run™ for AWS Architecture overview
-<img src="assets/AI_Run_For_AWS.drawio.svg" alt="Platform Architecture" width="1200">
+
+
 
