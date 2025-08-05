@@ -1163,5 +1163,7 @@ Choose the service(s) based on your needs and use the corresponding links for se
 9. Click on "Create Integration" button
 
 ## 10.2. Import entity
-
+This project provides ....
+## AI/Run™ for AWS Architecture overview
+<img src="assets/AI_Run_For_AWS.drawio.svg" alt="Platform Architecture" width="1200">
 
