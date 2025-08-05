@@ -13,6 +13,73 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 ################################################################################
+# Encryption key
+################################################################################
+
+data "aws_iam_policy_document" "ai_run_kms_key_policy" {
+  version = "2012-10-17"
+  statement {
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+# Following policy statements are adopted from EC2 guide:
+# https://docs.aws.amazon.com/autoscaling/ec2/userguide/key-policy-requirements-EBS-encryption.html
+  statement {
+    sid    = "Allow service-linked role use of the customer managed key"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"]
+    }
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "Allow attachment of persistent resources"
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"]
+    }
+    actions = ["kms:CreateGrant"]
+    resources = ["*"]
+    condition {
+      test     = "Bool"
+      variable = "kms:GrantIsForAWSResource"
+      values   = ["true"]
+    }
+  }
+}
+
+module "ai_run_kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "3.1.1"
+
+  description                        = "AI Run key usage"
+  key_usage                          = "ENCRYPT_DECRYPT"
+  enable_key_rotation                = false
+  aliases                            = ["airun-${replace(lower(local.cluster_name), "-", "")}"]
+  policy                             = data.aws_iam_policy_document.ai_run_kms_key_policy.json
+  key_administrators                 = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+  bypass_policy_lockout_safety_check = true
+
+  tags = local.tags
+}
+
+################################################################################
 # VPC
 ################################################################################
 resource "aws_eip" "nat" {
@@ -288,6 +355,7 @@ module "eks" {
           iops                  = 3000
           throughput            = 150
           encrypted             = var.ebs_encrypt
+          kms_key_id            = var.ebs_encrypt ? module.ai_run_kms.key_arn : null
           delete_on_termination = true
         }
       }
@@ -579,35 +647,6 @@ module "ai_run_irsa" {
       namespace_service_accounts = ["*"]
     }
   }
-
-  tags = local.tags
-}
-
-data "aws_iam_policy_document" "ai_run_kms_key_policy" {
-  version = "2012-10-17"
-  statement {
-    sid    = "Enable IAM User Permissions"
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-    }
-    actions   = ["kms:*"]
-    resources = ["*"]
-  }
-}
-
-module "ai_run_kms" {
-  source  = "terraform-aws-modules/kms/aws"
-  version = "3.1.1"
-
-  description                        = "AI Run key usage"
-  key_usage                          = "ENCRYPT_DECRYPT"
-  enable_key_rotation                = false
-  aliases                            = ["airun-${replace(lower(local.cluster_name), "-", "")}"]
-  policy                             = data.aws_iam_policy_document.ai_run_kms_key_policy.json
-  key_administrators                 = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-  bypass_policy_lockout_safety_check = true
 
   tags = local.tags
 }

@@ -46,6 +46,9 @@ module "db" {
   vpc_security_group_ids   = [data.terraform_remote_state.vpc.outputs.codemie_vpc_default_sg_id]
 
   publicly_accessible      = false
+
+  kms_key_id = data.terraform_remote_state.vpc.outputs.codemie_kms_key_arn
+
 }
 
 resource "random_password" "rds_master_password" {
