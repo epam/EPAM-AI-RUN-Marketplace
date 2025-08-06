@@ -279,6 +279,11 @@ module "eks" {
     use_mixed_instances_policy    = true
     iam_role_use_name_prefix      = false
     iam_role_permissions_boundary = var.role_permissions_boundary_arn
+    # Enable fluent-bit native CloudWatch integration
+    iam_role_additional_policies = {
+        CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+        }
+
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
