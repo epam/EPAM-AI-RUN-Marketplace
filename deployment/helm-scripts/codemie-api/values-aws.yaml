@@ -287,7 +287,41 @@ codemie:
                 cost:
                   input: 0.0000025
                   output: 0.000011
-      
+
+            # Amazon Nova Models Configs
+            #  - base_name: "amazon-nova-pro"
+            #    deployment_name: "eu.amazon.nova-pro-v1:0"
+            #    label: "Bedrock Nova Pro"
+            #    multimodal: true
+            #    enabled: true
+            #    provider: "aws_bedrock"
+            #    max_output_tokens: 10000
+            #    cost:
+            #      input: 0.00000105
+            #      output: 0.0000002625
+
+            #  - base_name: "amazon-nova-lite"
+            #    deployment_name: "eu.amazon.nova-lite-v1:0"
+            #    label: "Bedrock Nova Lite"
+            #    multimodal: true
+            #    enabled: true
+            #    provider: "aws_bedrock"
+            #    max_output_tokens: 10000
+            #    cost:
+            #      input: 0.000000078
+            #      output: 0.0000000195
+
+            #  - base_name: "amazon-nova-micro"
+            #    deployment_name: "eu.amazon.nova-micro-v1:0"
+            #    label: "Bedrock Nova Micro"
+            #    multimodal: false
+            #    enabled: true
+            #    provider: "aws_bedrock"
+            #    max_output_tokens: 10000
+            #    cost:
+            #      input: 0.000000046
+            #      output: 0.0000000115
+
             embeddings_models:
               - base_name: "titan"
                 deployment_name: "amazon.titan-embed-text-v1"
