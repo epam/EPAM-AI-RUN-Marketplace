@@ -2,11 +2,11 @@ apiVersion: v2
 name: codemie
 description: A Helm chart for AI/Run API
 
-version: 1.0.0
+version: 1.4.0
 
-appVersion: "1.0.0"
+appVersion: "1.4.0"
 
 dependencies:
 - name: codemie
-  version: 1.0.0
+  version: 1.4.0
   repository: oci://%%IMAGE_REPOSITORY%%/helm-charts
