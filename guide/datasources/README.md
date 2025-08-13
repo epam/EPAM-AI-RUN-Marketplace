@@ -16,6 +16,7 @@ The platform supports several types of data sources:
     - Presentations (.pptx)
     - Structured data files (.xml, .json, .yaml)
 - **Google Docs**: Index content from Google documents
+- **AWS Knowledge Base**: Connect to AWS Bedrock Knowledge Bases for leveraging data indexed within the AWS ecosystem
 
 ### Setting Up Data Sources
 
@@ -31,6 +32,17 @@ The platform supports several types of data sources:
 4. Click **Add** to create the data source
 
 > **Important note**: For Google Docs integration, you'll need to share the document with the platform's service account to enable indexing.
+
+### AWS Knowledge Base Integration
+
+To connect an AWS Knowledge Base:
+
+1. Ensure you have an AWS integration configured in your project
+2. Create AWS Knowledge Bases by [AWS documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-create.html) 
+3. Install Knowledge Bases in  EPAM AI/Run™ for AWS
+
+AWS Knowledge Bases allow you to leverage data you've already indexed within AWS Bedrock, providing a seamless way to utilize your existing AWS data infrastructure with EPAM AI/Run™ for AWS assistants.
+
 
 ### Managing Data Sources
 
