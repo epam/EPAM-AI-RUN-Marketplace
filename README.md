@@ -97,8 +97,9 @@ Before installing EPAM AI/Run™ for AWS, carefully review the prerequisites and
 # 3. EPAM AI/Run™ for AWS deployment architecture
 
 The diagram below depicts the EPAM AI/Run™ for AWS infrastructure deployment in one region (AZ) of the AWS public cloud environment.
-## AI/Run™ for AWS Architecture overview
-<img src="assets/deployment-guide/AI_Run_For_AWS.drawio.svg" alt="Platform Architecture" width="1200" style="background-color: lightgray;">
+
+
+<img src="assets/deployment-guide/AI_Run_For_AWS.drawio.svg" width="1200" style="background-color: #ffffff;">
 
 
 Container Resources Requirements
