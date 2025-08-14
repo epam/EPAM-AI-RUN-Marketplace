@@ -1041,9 +1041,9 @@ main() {
     deploy_nginx_ingress_controller "aws"
     deploy_storage_class "aws"
 
-    deploy_fluent_bit "aws"
     deploy_elasticsearch "aws"
     deploy_kibana "aws" "${TF_VAR_platform_domain_name}"
+    deploy_fluent_bit "aws"
     deploy_keycloak_operator
     deploy_postgres_operator
     deploy_keycloak "aws" "${TF_VAR_platform_domain_name}"
