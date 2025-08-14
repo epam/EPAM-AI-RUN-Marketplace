@@ -98,8 +98,8 @@ Before installing EPAM AI/Run™ for AWS, carefully review the prerequisites and
 
 The diagram below depicts the EPAM AI/Run™ for AWS infrastructure deployment in one region (AZ) of the AWS public cloud environment.
 ## AI/Run™ for AWS Architecture overview
-<img src="assets/deployment-guide/AI_Run_For_AWS.drawio.svg" alt="Platform Architecture" width="1200">
-[Diagram](guide/images/deployment-guide/architecture.png)
+<img src="assets/deployment-guide/AI_Run_For_AWS.drawio.svg" alt="Platform Architecture" width="1200" style="background-color: lightgray;">
+
 
 Container Resources Requirements
 
@@ -132,19 +132,29 @@ There are two deployment options available. Use the script if you want an easier
 ## 4.2. Set up Hosted zone
 
 ### 4.2.1. Open Hosted zone page
-![Diagram](assets/deployment-guide/Hosted_Zone4_2_1.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_1.png">
+
 ### 4.2.2. Click on Create hosted zone button
-![Diagram](assets/deployment-guide/Hosted_Zone4_2_2.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_2.png">
+
 ### 4.2.3. Create new hosted zone. Domain name should have the following pattern <any_name>.<your_DNS>
-![Diagram](assets/deployment-guide/Hosted_Zone4_2_3.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_3.png">
+
 ### 4.2.4. Copy "Value/Route traffic to" value from NS record
-![Diagram](assets/deployment-guide/Hosted_Zone4_2_4.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_4.png">
+
 ### 4.2.5. Open parent Hosted zone with name which equal to DNS name
 Create a new record in the hosted zone from the previous step
 Record name - should be the same value as <any_name> from step 4.2.3
 Record type - select "NS" option
 Value - Paste the value from step 4.2.4
-![Diagram](assets/deployment-guide/Hosted_Zone4_2_5.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_5.png">
+
 ## 4.3. Set up credential for AWS
 
 1. Find or create "credentials" file. By default, the file is located in the following directory:
@@ -698,7 +708,7 @@ Apply postgres-operator chart:
    helm upgrade --install keycloak-operator-helm keycloak-operator-helm/. -n security --create-namespace --values keycloak-operator-helm/values.yaml --wait --timeout 900s --dependency-update
     ```
 ### 6.3.8. Install Keycloak component:
-Fill in values in values.yaml and apply `keycloak` helm chart with the command:
+Fill in <values> placeholders in values.yaml and apply `keycloak` helm chart with the command:
 
    ```bash  
    helm upgrade --install keycloak keycloak-helm/. -n security --values keycloak-helm/values-aws.yaml --wait --timeout 900s --dependency-update
@@ -1065,28 +1075,35 @@ If you do not have your own logging system then consider installing Fluentbit co
 ## 7.1. Create new security group
 ### 7.1.1. Open EC2 service group
 
-![Diagram](assets/deployment-guide/security_group_7_1_1.png)
+<img src="assets/deployment-guide/security_group_7_1_1.png">
+
 ### 7.1.2. Open "Security Groups"
 
-![Diagram](assets/deployment-guide/security_group_7_1_2.png)
+<img src="assets/deployment-guide/security_group_7_1_2.png">
 
 ### 7.1.3. Create new "Security Groups""
-![Diagram](assets/deployment-guide/security_group_7_1_3.png)
-![Diagram](assets/deployment-guide/security_group_7_1_3_2.png)
+
+<img src="assets/deployment-guide/security_group_7_1_3.png">
+
+<img src="assets/deployment-guide/security_group_7_1_3_2.png">
 
 ## 7.2. Add security group to Load Balancers
 ### 7.2.1. Open  Load Balancers
 
-![Diagram](assets/deployment-guide/load_balancer_7_2_1.png)
+<img src="assets/deployment-guide/load_balancer_7_2_1.png">
+
 ### 7.2.2. Find and open  <some name>-ingress-alb balancer to cluster which was created
 
-![Diagram](assets/deployment-guide/load_balancer_7_2_2.png)
+
+<img src="assets/deployment-guide/load_balancer_7_2_2.png">
+
 ### 7.2.3. Navigate to security tab and click "edit" button
 
-![Diagram](assets/deployment-guide/load_balancer_7_2_3.png)
+<img src="assets/deployment-guide/load_balancer_7_2_3.png">
+
 ### 7.2.4. Add new security group and save changes
 
-![Diagram](assets/deployment-guide/load_balancer_7_2_4.png)
+<img src="assets/deployment-guide/load_balancer_7_2_4.png">
 
 # 8. EPAM AI/Run™ for AWS post-installation configuration
 
@@ -1107,7 +1124,8 @@ Separate 2 way
 
 After running `helm-charts.sh`, Keycloak credentials are displayed in the console or available in the "keycloak-admin" secret.
 
-![Diagram](assets/deployment-guide/helm_script_output.png)
+
+<img src="assets/deployment-guide/helm_script_output.png">
 
 How to find keycloak-admin secret:
 1. Login into aws console
@@ -1118,9 +1136,8 @@ How to find keycloak-admin secret:
 6. Find "keycloak-admin" secret
 7. Click on decode buttons
 
-   ![Diagram](assets/deployment-guide/keycloak_credential.png)
-   ![Diagram](assets/deployment-guide/keycloak_credential_2.png)
-
+   <img src="assets/deployment-guide/keycloak_credential.png">
+   <img src="assets/deployment-guide/keycloak_credential_2.png">
 
 Enable realm unmanaged attributes:
 1. Open a left side bar (Menu) on site
@@ -1130,39 +1147,46 @@ Enable realm unmanaged attributes:
 
 > ℹ️ When you assign a user access to a project that matches their Keycloak username (from the username claim), the system will automatically create this personal project in AI/Run CodeMie. Other projects must be created by AI/Run CodeMie admin.
 
-Create new user
+Create first  user
 
 To include the added `applications` unmanaged attribute as an additional claim to the token it's necessary to configure protocol mappers. Follow the step:
 1. Navigate to "Client Scopes" and update the client scope "profile" to include the newly added attribute.
 
-   ![Diagram](assets/deployment-guide/create_user_keycloak_1.png)
-2. Configure a mapper, selecting the mapping type as "User Attribute", then set applications as the field name, user attribute, and token claim name. Finally, save the changes.
+   <img src="assets/deployment-guide/create_user_keycloak_1.png">
    
-   ![Diagram](assets/deployment-guide/create_user_keycloak_2.png)
-   ![Diagram](assets/deployment-guide/create_user_keycloak_2_2.png)
-   ![Diagram](assets/deployment-guide/create_user_keycloak_2_3.png)
+2. Configure a mapper, selecting the mapping type as "User Attribute", then set applications as the field name, user attribute, and token claim name. Finally, save the changes.
+
+   <img src="assets/deployment-guide/create_user_keycloak_2.png">
+   <img src="assets/deployment-guide/create_user_keycloak_2_2.png">
+   <img src="assets/deployment-guide/create_user_keycloak_2_3.png">
+   
 3. Open Users list page
 
-   ![Diagram](assets/deployment-guide/create_user_keycloak_3.png)
+   <img src="assets/deployment-guide/create_user_keycloak_3.png">
+
 4. Click on "Add user" button
 
-   ![Diagram](assets/deployment-guide/create_user_keycloak_4.png)
+   <img src="assets/deployment-guide/create_user_keycloak_4.png">
+   
 5. Fill all necessary fields and click on "Email Verified " and "Create" buttons
 
-   ![Diagram](assets/deployment-guide/create_user_keycloak_5.png)
+   <img src="assets/deployment-guide/create_user_keycloak_5.png">
+   
 6. Assign admin role and unassign default role
 
-   ![Diagram](assets/deployment-guide/create_user_keycloak_6_1.png)
-   ![Diagram](assets/deployment-guide/create_user_keycloak_6_2.png)
-   ![Diagram](assets/deployment-guide/create_user_keycloak_6_3.png)
-   ![Diagram](assets/deployment-guide/create_user_keycloak_6_4.png)
+   <img src="assets/deployment-guide/create_user_keycloak_6_1.png">
+   <img src="assets/deployment-guide/create_user_keycloak_6_2.png">
+   <img src="assets/deployment-guide/create_user_keycloak_6_3.png">
+   <img src="assets/deployment-guide/create_user_keycloak_6_4.png">
 7. Set up credential
 
-   ![Diagram](assets/deployment-guide/create_user_keycloak_7_1.png)
-   ![Diagram](assets/deployment-guide/create_user_keycloak_7_2.png)
+   <img src="assets/deployment-guide/create_user_keycloak_7_1.png">
+   <img src="assets/deployment-guide/create_user_keycloak_7_2.png">
+   
 8. Set up attributes
 
-   ![Diagram](assets/deployment-guide/create_user_keycloak_8.png)
+   <img src="assets/deployment-guide/create_user_keycloak_8.png">
+   
 9. Verify login and access to EPAM AI/Run™ for AWS application.
    Link to fronted
    URL = https://codemie.<TF_VAR_platform_domain_name>
