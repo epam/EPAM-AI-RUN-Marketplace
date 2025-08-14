@@ -453,6 +453,8 @@ vpc_state_key        = "your-vpc_state_key"
 ### 5.1.1. Overview
 This section describes the process of enabling AWS Bedrock models in AWS account.
 
+> ⚠️ **Important**: EPAM AI/Run™ for AWS requires at least one configured chat model and one embedding model to function properly. Ensure these are set up before proceeding with creating assistants or data sources.
+
 ### 5.1.2. Steps to Enable Bedrock Models
 1. Access AWS Bedrock Console
    1. Sign in to the AWS Management Console
