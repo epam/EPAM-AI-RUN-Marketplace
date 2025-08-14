@@ -250,6 +250,28 @@ replace_aws_placeholders() {
     log_message "info" "Placeholders replaced successfully in ${values_file}"
 }
 
+replace_aws_region_placeholders() {
+    local values_file="$1"
+    local region_value="$2"
+    local backup_file="${values_file}.backup"
+
+    if [[ -f "$backup_file" ]]; then
+        log_message "info" "Restoring ${values_file} from backup"
+        mv "$backup_file" "$values_file"
+        log_message "info" "Deleting leftover backup file"
+        rm -f "$backup_file"
+    fi
+
+    log_message "info" "Replacing placeholders with values"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+           # macOS/BSD sed syntax (requires backup extension)
+        sed -i '.backup' "s|%%AWS_REGION%%|${region_value}|g" "${values_file}"
+    else
+           # GNU sed (Linux syntax; doesn't require extension)
+        sed -i.backup "s|%%AWS_REGION%%|${region_value}|g" "${values_file}"
+    fi
+}
+
 replace_image_repository_placeholders() {
     local values_file="$1"
     local image_repository="$2"
@@ -612,11 +634,25 @@ deploy_fluent_bit() {
     log_message "info" "Starting FluentBit deployment"
     check_and_create_namespace "$namespace"
 
+    replace_aws_region_placeholders "$values_file" ${TF_VAR_region}
+
+    if ! check_k8s_secret_exists "$namespace" "elasticsearch-master-credentials"; then
+        kubectl get secret elasticsearch-master-credentials -n elastic -o yaml | sed '/namespace:/d' | kubectl apply -n "$namespace" -f - > /dev/null
+        # shellcheck disable=SC2181
+        if [ $? -eq 0 ]; then
+            log_message "success" "Secret 'elasticsearch-master-credentials' created successfully."
+        else
+            log_message "fail" "Failed to create secret 'elasticsearch-master-credentials'."
+            exit 1
+        fi
+    fi
+
     helm upgrade --install fluent-bit fluent-bit/. \
       --namespace "$namespace" \
       -f "${values_file}" \
       --wait \
-      --timeout 180s > /dev/null
+      --timeout 180s \
+      --dependency-update > /dev/null
 
     # shellcheck disable=SC2181
     if [ $? -eq 0 ]; then
@@ -625,7 +661,6 @@ deploy_fluent_bit() {
         log_message "fail" "Failed to deploy FluentBit."
         exit 1
     fi
-
 }
 
 deploy_codemie_ui() {
@@ -1005,8 +1040,9 @@ main() {
     configure_kubectl
     deploy_nginx_ingress_controller "aws"
     deploy_storage_class "aws"
-    deploy_elasticsearch "aws"
 
+    deploy_fluent_bit "aws"
+    deploy_elasticsearch "aws"
     deploy_kibana "aws" "${TF_VAR_platform_domain_name}"
     deploy_keycloak_operator
     deploy_postgres_operator
