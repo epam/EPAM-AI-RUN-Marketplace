@@ -8,15 +8,12 @@ This guide provides step-by-step instructions for deploying the EPAM AI/Run™ f
 
 1. [Overview](#1-overview)
 2. [Prerequisites](#2-prerequisites)
-3. [AI/Run CodeMie Architecture](#3-airun-codemie-deployment-architecture)
+3. [EPAM AI/Run™ for AWS Architecture](#3-epam-airun-for-aws-deployment-architecture)
 4. [AWS Infrastructure Deployment](#4-aws-infrastructure-deployment)
 5. [AI Models Integration and Configuration](#5-ai-models-integration-and-configuration)
-6. [AI/Run CodeMie Components Deployment](#6-airun-codemie-components-deployment) 
+6. [EPAM AI/Run™ for AWS Components Deployment](#6-epam-airun-for-aws-components-deployment) 
 7. [Application Access](#7-provide-access-to-the-application) 
-8. [AWS Bedrock Configuration](#8-airun-codemie-post-installation-configuration)
-9. [Configure AWS Bedrock](#9-configure-aws-bedrock)
-10. [Import AWS Bedrock entity into CodeMie](#10-import-aws-bedrock-entity-into-codemie)
-
+8. [AWS Bedrock Configuration](#8-epam-airun-for-aws-post-installation-configuration)
 
 # 1. Overview
 
