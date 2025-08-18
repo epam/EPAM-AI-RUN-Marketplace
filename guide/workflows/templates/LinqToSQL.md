@@ -1,6 +1,6 @@
-# OKTA Implementation Workflow
+# Linq to SQL Implementation Workflow
 
-This guide provides a step-by-step process for integrating OKTA authentication into your project.
+This guide provides a step-by-step process for implementing Linq to SQL in your project.
 
 ---
 
@@ -13,7 +13,7 @@ This guide provides a step-by-step process for integrating OKTA authentication i
 
 ---
 
-## Steps for OKTA Implementation
+## Steps for Linq to SQL Implementation
 
 ### 1. Create Git Integration
 Set up a Git integration with **read and write** access to the repository where the project source code is stored.
@@ -27,17 +27,17 @@ Create a Git data source using the credentials from **Step 1**.
 
 ### 3. Navigate to the Workflow Template
 Go to the workflow template library and locate the template named:  
-`OKTA Implementation`.
+`Linq to SQL Implementation`.
 
 ---
 
 ### 4. Share Workflow Template with Project
-Share the `OKTA Implementation` workflow template with your target project.
+Share the `Linq to SQL Implementation` workflow template with your target project.
 
 ---
 
 ### 5. Customize the YAML Configuration
-Update the `datasource_ids` values in the YAML configuration file with id from data source which was created in **Step 2**.
+Update the `datasource_ids` values in the YAML configuration file with the ID from the data source created in **Step 2**.
 
 ---
 
@@ -63,7 +63,7 @@ Wait for the workflow to finish processing.
 
 ### 10. Review Implementation Output
 Once the workflow is complete, check the following:
-- Review the Pull Requests (PRs) for authentication-related changes.
-- Review the newly created branch named `okta-integration`.
+- Review the Pull Requests (PRs) for Linq to SQL-related changes.
+- Review the newly created branch named `linq-to-sql-migration`.
 
 ---

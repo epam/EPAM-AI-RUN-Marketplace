@@ -6,6 +6,7 @@ This guide provides a step-by-step workflow for migrating a project from .NET Fr
 
 ## ⚠️ Warning
 
+- Make sure the `main` branch is protected to prevent unintended changes.
 - Ensure the source code is located in the `main` branch.
 - If your source code is in a different branch, during **Step 7**, update all instances of `main` with your branch name (there are two places to update).
 - The Git data source should always point to your target branch.
