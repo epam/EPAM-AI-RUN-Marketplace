@@ -1,0 +1,41 @@
+1. Analyze the structure and components of the existing application.
+2. Identify dependencies, external libraries, and any unsupported or outdated features.
+3. Detect deprecated NuGet packages and recommend appropriate replacements.
+4. Provide a step-by-step roadmap for migrating the application to .NET 8.
+5. Break the task into smaller, manageable steps to ensure clarity.
+6. Ensure each step clearly specifies what must be created, deleted, added, or modified.
+7. Recommend which legacy components, files, or practices should be permanently removed after migration.
+8. Create a new ASP.NET Core MVC project.
+9. Move controllers, models, and views from the old project to the new one.
+10. Update namespaces and references as needed.
+11. Do not rename files
+12. Configure `launchSettings.json` on URL configured in old project .csproj file if any
+13. Move application configurations and service registrations from Startup.cs to Program.cs
+14. In Program.cs
+    a. Configure all routes defined in RouteConfig.cs
+    b. Configure filters defined in FilterConfig.cs
+15. Remove unsupported in .NET 8 files and folders
+    a. *.config
+    b. Startup.cs
+    c. AssemblyInfo.cs
+    d. Migrations folder
+    e. App_Start folder
+16. In .csproj file
+    a. Remove all content
+    b. Specify project Microsoft.NET.Sdk.Web
+    c. Specify TargetFramework on net8.0
+    d. enable ImplicitUsings
+    e. Add reference to NuGet packages only supported in .NET 8 and upgrade version if needed
+17. Do not make any changes in *.cshtml Views
+18. Copy files:
+    a. Copy all .css files from the `Content` folder to `wwwroot/css`
+    b. Copy all .js files from the `Scripts` folder to `wwwroot/js`
+19. Update `_Layout.cshtml`:
+    a. Add <link> tags to include CSS files from `wwwroot/css`
+    b. Add <script> tags to include JS files from `wwwroot/js`
+    c. Ensure that all referenced .css and .js files actually exist in the corresponding `wwwroot/css` and `wwwroot/js` folders
+20. Do not add any Models, Controllers and Views which do not exist in source branch
+21. For SOAP Web Services projects use SoapCore package
+22. Add references on *ALL* packages which used in the code
+23. DO NOT add logic in the methods which not exists in the source
+24. DO NOT add Models or model properties which not exists in the source
