@@ -1,0 +1,81 @@
+{
+  "general_information": {
+    "vm_name": "web-app-01",
+    "os_version": "Windows Server 2019",
+    "installed_applications": ["IIS", "App1", "SQL Server Express"],
+    "running_services": ["W3SVC", "MSSQL$SQLEXPRESS"],
+    "scheduled_tasks": ["BackupJob", "UpdateTask"],
+    "network_interfaces": ["Ethernet0"],
+    "users_and_groups": ["Administrator", "WebAdmins"],
+    "running_processes": ["w3wp.exe", "sqlservr.exe"],
+    "firewall": {
+      "status": "enabled",
+      "rules": ["HTTP (80)", "SQL (1433)"]
+    },
+    "mounted_drives": [
+      {
+        "drive_letter": "C:",
+        "size_gb": 100,
+        "is_network_drive": false
+      }
+    ]
+  },
+  "performance_metrics": {
+    "cpu_usage_percent": 35,
+    "memory_usage_mb": 6144,
+    "disk_usage_percent": 60,
+    "network_usage_mbps": 8
+  },
+  "specific_information": {
+    "iis": {
+      "sites": [
+        {
+          "name": "Default Web Site",
+          "status": "running"
+        }
+      ],
+      "application_pools": [
+        {
+          "name": "AppPool1",
+          ".net_version": "4.6",
+          "status": "started"
+        }
+      ],
+      "bindings": [
+        {
+          "host": "app.internal.local",
+          "port": 80,
+          "path": "C:\\inetpub\\wwwroot"
+        }
+      ],
+      "web_config_files": [
+        {
+          "site_name": "Default Web Site",
+          "config_path": "C:\\inetpub\\wwwroot\\web.config"
+        }
+      ]
+    },
+    "sql_server": {
+      "databases": ["MyAppDB"],
+      "instances": ["SQLEXPRESS"],
+      "jobs": ["DailyBackup"],
+      "linked_servers": [],
+      "users_and_roles": [
+        {
+          "user": "webuser",
+          "roles": ["db_owner"]
+        }
+      ]
+    },
+    "ucd": {
+      "folder_structure": {
+        "root": "C:\\UCD",
+        "folders": ["apps", "config", "logs"]
+      },
+      "configurations": {
+        "deployment_mode": "auto",
+        "version": "1.0.0"
+      }
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "general_information": {
+    "vm_name": "modern-app-01",
+    "os_version": "Windows Server 2022",
+    "installed_applications": ["MyModernApp"],
+    "running_services": ["MyModernAppService"],
+    "scheduled_tasks": [],
+    "network_interfaces": ["Ethernet0"],
+    "users_and_groups": ["AppUser"],
+    "running_processes": ["MyModernApp.exe"],
+    "firewall": {
+      "status": "enabled",
+      "rules": ["HTTP (80)", "HTTPS (443)"]
+    },
+    "mounted_drives": [
+      {
+        "drive_letter": "C:",
+        "size_gb": 60,
+        "is_network_drive": false
+      }
+    ]
+  },
+  "performance_metrics": {
+    "cpu_usage_percent": 20,
+    "memory_usage_mb": 2048,
+    "disk_usage_percent": 30,
+    "network_usage_mbps": 3
+  },
+  "specific_information": {
+    "iis": {
+      "sites": [
+        {
+          "name": "ModernWebApp",
+          "status": "running"
+        }
+      ],
+      "application_pools": [
+        {
+          "name": "ModernAppPool",
+          ".net_version": "4.8",
+          "status": "started"
+        }
+      ],
+      "bindings": [
+        {
+          "host": "modern.internal.local",
+          "port": 443,
+          "path": "C:\\inetpub\\modern"
+        }
+      ],
+      "web_config_files": [
+        {
+          "site_name": "ModernWebApp",
+          "config_path": "C:\\inetpub\\modern\\web.config"
+        }
+      ]
+    },
+    "sql_server": {
+      "databases": ["ModernAppDB"],
+      "instances": ["MSSQLSERVER"],
+      "jobs": [],
+      "linked_servers": [],
+      "users_and_roles": [
+        {
+          "user": "appuser",
+          "roles": ["db_owner"]
+        }
+      ]
+    },
+    "ucd": {
+      "folder_structure": {
+        "root": "C:\\ModernApp",
+        "folders": ["config", "logs"]
+      },
+      "configurations": {
+        "deployment_mode": "containerized",
+        "version": "2.0"
+      }
+    }
+  }
+}
