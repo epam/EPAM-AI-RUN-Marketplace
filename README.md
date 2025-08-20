@@ -37,13 +37,13 @@ Each installation step is designed to ensure a smooth deployment process. The gu
 
 Before installing EPAM AI/Run™ for AWS, carefully review the prerequisites and requirements.
 
-## 2.1. Prerequisites Checklist
+Prerequisites Checklist
 
-### 2.1.1.1. AWS Account Access Requirements
-✓ Active AWS Account with preferably region for deployment  
+### 2.1. AWS Account Access Requirements
+✓ Active AWS Account with a preferred region for deployment  
 ✓ User or Role with programmatic access to AWS account with permissions to create and manage IAM Roles and Policy Documents
 
-### 2.1.1.2. Domain Name
+### 2.2. Domain Name
 ✓ Available wildcard DNS hosted zone in Route53  
 📋 EPAM AI/Run™ for AWS terraform modules will automatically create:
 * DNS Records
@@ -51,25 +51,28 @@ Before installing EPAM AI/Run™ for AWS, carefully review the prerequisites and
 
 
 
-### 2.1.1.3. External connections
+### 2.3. External connections
 ✓ Firewall or SG and NACLs of EKS cluster allow outbound access to:
 * EPAM AI/Run™ for AWS container registry – <Need Update>
 * 3rd party container registries – quay.io, docker.io, registry.developer.zurich/data.com
 * Any service you're planning to use with EPAM AI/Run™ for AWS (for example, GitHub instance)
-  ✓ Firewall on your integration service allow inbound traffic from the EPAM AI/Run™ for AWS NAT Gateway public IP address
+
+✓ Firewall on your integration service allow inbound traffic from the EPAM AI/Run™ for AWS NAT Gateway public IP address
 
 ℹ️ NAT Gateway public IP address will be known after EKS installation
 
-### 2.1.1.4. LLM Models
+### 2.4. LLM Models
 ✓ Activated region in AWS where AWS Bedrock Models are available
+
 ✓ Activated desired LLMs and embeddings models in AWS account (for example, Sonnet 3.5/3.7, AWS Titan 2.0)
 
 ℹ️ EPAM AI/Run™ for AWS can be deployed with mock LLM configurations initially. Real configurations can be provided later if client-side approvals require additional time.
 
 > ⚠️ **Important**: EPAM AI/Run™ for AWS requires at least one configured chat model and one embedding model to function properly. Ensure these are set up before proceeding with creating assistants or data sources.
 
-### 2.1.1.5. User Permissions and Admission Control Requirements for EKS
+### 2.5. User Permissions and Admission Control Requirements for EKS
 ✓ Admin EKS permissions with rights to create `namespaces`
+
 ✓ Admission webhook allows creation of Kubernetes resources listed below (applicable when deploying onto an existing EKS cluster with enforced policies):
 
 | EPAM AI/Run™ for AWS Component | Kubernetes APIs | Description |
@@ -80,7 +83,7 @@ Before installing EPAM AI/Run™ for AWS, carefully review the prerequisites and
 | ElasticSearch                  | `Pod[securityContext]` | InitContainer must run as root user to set system parameter `vm.max_map_count=262144` |
 | All components                 | `Pod[securityContext]` | All components require SecurityContext with `readOnlyRootFilesystem: false` for proper operation |
 
-## 2.2. Deployer instance requirements
+## 2.6. Deployer instance requirements
 ✓ The following software must be pre-installed and configured on the deployer laptop or VDI instance before beginning the deployment process(if you're using Windows, avoid mixing WSL with a native Windows installation):
 * [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) `v1.5.7`
 * [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
@@ -231,11 +234,19 @@ TF_VAR_pg_instance_class="db.c6gd.medium"
    * `--access-key ACCESS_KEY`: Use the flag if the `.aws/credentials` file has not been updated.
    * `--secret-key SECRET_KEY`: Use the flag if the `.aws/credentials` file has not been updated.
    * `--region REGION`:         Use the flag if the `.aws/credentials` file has not been updated.
-   * `--rds-enable`:            CodeMie by default rely on Postgres database deployed in EKS cluster. Use this key if you want switch to AWS RDS.
+   * `--rds-enable`:            EPAM AI/Run™ for AWS by default rely on Postgres database deployed in EKS cluster. Use this key if you want switch to AWS RDS.
    * `--config-file FILE`:      Load configuration from file (default: deployment.conf)
    * `--help`
    
    The flags `--access-key`, `--secret-key`, and `--region REGION` can be omitted if step 4.3 has already been completed.
+
+
+### ⚠️ Warning
+
+EPAM AI/Run™ for AWS relies on a PostgreSQL database deployed by default in the EKS cluster.  
+Please consider whether you want to deploy the database in the EKS cluster or use AWS RDS instead.
+
+To enable AWS RDS, use the `--rds-enable` flag during deployment.
 
 ```bash
   bash terraform.sh
