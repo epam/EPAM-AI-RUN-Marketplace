@@ -104,22 +104,23 @@ The diagram below depicts the EPAM AI/Run™ for AWS infrastructure deployment i
 
 <img src="assets/deployment-guide/AI_Run_For_AWS.drawio.svg" width="1200" style="background-color: #ffffff;">
 
-
 Container Resources Requirements
 
-| Component | Pods | RAM | vCPU |
-|-----------|------|-----|------|
-| CodeMie API | 2 | 8Gi | 4.0 |
-| CodeMie UI | 1 | 128Mi | 0.1 |
-| Elasticsearch | 2 | 16Gi | 4.0 |
-| Kibana | 1 | 1Gi | 1.0 |
-| Mermaid-server | 1 | 512Mi | 1.0 |
-| PostgreSQL | 1 | 1Gi | 0.2 |
-| Keycloak + DB | 1 + 1 | 4Gi | 2.0 |
-| Oauth2-proxy | 1 | 128Mi | 0.1 |
+| Component           | Pods | RAM | vCPU |
+|---------------------|------|-----|------|
+| CodeMie API         | 2 | 8Gi | 4.0 |
+| CodeMie UI          | 1 | 128Mi | 0.1 |
+| Elasticsearch       | 2 | 16Gi | 4.0 |
+| Kibana              | 1 | 1Gi | 1.0 |
+| Mermaid-server      | 1 | 512Mi | 1.0 |
+| PostgreSQL*         | 1 | 1Gi | 0.2 |
+| Keycloak + DB       | 1 + 1 | 4Gi | 2.0 |
+| Oauth2-proxy        | 1 | 128Mi | 0.1 |
 | NATS + Auth Callout | 1 + 1 | 512Mi | 1.0 |
-| MCP Connect | 1 | 1Gi | 0.5 |
-| Fluentbit | daemonset | 128Mi | 0.1 |
+| MCP Connect         | 1 | 1Gi | 0.5 |
+| Fluentbit           | daemonset | 128Mi | 0.1 |
+
+*The database component can also be deployed separately in AWS RDS
 
 # 4. AWS Infrastructure Deployment
 
