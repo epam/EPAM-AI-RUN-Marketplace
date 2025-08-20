@@ -16,8 +16,39 @@
   "FILE_PATHS": "c:\\scratchpad",
   "ALLOWED_DIRS": "c:\\scratchpad",
   "ALLOWED_DIR": "c:\\scratchpad",
-  "PROJECT_BOOTSTRAP": "C:/scratchpad/proba/airun"
- }
+  "PROJECT_BOOTSTRAP": "C:/scratchpad/proba/airun",
+  "tree_sitter": {
+      "command": "uvx",
+      "args": [
+        "--index-url",
+        "https://nexus-ci.core.kuberocketci.io/repository/krci-python-group/simple/",
+        "--from",
+        "mcp-server-tree-sitter-extra",
+        "mcp-server-tree-sitter-extra"
+      ]
+   },
+  "filesystem_ext": {
+  "command": "uvx",
+  "args": [
+    "--index-url",
+    "https://nexus-ci.core.kuberocketci.io/repository/krci-python-group/simple/",
+    "--from",
+    "mcp-filesystem-extra",
+    "mcp-filesystem-extra"
+    ]
+   },
+  "cli-mcp": {
+  "command": "uvx",
+  "args": [
+    "--index-url",
+    "https://nexus-ci.core.kuberocketci.io/repository/krci-python-group/simple/",
+    "--from",
+    "cli-mcp",
+    "cli-mcp"
+    ]
+   } 
+}
+
    ```
 7. Check list of availability MCP server. Should be present "filesystem_ext" and "tree_sitter"
 ```bash

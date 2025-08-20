@@ -1,9 +1,9 @@
-# Java Test Coverage Enhancement
+# .NET Test Coverage Enhancement
 
-Unit tests can be generated using two efficient methods flow by flow or one general flow for full proces 
+Unit tests can be generated using two efficient methods flow by flow or one general flow for full proces
 
-1. Using flow by flow you can see what happen every iteration and can affect on any stage 
-2. Using only one flow you can provide all necessary data and config one time and you can get your output 
+1. Using flow by flow you can see what happen every iteration and can affect on any stage
+2. Using only one flow you can provide all necessary data and config one time and you can get your output
 
 
 # Step for run
@@ -75,17 +75,17 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
   export FILE_PATHS=/scratchpad/proba
   export PROJECT_BOOTSTRAP=/scratchpad/proba/airun
   codemie-plugins config list
-  codemie-plugins mcp run -s filesystem,filesystem_ext,cli-mcp-server -e cli-mcp-server=ALLOWED_DIR -e filesystem_ext=ALLOWED_DIR,PROJECT_BOOTSTRAP
+  ???????codemie-plugins mcp run -s filesystem,filesystem_ext,cli-mcp-server -e cli-mcp-server=ALLOWED_DIR -e filesystem_ext=ALLOWED_DIR,PROJECT_BOOTSTRAP
 ```
 For Windows
 ```bash
-set ALLOWED_DIR=C:\scratchpad\proba
-set FILE_PATHS=C:\scratchpad\proba
-set PROJECT_BOOTSTRAP=C:\scratchpad\proba\airun
-poetry run codemie-plugins config list
-poetry run codemie-plugins mcp run -s filesystem,filesystem_ext,cli-mcp-server -e cli-mcp-server=ALLOWED_DIR -e filesystem_ext=ALLOWED_DIR,PROJECT_BOOTSTRAP
+  set ALLOWED_DIR=C:\scratchpad\proba
+  set FILE_PATHS=C:\scratchpad\proba
+  set PROJECT_BOOTSTRAP=C:\scratchpad\proba\airun
+  poetry run codemie-plugins config list
+  ???????poetry run codemie-plugins mcp run -s filesystem,filesystem_ext,cli-mcp-server -e cli-mcp-server=ALLOWED_DIR -e filesystem_ext=ALLOWED_DIR,PROJECT_BOOTSTRAP
 ```
-12. Go to Workflows and run ```JUNIT: fully automated test generation``` workflow
+12. Go to Workflows and run ```DOTNET: fully automated test generation``` workflow
 13. Wait util workflow done
 14. Result you can find in ```~scratchpad\proba file```
 
@@ -93,8 +93,8 @@ poetry run codemie-plugins mcp run -s filesystem,filesystem_ext,cli-mcp-server -
 If you want to run the flow step by step, you can do so, but you'll need to follow the previous instructions up to step 14
 
 Order of workflow:
-- JUNIT: project discovery
-- JUNIT: sources triage
-- JUNIT: coverage analyzer
-- JUNIT: test writer
-- JUNIT: fully automated test generation
+- DOTNET: project discovery
+- DOTNET: sources triage
+- DOTNET: coverage analyzer
+- DOTNET: test writer
+- DOTNET: fully automated test generation
