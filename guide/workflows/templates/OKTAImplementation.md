@@ -16,7 +16,7 @@ This guide provides a step-by-step process for integrating OKTA authentication i
 ## Steps for OKTA Implementation
 
 ### 1. Create Git Integration
-Set up a Git integration with **read and write** access to the repository where the project source code is stored.
+Set up a project Git integration with **read and write** access to the repository where the project source code is stored.
 
 ---
 

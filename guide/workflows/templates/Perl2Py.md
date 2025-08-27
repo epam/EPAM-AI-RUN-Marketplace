@@ -56,7 +56,7 @@
 ```
 8. Create in scratchpad file ```Perl2Py```
 9. Create next three sub folder in Perl2Py: ```airun```, ```Perl```, ```Python```
-10. Update plugin project integration on CodeMie with value from config.json files using PLUGIN_KEY
+10. Update plugin project integration on AI/Run™ for AWS with value from config.json files using PLUGIN_KEY
 11. Add ```00bootstrap.json``` files with next values
 ```
  {

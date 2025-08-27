@@ -1,10 +1,10 @@
-## EPAM AI/Run™ for AWS - Workflows Overview
+## AI/Run™ for AWS - Workflows Overview
 
-EPAM AI/Run™ for AWS offers powerful workflow capabilities that allow you to automate complex tasks by chaining together multiple AI assistants. Workflows enable you to create sequential or autonomous processes that can handle sophisticated business logic and multi-step operations.
+AI/Run™ for AWS offers powerful workflow capabilities that allow you to automate complex tasks by chaining together multiple AI assistants. Workflows enable you to create sequential or autonomous processes that can handle sophisticated business logic and multi-step operations.
 
 ### What Are Workflows?
 
-Workflows in EPAM AI/Run™ for AWS are structured sequences of AI assistant interactions designed to accomplish complex tasks by breaking them down into manageable steps. Each step can involve different assistants with specialized capabilities, working together toward a common goal.
+Workflows in AI/Run™ for AWS are structured sequences of AI assistant interactions designed to accomplish complex tasks by breaking them down into manageable steps. Each step can involve different assistants with specialized capabilities, working together toward a common goal.
 
 ### Types of Workflow Modes
 
@@ -27,7 +27,7 @@ If you want to use the same workflow simultaneously in different projects:
 
 ### Creating a Workflow
 
-1. Navigate to the **Workflows** tab in EPAM AI/Run™ for AWS
+1. Navigate to the **Workflows** tab in AI/Run™ for AWS
 2. Click **Create Workflow**
 3. Configure the workflow settings:
    - **Project**: Select your project (typically pre-populated)

@@ -1,4 +1,4 @@
-# .NET Test Coverage Enhancement
+# JS Test Coverage Enhancement
 
 Unit tests can be generated using two efficient methods flow by flow or one general flow for full proces
 
@@ -7,14 +7,14 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 
 
 # Step for run
-1. Install Python 3.12 or higher
-2. Install uvx
-3. Install Node.js 22 or higher
-4. Run command for install codemie-plugins
+2. Install Python 3.12 or higher
+4. Install uvx
+4. Install Node.js 22 or higher
+5. Run command for install codemie-plugins
 ```bash
   uvx pip install codemie-plugins
 ```
-5. Define default folders and connection to nats catalogue
+6. Define default folders and connection to nats catalogue
 ```
  {
   "PLUGIN_KEY": "<Any value>",
@@ -49,25 +49,25 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
     "--index-url",
     "https://nexus-ci.core.kuberocketci.io/repository/krci-python-group/simple/",
     "--from",
-    "cli-mcp-server",
-    "cli-mcp-server"
+    "cli-mcp",
+    "cli-mcp"
     ]
    } 
 }
    ```
-6. Check list of availability MCP server. Should be present "filesystem_ext", "cli-mcp-server" and "tree_sitter"
+7. Check list of availability MCP server. Should be present "filesystem_ext", "cli-mcp-server" and "tree_sitter"
 ```bash
   codemie-plugins mcp list
 ```
-7. Update plugin project integration on AI/Run™ for AWS with value from config.json files using PLUGIN_KEY
-8. Create folder in scratchpad: ```airun``` in root of your project,
-9. Add ```00bootstrap.json``` files with next values in ```airun```
+8. Update plugin project integration on CodeMie with value from config.json files using PLUGIN_KEY
+9. Create folder in root of your project ```airun```
+10. Add ```00bootstrap.json``` files with next values in ```airun```
 ```
  {
   "project_base": "absolute_path_to_your_project",  
  }
 ```
-10. Run MCP servers and codemie-plugins
+11. Run MCP servers and codemie-plugins
     For MacOS & Linux
 ```bash
   export PROJECT_BOOTSTRAP=/<absolute_path_to_your_project>/airun
@@ -80,15 +80,15 @@ For Windows
   poetry run codemie-plugins config list
   poetry run codemie-plugins mcp run -s filesystem,filesystem_ext,cli-mcp-server -e cli-mcp-server=ALLOWED_DIR -e filesystem_ext=ALLOWED_DIR,PROJECT_BOOTSTRAP
 ```
-11. Go to Workflows and run ```DOTNET: fully automated test generation``` workflow
-12. Wait util workflow done
-13. Path to result you can find in ```<project_base>/airun/00project-info.json```
+12. Go to Workflows and run ```JS: fully automated test generation``` workflow
+13. Wait util workflow done
+14. Path to result you can find in ```<project_base>/airun/00project-info.json```
 
 
-If you want to run the flow step by step, you can do so, but you'll need to follow the previous instructions up to step 11
+If you want to run the flow step by step, you can do so, but you'll need to follow the previous instructions up to step 14
 
 Order of workflow:
-- DOTNET: project discovery
-- DOTNET: sources triage
-- DOTNET: coverage analyzer
-- DOTNET: test writer
+- JS: project discovery
+- JS: sources triage
+- JS: coverage analyzer
+- JS: test writer
