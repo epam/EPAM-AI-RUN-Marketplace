@@ -1,0 +1,44 @@
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: aitestmate-redis
+  labels:
+    {{- include "aitestmate-redis.labels" . | nindent 4 }}
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "aitestmate-redis.selectorLabels" . | nindent 6 }}
+  serviceName: aitestmate-redis-headless
+  template:
+    metadata:
+      labels:
+        {{- include "aitestmate-redis.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: aitestmate-redis
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: redis
+              containerPort: 6379
+          env:
+            - name: REDIS_BIND
+              value: 0.0.0.0
+          envFrom:
+            - secretRef:
+                name: aitestmate-redis-secret
+          volumeMounts:
+          - name: aitestmate-redis-data
+            mountPath: /var/lib/redis
+  volumeClaimTemplates:
+    - metadata:
+        name: aitestmate-redis-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 256Mi
