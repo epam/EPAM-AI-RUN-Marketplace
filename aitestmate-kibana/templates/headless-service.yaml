@@ -5,7 +5,7 @@ kind: Service
 metadata:
   name: aitestmate-kibana-headless
   labels:
-    {{- include "aitestmate-kibana.labels" . | nindent 4 }}
+    # {{ include "aitestmate-kibana.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -15,4 +15,4 @@ spec:
       port: 5601
       targetPort: 5601
   selector:
-    {{- include "aitestmate-kibana.selectorLabels" . | nindent 4 }}
+    # {{ include "aitestmate-kibana.selectorLabels" . | nindent 4 }}
