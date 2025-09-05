@@ -2,14 +2,8 @@
 
 # AI TestMate Embeddings
 
-# Default values for aitestmate-embeddings.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
 
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
   repository: artifactoryspb.epam.com/epm-eag-docker/embeddings/api
 
@@ -18,11 +12,16 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
+
 # This is to override the chart name.
 nameOverride: "aitestmate-embeddings"
 fullnameOverride: "aitestmate-embeddings"
+
+env: []
+
+# Additional environment passed into container
+extraEnv: []
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:

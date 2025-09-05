@@ -5,13 +5,15 @@ kind: Service
 metadata:
   name: aitestmate-embeddings
   labels:
-    {{- include "aitestmate-embeddings.labels" . | nindent 4 }}
+    # {{ include "aitestmate-embeddings.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: >-
+    {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - name: http
+      port:
+        {{ .Values.service.port }}
       targetPort: http
       protocol: TCP
-      name: http
   selector:
-    {{- include "aitestmate-embeddings.selectorLabels" . | nindent 4 }}
+    # {{ include "aitestmate-embeddings.selectorLabels" . | nindent 4 }}
