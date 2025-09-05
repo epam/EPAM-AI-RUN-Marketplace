@@ -1,0 +1,56 @@
+{{ if .Values.pgo.enabled}}
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: keycloak
+spec:
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-14.8-0
+  postgresVersion: 14
+  instances:
+    - name: pgha1
+      replicas: 2
+      resources:
+        requests:
+          cpu: 50m
+          memory: 512Mi
+      dataVolumeClaimSpec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: {{ .Values.pgo.storageClassName }}
+  users:
+    - name: admin
+      databases:
+        - keycloak
+      options: "SUPERUSER"
+      password:
+        type: AlphaNumeric
+
+  backups:
+    pgbackrest:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.45-0
+      global:
+        log-level-console: info
+        log-level-file: info
+        repo1-retention-full: "7"
+        repo1-retention-full-type: time
+      repos:
+        - name: repo1
+          schedules:
+            full: 5 2 * * *
+          volume:
+            volumeClaimSpec:
+              accessModes:
+                - "ReadWriteOnce"
+              resources:
+                requests:
+                  storage: 1Gi
+              storageClassName: {{ .Values.pgo.storageClassName }}
+  patroni:
+    dynamicConfiguration:
+      postgresql:
+        pg_hba:
+          - "host all all 0.0.0.0/0 trust"
+{{ end }}

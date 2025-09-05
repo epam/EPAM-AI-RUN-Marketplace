@@ -1,0 +1,37 @@
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakClient
+metadata:
+  name: codemie
+  annotations:
+    edp.epam.com/preserve-resources-on-deletion: "true"
+spec:
+  advancedProtocolMappers: true
+  attributes:
+    post.logout.redirect.uris: +
+  clientAuthenticatorType: client-secret
+  secret: '$oauth2-proxy:client-secret'
+  clientId: codemie
+  defaultClientScopes:
+    - profile
+    - email
+    - codemie
+  enabled: true
+  directAccess: false
+  fullScopeAllowed: true
+  protocolMappers:
+    - config:
+        access.token.claim: 'false'
+        claim.name: roles
+        id.token.claim: 'true'
+        multivalued: 'true'
+        userinfo.token.claim: 'true'
+      name: roles
+      protocol: openid-connect
+      protocolMapper: oidc-usermodel-realm-role-mapper
+  realmRef:
+    kind: KeycloakRealm
+    name: codemie-prod
+  standardFlowEnabled: true
+  webOrigins:
+    - {{ .Values.codemie.url }}
+  webUrl: {{ .Values.codemie.url }}

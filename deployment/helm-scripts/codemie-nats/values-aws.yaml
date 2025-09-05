@@ -1,0 +1,87 @@
+
+container:
+  env:
+    CALLOUT_USERNAME:
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: CALLOUT_USERNAME
+    CALLOUT_BCRYPTED_PASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: CALLOUT_BCRYPTED_PASSWORD
+    CODEMIE_USERNAME:
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: CODEMIE_USERNAME
+    CODEMIE_BCRYPTED_PASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: CODEMIE_BCRYPTED_PASSWORD
+    ISSUER_NKEY:
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: ISSUER_NKEY
+    ISSUER_XKEY:
+      valueFrom:
+        secretKeyRef:
+          name: codemie-nats-secrets
+          key: ISSUER_XKEY
+config:
+  merge:
+    00$include: accounts.conf
+    01$include: auth.conf
+    02$include: params.conf
+configMap:
+  merge:
+    data:
+      accounts.conf: |
+        accounts {
+          AUTH {
+            users: [
+              { user: $CALLOUT_USERNAME, password: $CALLOUT_BCRYPTED_PASSWORD }
+            ]
+            imports: [
+                {service: {account: APP, subject: plugin_key.>}}
+            ]
+          }
+          APP {
+            users: [
+              { user: $CODEMIE_USERNAME, password: $CODEMIE_BCRYPTED_PASSWORD }
+            ]
+            exports: [
+                {service: plugin_key.>}
+            ]
+          }
+          SYS {}
+        }
+      auth.conf: |
+        authorization {
+          auth_callout {
+            issuer: $ISSUER_NKEY
+            users: [ $CALLOUT_USERNAME, $CODEMIE_USERNAME ]
+            account: AUTH
+            xkey: $ISSUER_XKEY
+          }
+        }
+      params.conf: |
+        tls: {}
+        allow_non_tls: true
+        system_account: SYS
+        max_payload: 32MB
+service:
+  merge:
+    spec:
+      type: NodePort
+  patch:
+    - op: add
+      path: /spec/ports/0/nodePort
+      value: 30422
+natsBox:
+  enabled: false
+podDisruptionBudget:
+  enabled: false

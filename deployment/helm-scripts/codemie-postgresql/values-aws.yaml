@@ -1,0 +1,25 @@
+global:
+  defaultStorageClass: "gp3"
+  postgresql:
+    auth:
+      username: admin
+      existingSecret: codemie-postgresql
+      database: codemie
+
+nameOverride: codemie-postgresql
+fullnameOverride: codemie-postgresql
+
+primary:
+  networkPolicy:
+    enabled: false
+  persistence:
+    size: 30Gi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1536Mi
+      ephemeral-storage: 2Gi
+    requests:
+      cpu: 200m
+      memory: 1024Mi
+      ephemeral-storage: 50Mi
