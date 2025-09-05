@@ -5,41 +5,51 @@ kind: StatefulSet
 metadata:
   name: aitestmate-elasticsearch
   labels:
-    {{- include "aitestmate-elasticsearch.labels" . | nindent 4 }}
+    # {{ include "aitestmate-elasticsearch.labels" . | nindent 4 }}
 spec:
   minReadySeconds: 30
   replicas: 1
   selector:
     matchLabels:
-      {{- include "aitestmate-elasticsearch.selectorLabels" . | nindent 6 }}
+      # {{ include "aitestmate-elasticsearch.selectorLabels" . | nindent 6 }}
   serviceName: aitestmate-elasticsearch-headless
   template:
     metadata:
       labels:
-        {{- include "aitestmate-elasticsearch.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        # {{ include "aitestmate-elasticsearch.labels" . | nindent 8 }}
+        # {{ with .Values.podLabels }}
+        # {{ toYaml . | nindent 8 }}
+        # {{ end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      # {{ with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.podSecurityContext }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      # {{ with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
       containers:
         - name: aitestmate-elasticsearch
-          {{- with .Values.securityContext }}
+          # {{ with .Values.securityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          image: >-
+            {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: >-
+            {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 9200
+          # {{ with (concat (default list .Values.env) (default list .Values.extraEnv) | uniq) }}
+          env:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.resources }}
+          resources:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
           volumeMounts:
           - name: aitestmate-elasticsearch-data
             mountPath: /var/lib/elasticsearch
