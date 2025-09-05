@@ -150,7 +150,7 @@ fluent-bit:
       [OUTPUT]
           Name               cloudwatch_logs
           Match              important.*
-          region             eu-central-1
+          region             %%AWS_REGION%%
           log_group_name     codemie-important
           log_stream_prefix  codemie-
           log_retention_days 3
@@ -159,7 +159,7 @@ fluent-bit:
       [OUTPUT]
           Name               cloudwatch_logs
           Match              verbose.*
-          region             eu-central-1
+          region             %%AWS_REGION%%
           log_group_name     codemie-verbose
           log_stream_prefix  codemie-
           log_retention_days 1

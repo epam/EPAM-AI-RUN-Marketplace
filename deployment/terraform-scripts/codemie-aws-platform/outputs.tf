@@ -13,6 +13,12 @@ output "codemie_kms_key_id" {
   value       = module.ai_run_kms.key_id
 }
 
+output "codemie_kms_key_arn" {
+  description = "The ARN of the AWS KMS key used for encryption user data"
+  value       = module.ai_run_kms.key_arn
+}
+
+
 output "codemie_s3_bucket_name" {
   description = "The S3 bucket name used for storing user data in CodeMie"
   value       = module.s3_bucket.s3_bucket_id
