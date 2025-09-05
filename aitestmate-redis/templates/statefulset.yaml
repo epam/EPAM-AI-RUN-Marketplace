@@ -12,6 +12,7 @@ spec:
   selector:
     matchLabels:
       # {{ include "aitestmate-redis.selectorLabels" . | nindent 6 }}
+  serviceName: aitestmate-redis-headless
   template:
     metadata:
       labels:

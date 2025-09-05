@@ -5,28 +5,46 @@ kind: StatefulSet
 metadata:
   name: aitestmate-rabbitmq
   labels:
-    {{- include "aitestmate-rabbitmq.labels" . | nindent 4 }}
+    # {{ include "aitestmate-rabbitmq.labels" . | nindent 4 }}
 spec:
   minReadySeconds: 10
   replicas: 1
   selector:
     matchLabels:
-      {{- include "aitestmate-rabbitmq.selectorLabels" . | nindent 6 }}
+      # {{ include "aitestmate-rabbitmq.selectorLabels" . | nindent 6 }}
   serviceName: aitestmate-rabbitmq-headless
   template:
     metadata:
       labels:
-        {{- include "aitestmate-rabbitmq.labels" . | nindent 8 }}
+        # {{ include "aitestmate-rabbitmq.labels" . | nindent 8 }}
     spec:
+      # {{ with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      # {{ with .Values.podSecurityContext }}
+      securityContext:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
       containers:
         - name: aitestmate-rabbitmq
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: >-
+            {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: >-
+            {{ .Values.image.pullPolicy }}
           ports:
             - name: rabbitmq
               containerPort: 5672
             - name: management
               containerPort: 15672
+          # {{ with (concat (default list .Values.env) (default list .Values.extraEnv) | uniq) }}
+          env:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.resources }}
+          resources:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
           volumeMounts:
           - name: aitestmate-rabbitmq-data
             mountPath: /var/lib/rabbitmq

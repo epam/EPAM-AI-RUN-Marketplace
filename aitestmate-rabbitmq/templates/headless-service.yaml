@@ -5,7 +5,7 @@ kind: Service
 metadata:
   name: aitestmate-rabbitmq-headless
   labels:
-    {{- include "aitestmate-rabbitmq.labels" . | nindent 4 }}
+    # {{ include "aitestmate-rabbitmq.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -19,4 +19,4 @@ spec:
       port: 15672
       targetPort: 15672
   selector:
-    {{- include "aitestmate-rabbitmq.selectorLabels" . | nindent 4 }}
+    # {{ include "aitestmate-rabbitmq.selectorLabels" . | nindent 4 }}
