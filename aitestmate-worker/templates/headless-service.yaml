@@ -5,9 +5,9 @@ kind: Service
 metadata:
   name: aitestmate-worker-headless
   labels:
-    {{- include "aitestmate-worker.labels" . | nindent 4 }}
+    # {{ include "aitestmate-worker.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
   selector:
-    {{- include "aitestmate-worker.selectorLabels" . | nindent 4 }}
+    # {{ include "aitestmate-worker.selectorLabels" . | nindent 4 }}
