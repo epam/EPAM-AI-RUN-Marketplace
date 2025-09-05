@@ -655,3 +655,32 @@ module "ai_run_irsa" {
 
   tags = local.tags
 }
+
+data "aws_iam_policy_document" "ai_run_kms_key_policy" {
+  version = "2012-10-17"
+  statement {
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+}
+
+module "ai_run_kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "3.1.1"
+
+  description                        = "AI Run key usage"
+  key_usage                          = "ENCRYPT_DECRYPT"
+  enable_key_rotation                = false
+  aliases                            = ["airun-${replace(lower(local.cluster_name), "-", "")}"]
+  policy                             = data.aws_iam_policy_document.ai_run_kms_key_policy.json
+  key_administrators                 = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+  bypass_policy_lockout_safety_check = true
+
+  tags = local.tags
+}

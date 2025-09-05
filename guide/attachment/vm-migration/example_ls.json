@@ -1,0 +1,64 @@
+{
+  "general_information": {
+    "vm_name": "legacy-app-01",
+    "os_version": "Windows Server 2016",
+    "installed_applications": ["IBM WebSphere", "AppX", "SQL Server Express"],
+    "running_services": ["WebSphereService", "MSSQL$SQLEXPRESS"],
+    "scheduled_tasks": ["NightlyETL", "WeeklyReportJob"],
+    "network_interfaces": ["Ethernet1"],
+    "users_and_groups": ["Administrator", "LegacyUsers"],
+    "running_processes": ["java.exe", "sqlservr.exe"],
+    "firewall": {
+      "status": "enabled",
+      "rules": ["WebSphere (9080)", "SQL (1433)"]
+    },
+    "mounted_drives": [
+      {
+        "drive_letter": "Z:",
+        "size_gb": 200,
+        "is_network_drive": true
+      },
+      {
+        "drive_letter": "C:",
+        "size_gb": 150,
+        "is_network_drive": false
+      }
+    ]
+  },
+  "performance_metrics": {
+    "cpu_usage_percent": 65,
+    "memory_usage_mb": 10240,
+    "disk_usage_percent": 85,
+    "network_usage_mbps": 25
+  },
+  "specific_information": {
+    "iis": {
+      "sites": [],
+      "application_pools": [],
+      "bindings": [],
+      "web_config_files": []
+    },
+    "sql_server": {
+      "databases": ["LegacyDB"],
+      "instances": ["SQLEXPRESS"],
+      "jobs": ["FullBackup"],
+      "linked_servers": ["FinanceDB"],
+      "users_and_roles": [
+        {
+          "user": "etl_user",
+          "roles": ["db_datareader", "db_datawriter"]
+        }
+      ]
+    },
+    "ucd": {
+      "folder_structure": {
+        "root": "C:\\LegacyUCD",
+        "folders": ["conf", "bin", "logs"]
+      },
+      "configurations": {
+        "deployment_mode": "manual",
+        "version": "0.9"
+      }
+    }
+  }
+}

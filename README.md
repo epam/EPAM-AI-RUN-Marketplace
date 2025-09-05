@@ -2,121 +2,125 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-This guide provides step-by-step instructions for deploying the AI/Run CodeMie application to Amazon EKS and related AWS services.
+This guide provides step-by-step instructions for deploying the AI/Run™ for AWS application to Amazon EKS and related AWS services.
 
 ## Table of Contents
 
 1. [Overview](#1-overview)
 2. [Prerequisites](#2-prerequisites)
-3. [AI/Run CodeMie Architecture](#3-airun-codemie-deployment-architecture)
+3. [AI/Run™ for AWS Architecture](#3-airun-for-aws-deployment-architecture)
 4. [AWS Infrastructure Deployment](#4-aws-infrastructure-deployment)
 5. [AI Models Integration and Configuration](#5-ai-models-integration-and-configuration)
-6. [AI/Run CodeMie Components Deployment](#6-airun-codemie-components-deployment) 
+6. [AI/Run™ for AWS Components Deployment](#6-airun-for-aws-components-deployment) 
 7. [Application Access](#7-provide-access-to-the-application) 
-8. [AWS Bedrock Configuration](#8-airun-codemie-post-installation-configuration)
-9. [Configure AWS Bedrock](#9-configure-aws-bedrock)
-10. [Import AWS Bedrock entity into CodeMie](#10-import-aws-bedrock-entity-into-codemie)
-
+8. [AWS Bedrock Configuration](#8-airun-for-aws-post-installation-configuration)
 
 # 1. Overview
 
-This guide provides step-by-step instructions for deploying the AI/Run CodeMini application to Amazon EKS and related AWS services. By following these instructions, you will:
+This guide provides step-by-step instructions for deploying the AI/Run™ for AWS application to Amazon EKS and related AWS services. By following these instructions, you will:
 
-* Get along with AI/Run CodeMini architecture
+* Get along with AI/Run™ for AWS architecture
 * Deploy AWS infrastructure using Terraform
-* Configure and deploy all AI/Run CodeMini application components
+* Configure and deploy all AI/Run™ for AWS application components
 * Integrate and configure AI modes
 
 ## 1.1. How to Use This Guide
 
 For successful deployment, please follow these steps in sequence:
 1. First, verify all prerequisites and set up your AWS environment accordingly. Next, deploy the required infrastructure using Terraform.
-2. Finally, deploy and configure the AI/Run CodeMini components on EKS cluster.
+2. Finally, deploy and configure the  AI/Run™ for AWS components on EKS cluster.
 3. Complete post-installation configuration.
 
-Each installation step is designed to ensure a smooth deployment process. The guide is structured to walk you through from initial setup to a fully functional AI/Run CodeMini environment on AWS.
+Each installation step is designed to ensure a smooth deployment process. The guide is structured to walk you through from initial setup to a fully functional AI/Run™ for AWS environment on AWS.
 
 # 2. Prerequisites
 
-Before installing AI/Run CodeMini, carefully review the prerequisites and requirements.
+Before installing AI/Run™ for AWS, carefully review the prerequisites and requirements.
 
-## 2.1. Prerequisites Checklist
+Prerequisites Checklist
 
-### 2.1.1.1. AWS Account Access Requirements
-✓ Active AWS Account with preferably region for deployment  
+### 2.1. AWS Account Access Requirements
+✓ Active AWS Account with a preferred region for deployment  
 ✓ User or Role with programmatic access to AWS account with permissions to create and manage IAM Roles and Policy Documents
 
-### 2.1.1.2. Domain Name
+### 2.2. Domain Name
 ✓ Available wildcard DNS hosted zone in Route53  
-📋 AI/Run CodeMini terraform modules will automatically create:
+📋 AI/Run™ for AWS terraform modules will automatically create:
 * DNS Records
 * TLS certificate through AWS Certificate Manager, which will be used later by the ALB and NLB
 
 
 
-### 2.1.1.3. External connections
+### 2.3. External connections
 ✓ Firewall or SG and NACLs of EKS cluster allow outbound access to:
-* AI/Run CodeMile container registry – <Need Update>
+*  AI/Run™ for AWS container registry – <Need Update>
 * 3rd party container registries – quay.io, docker.io, registry.developer.zurich/data.com
-* Any service you're planning to use with AI/Run CodeMile (for example, GitHub instance)
-  ✓ Firewall on your integration service allow inbound traffic from the AI/Run CodeMile NAT Gateway public IP address
+* Any service you're planning to use with AI/Run™ for AWS (for example, GitHub instance)
+
+✓ Firewall on your integration service allow inbound traffic from the AI/Run™ for AWS NAT Gateway public IP address
 
 ℹ️ NAT Gateway public IP address will be known after EKS installation
 
-### 2.1.1.4. LLM Models
+### 2.4. LLM Models
 ✓ Activated region in AWS where AWS Bedrock Models are available
+
 ✓ Activated desired LLMs and embeddings models in AWS account (for example, Sonnet 3.5/3.7, AWS Titan 2.0)
 
-ℹ️ AI/Run CodeMile can be deployed with mock LLM configurations initially. Real configurations can be provided later if client-side approvals require additional time.
+ℹ️  AI/Run™ for AWS can be deployed with mock LLM configurations initially. Real configurations can be provided later if client-side approvals require additional time.
 
-### 2.1.1.5. User Permissions and Admission Control Requirements for EKS
+> ⚠️ **Important**: AI/Run™ for AWS requires at least one configured chat model and one embedding model to function properly. Ensure these are set up before proceeding with creating assistants or data sources.
+
+### 2.5. User Permissions and Admission Control Requirements for EKS
 ✓ Admin EKS permissions with rights to create `namespaces`
+
 ✓ Admission webhook allows creation of Kubernetes resources listed below (applicable when deploying onto an existing EKS cluster with enforced policies):
 
-| AI/Run CodeMile Component | Kubernetes APIs | Description |
-|---------------------------|-----------------|-------------|
-| NATS | `Service` | NATS messaging system requires a LoadBalancer service type for client-server communication. When running `codemile-plugins`: <br>– within the same VPC as the EKS cluster – internal LoadBalancer configured for secure, private network communication<br>– outside the EKS cluster's VPC – Public LoadBalancer required for cross-network communication |
-| keycloak-operator | `ClusterRole`, `ClusterRoleBinding`, `Role`, `RoleBinding`, `CRDs`, `CR` | Cluster-wide permissions required for managing Keycloak configuration, including realm, clients, and user federation settings |
-| Postgres-operator | `ClusterRole`, `ClusterRoleBinding`, `CRDs`, `CR` | Cluster-wide permissions required for managing PostgreSQL instances and their lifecycle |
-| ElasticSearch | `Pod[securityContext]` | InitContainer must run as root user to set system parameter `vm.max_map_count=262144` |
-| All components | `Pod[securityContext]` | All components require SecurityContext with `readOnlyRootFilesystem: false` for proper operation |
+| AI/Run™ for AWS Component | Kubernetes APIs | Description |
+|-------------------------------|-----------------|-------------|
+| NATS                          | `Service` | NATS messaging system requires a LoadBalancer service type for client-server communication. When running `codemile-plugins`: <br>– within the same VPC as the EKS cluster – internal LoadBalancer configured for secure, private network communication<br>– outside the EKS cluster's VPC – Public LoadBalancer required for cross-network communication |
+| keycloak-operator             | `ClusterRole`, `ClusterRoleBinding`, `Role`, `RoleBinding`, `CRDs`, `CR` | Cluster-wide permissions required for managing Keycloak configuration, including realm, clients, and user federation settings |
+| Postgres-operator             | `ClusterRole`, `ClusterRoleBinding`, `CRDs`, `CR` | Cluster-wide permissions required for managing PostgreSQL instances and their lifecycle |
+| ElasticSearch                 | `Pod[securityContext]` | InitContainer must run as root user to set system parameter `vm.max_map_count=262144` |
+| All components                | `Pod[securityContext]` | All components require SecurityContext with `readOnlyRootFilesystem: false` for proper operation |
 
-## 2.2. Deployer instance requirements
+## 2.6. Deployer instance requirements
 ✓ The following software must be pre-installed and configured on the deployer laptop or VDI instance before beginning the deployment process(if you're using Windows, avoid mixing WSL with a native Windows installation):
-* terraform `v1.5.7`
-* kubectl
-* helm `v3.16.0+`
-* AWS CLI
-* docker
-* nslcd
-* unzip
-* htpasswd
+* [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) `v1.5.7`
+* [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
+* [helm](https://helm.sh/docs/intro/install/)  `v3.16.0+`
+* [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+* [docker](https://docs.docker.com/get-started/get-docker/)
+* [natscli](https://github.com/nats-io/natscli?tab=readme-ov-file#installation)
+* [nsc](https://github.com/nats-io/nsc)
+* [htpasswd](https://httpd.apache.org/)
 
 ℹ️ If you use Windows, please use linux shells such as Git Bash, WSL, etc
 
 
-# 3. AI/Run CodeMie deployment architecture
+# 3. AI/Run™ for AWS deployment architecture
 
-The diagram below depicts the AI/Run CodeMie infrastructure deployment in one region (AZ) of the AWS public cloud environment.
-## AI/Run™ for AWS Architecture overview
-<img src="assets/AI_Run_For_AWS.drawio.svg" alt="Platform Architecture" width="1200">
-[Diagram](guide/images/deployment-guide/architecture.png)
+The diagram below depicts the AI/Run™ for AWS infrastructure deployment in one region (AZ) of the AWS public cloud environment.
+
+
+<img src="assets/deployment-guide/AI_Run_For_AWS.drawio.svg" width="1200" style="background-color: #ffffff;">
 
 Container Resources Requirements
 
-| Component | Pods | RAM | vCPU |
-|-----------|------|-----|------|
-| CodeMie API | 2 | 8Gi | 4.0 |
-| CodeMie UI | 1 | 128Mi | 0.1 |
-| Elasticsearch | 2 | 16Gi | 4.0 |
-| Kibana | 1 | 1Gi | 1.0 |
-| Mermaid-server | 1 | 512Mi | 1.0 |
-| PostgreSQL | 1 | 1Gi | 0.2 |
-| Keycloak + DB | 1 + 1 | 4Gi | 2.0 |
-| Oauth2-proxy | 1 | 128Mi | 0.1 |
+| Component           | Pods | RAM | vCPU |
+|---------------------|------|-----|------|
+| CodeMie API         | 2 | 8Gi | 4.0 |
+| CodeMie UI          | 1 | 128Mi | 0.1 |
+| Elasticsearch       | 2 | 16Gi | 4.0 |
+| Kibana              | 1 | 1Gi | 1.0 |
+| Mermaid-server      | 1 | 512Mi | 1.0 |
+| PostgreSQL*         | 1 | 1Gi | 0.2 |
+| Keycloak + DB       | 1 + 1 | 4Gi | 2.0 |
+| Oauth2-proxy        | 1 | 128Mi | 0.1 |
 | NATS + Auth Callout | 1 + 1 | 512Mi | 1.0 |
-| MCP Connect | 1 | 1Gi | 0.5 |
-| Fluentbit | daemonset | 128Mi | 0.1 |
+| MCP Connect         | 1 | 1Gi | 0.5 |
+| Fluentbit           | daemonset | 128Mi | 0.1 |
+
+*The database component can also be deployed separately in AWS RDS
 
 # 4. AWS Infrastructure Deployment
 
@@ -124,7 +128,7 @@ Container Resources Requirements
 
 Skip if you have ready EKS cluster with all required services (check the diagram above).
 
-This section describes the process of deploying the AI/Run CodeMile infrastructure within an AWS environment. Terraform is used to manage resources and configure services.
+This section describes the process of deploying the AI/Run™ for AWS infrastructure within an AWS environment. Terraform is used to manage resources and configure services.
 
 ⚠️ A crucial step involves using a registered domain name added to AWS Route 53, which allows Terraform to automatically create SSL/TLS certificates via AWS Certificate Manager. These certificates are essential for securing traffic handled by the Application Load Balancer (ALB) and Network Load Balancer (NLB).
 
@@ -133,24 +137,34 @@ There are two deployment options available. Use the script if you want an easier
 ## 4.2. Set up Hosted zone
 
 ### 4.2.1. Open Hosted zone page
-![Diagram](guide/images/deployment-guide/Hosted_Zone4_2_1.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_1.png">
+
 ### 4.2.2. Click on Create hosted zone button
-![Diagram](guide/images/deployment-guide/Hosted_Zone4_2_2.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_2.png">
+
 ### 4.2.3. Create new hosted zone. Domain name should have the following pattern <any_name>.<your_DNS>
-![Diagram](guide/images/deployment-guide/Hosted_Zone4_2_3.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_3.png">
+
 ### 4.2.4. Copy "Value/Route traffic to" value from NS record
-![Diagram](guide/images/deployment-guide/Hosted_Zone4_2_4.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_4.png">
+
 ### 4.2.5. Open parent Hosted zone with name which equal to DNS name
 Create a new record in the hosted zone from the previous step
 Record name - should be the same value as <any_name> from step 4.2.3
 Record type - select "NS" option
 Value - Paste the value from step 4.2.4
-![Diagram](guide/images/deployment-guide/Hosted_Zone4_2_5.png)
+
+<img src="assets/deployment-guide/Hosted_Zone4_2_5.png">
+
 ## 4.3. Set up credential for AWS
 
 1. Find or create "credentials" file. By default, the file is located in the following directory:
     * "/Users/<user_name>/.aws" - Linux/Mac
-    * "%USERPROFILE%\.aws" - Windows
+    * "C:\Users\<profile>\.aws" - Windows
 2. Open the file and update next property: aws_region, aws_access_key_id, aws_secret_access_key, aws_session_token (if you use temporary credential)
 
 Also, you can use the command instead previous 2 steps
@@ -165,39 +179,50 @@ Also, you can use the command instead previous 2 steps
   cd EPAM-AI-RUN-Marketplace/deployment/terraform-scripts
  ```
 
-## 4.5. Scripted Deployment (Two ways of deployment: script or manual)
+## 4.5. Infrastructure Provisioning (Two ways of deployment: script or manual)
 
 ### 4.5.1. Run Installation Script
 
 The `terraform.sh` script automates the deployment of infrastructure.
 
-To deploy AI/Run CodeMile infrastructure to AWS use the following steps:
+To deploy AI/Run™ for AWS infrastructure to AWS use the following steps:
 
 1. Fill configuration details that specific for your AWS account in `deployment.conf`:
 
 ```bash
-# AI/Run CodeMile deployment variables configuration
+# AI/Run CodeMie deployment variables configuration
 # Fill required values and save this file as deployment.conf
 
 TF_VAR_region="<REGION>" # Example: us-east-1
-TF_VAR_subnet_azs="[<SUBNET AZs>]" # Example: ["us-east-1a", "us-east-1b", "us-east-1c"]
+TF_VAR_subnet_azs='[<SUBNET AZS>]' # Example: '["us-east-1a", "us-east-1b", "us-east-1c"]'
 
-TF_VAR_platform_name="<PLATFORM NAME>" # Example: codemile
+TF_VAR_platform_name="<PLATFORM NAME>" # Example: ai-run
 TF_VAR_deployer_role_name="<ROLE>" # Example: AIRunDeployerRole
 
-TF_VAR_s3_states_bucket_name="<BUCKET NAME>" # Example: codemile-terraform-states
-TF_VAR_table_name="<TABLE NAME>" # Example: codemile_terraform_locks
+TF_VAR_s3_states_bucket_name="<BUCKET NAME>" # Example: ai-run-terraform-states
+TF_VAR_table_name="<TABLE NAME>" # Example: ai_run_terraform_locks
 
-TF_VAR_platform_domain_name="<DOMAIN NAME>" # Example: example.com, domain name as hosted zone that you created
+TF_VAR_platform_domain_name="<DOMAIN NAME>" # Example: example.com
 
-TF_VAR_spot_instance_types="[{\"instance_type\":\"c5.2xlarge\"}]"
+TF_VAR_role_permissions_boundary_arn="" # Example: arn:aws:iam::012345678901:policy/role_boundary
+
+# Uncomment in case Eks admin role is differ then current user
+#TF_VAR_eks_admin_role_arn=""
+
+# Uncomment in case EBS encryption needed
+#TF_VAR_ebs_encrypt="<BOOLEAN VALUE>" # Example: true or false
+
+TF_VAR_spot_instance_types='[{"instance_type":"c5.2xlarge"}]'
 TF_VAR_spot_max_nodes_count=0
 TF_VAR_spot_desired_nodes_count=0
 TF_VAR_spot_min_nodes_count=0
-TF_VAR_demand_instance_types="[{\"instance_type\":\"c5.2xlarge\"}]"
+TF_VAR_demand_instance_types='[{"instance_type":"c5.2xlarge"}]'
 TF_VAR_demand_max_nodes_count=2
 TF_VAR_demand_desired_nodes_count=2
 TF_VAR_demand_min_nodes_count=1
+
+# RDS
+TF_VAR_pg_instance_class="db.c6gd.medium"
 ```
 
 2. Run the following command if using a Unix-like operating system:
@@ -210,11 +235,19 @@ TF_VAR_demand_min_nodes_count=1
    * `--access-key ACCESS_KEY`: Use the flag if the `.aws/credentials` file has not been updated.
    * `--secret-key SECRET_KEY`: Use the flag if the `.aws/credentials` file has not been updated.
    * `--region REGION`:         Use the flag if the `.aws/credentials` file has not been updated.
-   * `--rds-enable`:            Use the flag if you want to deploy the database
+   * `--rds-enable`:            AI/Run™ for AWS by default rely on Postgres database deployed in EKS cluster. Use this key if you want switch to AWS RDS.
    * `--config-file FILE`:      Load configuration from file (default: deployment.conf)
    * `--help`
    
    The flags `--access-key`, `--secret-key`, and `--region REGION` can be omitted if step 4.3 has already been completed.
+
+
+### ⚠️ Warning
+
+AI/Run™ for AWS relies on a PostgreSQL database deployed by default in the EKS cluster.  
+Please consider whether you want to deploy the database in the EKS cluster or use AWS RDS instead.
+
+To enable AWS RDS, use the `--rds-enable` flag during deployment.
 
 ```bash
   bash terraform.sh
@@ -233,7 +266,7 @@ After execution, the script will:
 2. Create IAM Voyager role and policy
 3. Deploy infrastructure:
    a. Create Terraform backend storage (S3 bucket and DynamoDB table)
-   b. Deploy core AI/Run CodeMile Platform infrastructure
+   b. Deploy core AI/Run™ for AWS Platform infrastructure
    c. Set up necessary AWS resources
 4. Generate Outputs:
 
@@ -242,28 +275,28 @@ After execution, the script will:
          AWS_DEFAULT_REGION=eu-west-2
          EKS_ARN_DEV=arn:aws:eks:eu-west-2:123456789012:cluster/...
          AWS_SSM_KMS_ID=1294fa78-98ab-cdef-1234-567890abcdef
-         AWS_S3_BUCKET_NAME=codemile-platform-bucket
+         AWS_S3_BUCKET_NAME=codemie-platform-bucket
          ```
    b. If the user includes the `--rds-enable` flag, the `deployment_outputs.env` file will be generated with the relevant infrastructure details:
         ```
         AWS_DEFAULT_REGION=eu-west-2
         ECS_AWS_ROLE_ARN=arn:aws:iam::123456789012:role/...
         AWS_KMS_KEY_ID=12345678-90ab-cdef-1234-567890abcdef
-        AWS_S3_BUCKET_NAME=codemile-platform-bucket
+        AWS_S3_BUCKET_NAME=codemie-platform-bucket
         AWS_RDS_ENDPOINT=database.aaaaaaaaaaa.us-east-1.rds.amazonaws.com
-        AWS_RDS_DATABASE_NAME=codemile
+        AWS_RDS_DATABASE_NAME=codemie
         AWS_RDS_DATABASE_USER=dbuser
         AWS_RDS_DATABASE_PASSWORD=SomePassword
        ```
 
 5. Deployment Completion:
    a. A success message will confirm the deployment
-   b. Logs will be available in `codemile_aws_deployment_YYYY-MM-DD-HHMMSS.log`
+   b. Logs will be available in `codemie_aws_deployment_YYYY-MM-DD-HHMMSS.log`
    c. The script will display a summary of deployed resources
 
 ⚠️ Keep the `deployment_outputs.env` file secure as it contains sensitive information. Do not commit it to version control.
 
-After successful deployment, you can proceed with the AI/Run CodeMile components installation and start using AI/Run CodeMile services.
+After successful deployment, you can proceed with the AI/Run™ for AWS components installation and start using AI/Run™ for AWS services.
 
 ## 4.6. Manual Deployment (If the previous step has already been completed, please proceed to skip this step.)
 
@@ -338,7 +371,7 @@ This step will cover the following topics:
 * Create the AWS ASGs for the EKS Cluster
 * Create the AWS ALB
 * Create the AWS NLB
-* Create the AWS KMS key to encrypt and decrypt sensitive data in the AI/Run CodeMile application.
+* Create the AWS KMS key to encrypt and decrypt sensitive data in the AI/Run CodeMie application.
 * Create the AWS IAM Role to access the AWS KMS and Bedrock services
 * Create the AWS IAM role ExternalSecretOperator to use AWS Systems Manager
 
@@ -427,97 +460,133 @@ vpc_state_key        = "your-vpc_state_key"
 
 # 5. AI Models Integration and Configuration
 
-## 5.1. Managing LLM and embedding models
+## 5.1. AWS Bedrock Models
+
+### 5.1.1. Overview
+This section describes the process of enabling AWS Bedrock models in AWS account.
+
+> ⚠️ **Important**: AI/Run™ for AWS requires at least one configured chat model and one embedding model to function properly. Ensure these are set up before proceeding with creating assistants or data sources.
+
+### 5.1.2. Steps to Enable Bedrock Models
+1. Access AWS Bedrock Console
+   1. Sign in to the AWS Management Console
+   2. Navigate to the AWS Bedrock service
+   3. Select "Model access" from the left navigation panel
+2. Request Model Access
+   1. In the Model access page, you'll see available foundation models grouped by providers
+   2. Common providers include:
+      * Anthropic (Claude models)
+      * Amazon
+   3. Click "Request model access"
+      * Locate the model in the list
+      * Check the checkbox next to the model name
+      * Click "Request model access"
+3. Verify Model Access
+   1. After requesting access, the status will initially show as "Pending"
+   2. Wait for the status to change to "Access granted"
+   3. This typically takes only a few minutes
+   4. Refresh the page to see updated status
+4. Region-Specific Configuration
+   * Note that model access needs to be enabled separately for each AWS region
+   * Repeat the process for additional regions if needed
+
+
+## 5.2. Managing LLM and embedding models
+
+> 📋 **Model Information**:
+> 1. [Find the supported model IDs (deployment_name) in the AWS Bedrock documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html)
+> 2. [Find cost information for AWS Bedrock models](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html)
+Second point need link fix 
 
 Example of providing LLM and embedding models for the custom environment:
 
-1. Go to the `/app/openai/helm/development/codemie-llm-customer-conf.yaml` file
+1. Go to the `deployment/helm-scripts/codemie-api/values-aws.yaml` file
 2. Fill the following values to create and mount custom configmap to AI/Run pod:
 
 ```yaml
-extraVolumes: |
-  ...
-  - name: codemie-llm-customer-config
-    configMap:
-      name: codemie-llm-customer-config
-  ...
+  extraObjects:
+     - apiVersion: v1
+       kind: ConfigMap
+       metadata:
+          name: codemie-llm-customer-config
+       data:
+          llm-amnaairn-config.yaml: |
+             llm_models:
+               - base_name: "mistral"
+                 deployment_name: "mistral.mistral-7b-instruct-v0:2"
+                 label: "Mistral 7b - Instruct"
+                 multimodal: false
+                 enabled: true
+                 default: true
+                 provider: "aws_bedrock"
+                 features:
+                   system_prompt: false
+                   max_tokens: false
+                 cost:
+                   input: 0.0000025
+                   output: 0.000011
 
-extraObjects:
-- apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: codemie-llm-customer-config
-  data:
-    llm-amazeai-config.yaml: |
-      llm_models:
-        - base_name: "mistral"
-          deployment_name: "mistral-mistral-7b-instruct-v0:2"
-          label: "Mistral-7b - Instruct"
-          multimodal: false
-          enabled: true
-          default: true
-          provider: "aws_bedrock"
-          features:
-            system_prompt: false
-            max_tokens: false
-          cost:
-            input: 0.0000025
-            output: 0.000015
-      
-      embeddings_models:
-        - base_name: "titan"
-          deployment_name: "amazon.titan-embed-text-v1"
-          label: "Titan Embeddings G1 - Text"
-          enabled: true
-          default: true
-          provider: "aws_bedrock"
-          cost:
-            input: 0.0000001
-            output: 0
+             # Amazon Nova Models Configs
+             #  - base_name: "amazon-nova-pro"
+             #    deployment_name: "eu.amazon.nova-pro-v1:0"
+             #    label: "Bedrock Nova Pro"
+             #    multimodal: true
+             #    enabled: true
+             #    provider: "aws_bedrock"
+             #    max_output_tokens: 10000
+             #    cost:
+             #      input: 0.00000105
+             #      output: 0.0000002625
+
+             #  - base_name: "amazon-nova-lite"
+             #    deployment_name: "eu.amazon.nova-lite-v1:0"
+             #    label: "Bedrock Nova Lite"
+             #    multimodal: true
+             #    enabled: true
+             #    provider: "aws_bedrock"
+             #    max_output_tokens: 10000
+             #    cost:
+             #      input: 0.000000078
+             #      output: 0.0000000195
+
+             #  - base_name: "amazon-nova-micro"
+             #    deployment_name: "eu.amazon.nova-micro-v1:0"
+             #    label: "Bedrock Nova Micro"
+             #    multimodal: false
+             #    enabled: true
+             #    provider: "aws_bedrock"
+             #    max_output_tokens: 10000
+             #    cost:
+             #      input: 0.000000046
+             #      output: 0.0000000115
+
+             embeddings_models:
+               - base_name: "titan"
+                 deployment_name: "amazon.titan-embed-text-v1"
+                 label: "Titan Embeddings G1 - Text"
+                 enabled: true
+                 default: true
+                 provider: "aws_bedrock"
+                 cost:
+                   input: 0.0000001
+                   output: 0
 ```
-## 5.2. AWS Bedrock Models
 
-### 5.2.1. Overview
-This section describes the process of enabling AWS Bedrock models in AWS account.
-
-### 5.2.2. Steps to Enable Bedrock Models
-1. Access AWS Bedrock Console
-    1. Sign in to the AWS Management Console
-    2. Navigate to the AWS Bedrock service
-    3. Select "Model access" from the left navigation panel
-2. Request Model Access
-    1. In the Model access page, you'll see available foundation models grouped by providers
-    2. Common providers include:
-        * Anthropic (Claude models)
-        * Amazon
-    3. Click "Request model access"
-        * Locate the model in the list
-        * Check the checkbox next to the model name
-        * Click "Request model access"
-3. Verify Model Access
-    1. After requesting access, the status will initially show as "Pending"
-    2. Wait for the status to change to "Access granted"
-    3. This typically takes only a few minutes
-    4. Refresh the page to see updated status
-4. Region-Specific Configuration
-    * Note that model access needs to be enabled separately for each AWS region
-    * Repeat the process for additional regions if needed
-
-# 6. AI/Run CodeMie Components Deployment
+# 6. AI/Run™ for AWS Components Deployment
 
 ## 6.1. Overview
 
-This section describes the process of the main AI/Run CodeMie components deployment to the AWS EKS cluster.
+This section describes the process of the main AI/Run™ for AWS components deployment to the AWS EKS cluster.
 
 ### 6.1.1. Core AI/Run CodeMie Components:
 
-ℹ️ AI/Run CodeMie current versions of codemie: <Need_Update>
+ℹ️ AI/Run™ for AWS current versions of codemie: <Need_Update>
 
 | Component name | Images | Description |
 |---------------|--------|-------------|
-| AI/Run CodeMie API | <Need Update> | The backend service of the AI/Run CodeMie application responsible for business logic, data processing, and API operations |
-| AI/Run CodeMie UI | <Need Update> | The frontend service of the AI/Run CodeMie application that provides the user interface for interacting with the system |
-| AI/Run CodeMie Nats Auth Callout | <Need Update> | Authorization component of AI/Run CodeMie Plugin Engine that handles authentication and authorization for the NATS messaging system |
+| AI/Run CodeMie API | <Need Update> | The backend service of the AI/Run™ for AWS application responsible for business logic, data processing, and API operations |
+| AI/Run CodeMie UI | <Need Update> | The frontend service of the AI/Run™ for AWS application that provides the user interface for interacting with the system |
+| AI/Run CodeMie Nats Auth Callout | <Need Update> | Authorization component of AI/Run™ for AWS Plugin Engine that handles authentication and authorization for the NATS messaging system |
 | AI/Run CodeMie MCP Connect | <Need Update> | A lightweight bridge tool that enables cloud-based AI services to communicate with local Model Content Protocol (MCP) servers via protocol translation while maintaining security and flexibility |
 | AI/Run Mermaid Server | <Need Update> | Implementation of open-source service that generates image URLs for diagrams based on the provided Mermaid code for workflow visualization |
 
@@ -525,19 +594,19 @@ This section describes the process of the main AI/Run CodeMie components deploym
 
 | Component name | Images | Description |
 |---------------|--------|-------------|
-| Ingress Nginx Controller | registry.k8s.io/ingress-nginx/controller:<Need_Update> | Handles external traffic routing to services within the Kubernetes cluster. The AI/Run CodeMie application uses oauth2-proxy, which relies on the Ingress Nginx Controller for proper routing and access control |
+| Ingress Nginx Controller | registry.k8s.io/ingress-nginx/controller:<Need_Update> | Handles external traffic routing to services within the Kubernetes cluster. The AI/Run™ for AWSe application uses oauth2-proxy, which relies on the Ingress Nginx Controller for proper routing and access control |
 | Storage Class | - | Provides persistent storage capabilities |
-| Elasticsearch | docker.elastic.co/elasticsearch/elasticsearch:<Need_Update> | Database component that stores all AI/Run CodeMie data, including datasources, projects, and other application information |
-| Kibana | docker.elastic.co/kibana/kibana:<Need_Update> | Web-based analytics and visualization platform that provides visualization of the data stored in Elasticsearch. Allows monitoring and analyzing AI/Run CodeMie data |
+| Elasticsearch | docker.elastic.co/elasticsearch/elasticsearch:<Need_Update> | Database component that stores all AI/Run™ for AWS data, including datasources, projects, and other application information |
+| Kibana | docker.elastic.co/kibana/kibana:<Need_Update> | Web-based analytics and visualization platform that provides visualization of the data stored in Elasticsearch. Allows monitoring and analyzing AI/Run™ for AWS data |
 | Postgres-operator | registry.developers.crunchydata.com/crunchydata/postgres-operator:<Need_Update> | Manages PostgreSQL database instances required by other components in the stack. Handles database lifecycle operations |
 | Keycloak-operator | quay.io/keycloak-operator:<Need_Update> | Manages Keycloak identity and access management instance and its configuration |
 | Keycloak | docker.io/keycloak:X.Y.Z, quay.io/keycloak/keycloak:<Need_Update>, registry.developers.crunchydata.com/crunchydata/crunchy-postgres:1.0.0 | Identity and access management solution that provides authentication and authorization capabilities for integration with oauth2-proxy component |
-| OAuth2-Proxy | quay.io/oauth2-proxy/oauth2-proxy:<Need_Update> | Authentication middleware that provides secure authentication for the AI/Run CodeMie application by integrating with Keycloak or any other IdP |
-| NATS | nats:X.Y.Z, nats/nats-server-config-reloader:<Need_Update> | Message broker that serves as a crucial component of the AI/Run CodeMie Plugin Engine, facilitating communication between services |
-| FluentBit | cr.fluentbit.io/fluent/fluent-bit:<Need_Update> | FluentBit enables logs and metrics collection from AI/Run CodeMie enabling the agents observability |
-| PostgreSQL | docker.io/bitnami/postgresql:<Need_Update> | Database component that stores all AI/Run CodeMie data, including datasources, projects, and other application information |
+| OAuth2-Proxy | quay.io/oauth2-proxy/oauth2-proxy:<Need_Update> | Authentication middleware that provides secure authentication for the AI/Run™ for AWS application by integrating with Keycloak or any other IdP |
+| NATS | nats:X.Y.Z, nats/nats-server-config-reloader:<Need_Update> | Message broker that serves as a crucial component of the AI/Run™ for AWS Plugin Engine, facilitating communication between services |
+| FluentBit | cr.fluentbit.io/fluent/fluent-bit:<Need_Update> | FluentBit enables logs and metrics collection from AI/Run™ for AWS enabling the agents observability |
+| PostgreSQL | docker.io/bitnami/postgresql:<Need_Update> | Database component that stores all AI/Run™ for AWS data, including datasources, projects, and other application information |
 
-## 6.2. Scripted AI/Run CodeMie Components Installation
+## 6.2. Scripted AI/Run™ for AWS Components Installation
 
 1. Navigate helm-scripts folder:
    ```bash
@@ -559,7 +628,7 @@ This section describes the process of the main AI/Run CodeMie components deploym
   ./helm-charts.sh --version=<Need_Update>
 ```
 
-## 6.3. Manual Installation AI/Run CodeMie (If the previous step has already been completed, please proceed to skip this step.)
+## 6.3. Manual Installation AI/Run™ for AWS (If the previous step has already been completed, please proceed to skip this step.)
 
 ### 6.3.1. Set up kubectl config
 Run next command
@@ -654,7 +723,7 @@ Apply postgres-operator chart:
    helm upgrade --install keycloak-operator-helm keycloak-operator-helm/. -n security --create-namespace --values keycloak-operator-helm/values.yaml --wait --timeout 900s --dependency-update
     ```
 ### 6.3.8. Install Keycloak component:
-Fill in values in values.yaml and apply `keycloak` helm chart with the command:
+Fill in <values> placeholders in values.yaml and apply `keycloak` helm chart with the command:
 
    ```bash  
    helm upgrade --install keycloak keycloak-helm/. -n security --values keycloak-helm/values-aws.yaml --wait --timeout 900s --dependency-update
@@ -907,7 +976,7 @@ type: Opaque
 
 ### 6.3.13. Install OAuth2 Proxy component:
 
-Authentication middleware that provides secure authentication for the AI/Run CodeMie application by integrating with Keycloak
+Authentication middleware that provides secure authentication for the AI/Run™ for AWS application by integrating with Keycloak
 
 1. Create Kubernetes namespace, e.g. `oauth2-proxy` with the command:
 
@@ -1021,36 +1090,41 @@ If you do not have your own logging system then consider installing Fluentbit co
 ## 7.1. Create new security group
 ### 7.1.1. Open EC2 service group
 
-![Diagram](guide/images/deployment-guide/security_group_7_1_1.png)
+<img src="assets/deployment-guide/security_group_7_1_1.png">
+
 ### 7.1.2. Open "Security Groups"
 
-![Diagram](guide/images/deployment-guide/security_group_7_1_2.png)
+<img src="assets/deployment-guide/security_group_7_1_2.png">
 
 ### 7.1.3. Create new "Security Groups""
-![Diagram](guide/images/deployment-guide/security_group_7_1_3.png)
-![Diagram](guide/images/deployment-guide/security_group_7_1_3_2.png)
+
+<img src="assets/deployment-guide/security_group_7_1_3.png">
+
+<img src="assets/deployment-guide/security_group_7_1_3_2.png">
 
 ## 7.2. Add security group to Load Balancers
 ### 7.2.1. Open  Load Balancers
 
-![Diagram](guide/images/deployment-guide/load_balancer_7_2_1.png)
+<img src="assets/deployment-guide/load_balancer_7_2_1.png">
+
 ### 7.2.2. Find and open  <some name>-ingress-alb balancer to cluster which was created
 
-![Diagram](guide/images/deployment-guide/load_balancer_7_2_2.png)
+
+<img src="assets/deployment-guide/load_balancer_7_2_2.png">
+
 ### 7.2.3. Navigate to security tab and click "edit" button
 
-![Diagram](guide/images/deployment-guide/load_balancer_7_2_3.png)
+<img src="assets/deployment-guide/load_balancer_7_2_3.png">
+
 ### 7.2.4. Add new security group and save changes
 
-![Diagram](guide/images/deployment-guide/load_balancer_7_2_4.png)
+<img src="assets/deployment-guide/load_balancer_7_2_4.png">
 
-# 8. AI/Run CodeMie post-installation configuration
-
-## 8.1. Required Steps
+# 8. AI/Run™ for AWS post-installation configuration
 
 Before onboarding users few additional configuration steps are required:
 
-### 8.1.1. Keycloak AI/Run CodeMie Realm configuration
+### 8.1. Keycloak AI/Run™ for AWS Realm configuration
 
 Login into Keycloak console
 
@@ -1065,7 +1139,8 @@ Separate 2 way
 
 After running `helm-charts.sh`, Keycloak credentials are displayed in the console or available in the "keycloak-admin" secret.
 
-![Diagram](guide/images/deployment-guide/helm_script_output.png)
+
+<img src="assets/deployment-guide/helm_script_output.png">
 
 How to find keycloak-admin secret:
 1. Login into aws console
@@ -1076,23 +1151,8 @@ How to find keycloak-admin secret:
 6. Find "keycloak-admin" secret
 7. Click on decode buttons
 
-   ![Diagram](guide/images/deployment-guide/keycloak_credential.png)
-   ![Diagram](guide/images/deployment-guide/keycloak_credential_2.png)
-
-### 8.1.1. Keycloak AI/Run CodeMie Realm configuration
-
-Login into Keycloak console
-
-Link to keycloak
-URL = https://keycloak.<TF_VAR_platform_domain_name>/auth/admin
-TF_VAR_platform_domain_name the value is define in "deployment/terraform-scripts/deployment.conf" file
-
-Credential
-
-You can find creds in console as output of script or via keycloak-admin
-Separate 2 way
-
-After running `helm-charts.sh`, Keycloak credentials are displayed in the console or available in the "keycloak-admin" secret.
+   <img src="assets/deployment-guide/keycloak_credential.png">
+   <img src="assets/deployment-guide/keycloak_credential_2.png">
 
 Enable realm unmanaged attributes:
 1. Open a left side bar (Menu) on site
@@ -1102,68 +1162,49 @@ Enable realm unmanaged attributes:
 
 > ℹ️ When you assign a user access to a project that matches their Keycloak username (from the username claim), the system will automatically create this personal project in AI/Run CodeMie. Other projects must be created by AI/Run CodeMie admin.
 
-Create new user
+Create first  user
 
 To include the added `applications` unmanaged attribute as an additional claim to the token it's necessary to configure protocol mappers. Follow the step:
 1. Navigate to "Client Scopes" and update the client scope "profile" to include the newly added attribute.
 
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_1.png)
-2. Configure a mapper, selecting the mapping type as "User Attribute", then set applications as the field name, user attribute, and token claim name. Finally, save the changes.
+   <img src="assets/deployment-guide/create_user_keycloak_1.png">
    
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_2.png)
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_2_2.png)
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_2_3.png)
+2. Configure a mapper, selecting the mapping type as "User Attribute", then set applications as the field name, user attribute, and token claim name. Finally, save the changes.
+
+   <img src="assets/deployment-guide/create_user_keycloak_2.png">
+   <img src="assets/deployment-guide/create_user_keycloak_2_2.png">
+   <img src="assets/deployment-guide/create_user_keycloak_2_3.png">
+   
 3. Open Users list page
 
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_3.png)
+   <img src="assets/deployment-guide/create_user_keycloak_3.png">
+
 4. Click on "Add user" button
 
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_4.png)
+   <img src="assets/deployment-guide/create_user_keycloak_4.png">
+   
 5. Fill all necessary fields and click on "Email Verified " and "Create" buttons
 
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_5.png)
+   <img src="assets/deployment-guide/create_user_keycloak_5.png">
+   
 6. Assign admin role and unassign default role
 
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_6_1.png)
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_6_2.png)
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_6_3.png)
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_6_4.png)
+   <img src="assets/deployment-guide/create_user_keycloak_6_1.png">
+   <img src="assets/deployment-guide/create_user_keycloak_6_2.png">
+   <img src="assets/deployment-guide/create_user_keycloak_6_3.png">
+   <img src="assets/deployment-guide/create_user_keycloak_6_4.png">
 7. Set up credential
 
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_7_1.png)
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_7_2.png)
+   <img src="assets/deployment-guide/create_user_keycloak_7_1.png">
+   <img src="assets/deployment-guide/create_user_keycloak_7_2.png">
+   
 8. Set up attributes
 
-   ![Diagram](guide/images/deployment-guide/create_user_keycloak_8.png)
-9. Verify login and access to AI/Run CodeMie application.
-   Link to Codemie
+   <img src="assets/deployment-guide/create_user_keycloak_8.png">
+   
+9. Verify login and access to AI/Run™ for AWS application.
+   Link to fronted
    URL = https://codemie.<TF_VAR_platform_domain_name>
-
-
-# 9. Configure AWS Bedrock
-
-Choose the service(s) based on your needs and use the corresponding links for setup:
-
-* If you need Agent (to manage and configure conversational agents), use this link: [Create and configure agent manually - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-create.html)
-* If you need Workflow (to design and execute process flows), use this link: [Create your first flow in Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/flows-create.html)
-* If you need Knowledge base (to provide additional data that helps improve AI-generated responses), use this link: [Retrieve data and generate AI responses with Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-bases.html)
-* If you need Guardrails(to detect and filter harmful or sensitive content), use this link: [Detect and filter harmful content by using Amazon Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html)
-
-# 10. Import AWS Bedrock entity into CodeMie
-
-## 10.1. Create integration to AWS Account
-
-1. Login as admin
-2. Open integration page (or enter by URL https://codemie.<TF_VAR_platform_domain_name>/#/integrations)
-3. Click on "Create Project Integration"
-4. Select project
-5. Select AWS type in Credential Type drop down list
-6. Fill all other fields
-7. Click on "Test Integration" button
-8. Verify that "Integration test successful" pop up is displayed
-9. Click on "Create Integration" button
-
-## 10.2. Import entity
 
 
 
