@@ -19,6 +19,8 @@ codemie:
       value: "amnaairn"
     - name: ENV
       value: "prod"
+    - name: AMNA_AIRN_PRECREATE_WORKFLOWS
+      value: "true"
     - name: IDP_PROVIDER
       value: 'keycloak'
     - name: ENCRYPTION_TYPE
@@ -243,7 +245,7 @@ codemie:
   extraVolumeMounts: |
     - name: codemie-ui
       mountPath: /codemie-ui
-    - name: codemie-customer-config
+    - name: codemie-customer-amna-config-vol
       mountPath: /app/config/customer
     - name: codemie-llm-customer-config
       mountPath: /app/config/llms/llm-amnaairn-config.yaml
@@ -252,9 +254,9 @@ codemie:
   extraVolumes: |
     - name: codemie-ui
       emptyDir: {}
-    - name: codemie-customer-config
+    - name: codemie-customer-amna-config-vol
       configMap:
-        name: codemie-customer-config
+        name: codemie-customer-amna-config
     - name: codemie-llm-customer-config
       configMap:
         name: codemie-llm-customer-config
@@ -332,3 +334,69 @@ codemie:
                 cost:
                   input: 0.0000001
                   output: 0
+      - apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: codemie-customer-amna-config
+        data:
+            customer-config.yaml: |
+              ---
+              components:
+                - id: "userGuide"
+                  settings:
+                    name: "User Guide"
+                    enabled: true
+                    url: "https://kb.epam.com/pages/viewpage.action?pageId=2548747220"
+                - id: "adminActions"
+                  settings:
+                    enabled: true
+                - id: "feedbackAssistant"
+                  settings:
+                    enabled: true
+                - id: "workflowDocumentation"
+                  settings:
+                    name: "Workflow Documentation"
+                    enabled: true
+                    url: "https://kb.epam.com/pages/viewpage.action?pageId=2548747220"
+                - id: "mcpConnect"
+                  settings:
+                    enabled: true
+                - id: "applications:test-mate"
+                  settings:
+                    enabled: true
+                    name: "Test Mate"
+                    url: "/aitestmate"
+                    type: "link"
+                    description: ""
+                - id: "vendorIntegrationAWS"
+                  settings:
+                    enabled: true
+              
+              preconfigured_assistants:
+                - id: "codemie-onboarding"
+                  settings:
+                    enabled: true
+                    index_name: "codemie-onboarding"
+                - id: "prompt-engineer"
+                  settings:
+                    enabled: true
+                - id: "amna-junit-project-fixer"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-dotnet-project-fixer"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-sct-tsql-to-pgsql-converter"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-template-gitlab-cicd-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-aws-eb-bean"
+                  project: demo
+                  settings:
+                    enabled: true
