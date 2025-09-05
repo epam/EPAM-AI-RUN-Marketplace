@@ -2,11 +2,6 @@
 
 # AI TestMate Beat Scheduler
 
-# Default values for aitestmate-beat.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
   repository: artifactoryspb.epam.com/epm-eag-docker/aitestmate/beat
   # This sets the pull policy for images.
@@ -14,11 +9,42 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
+
 # This is to override the chart name.
 nameOverride: "aitestmate-beat"
 fullnameOverride: "aitestmate-beat"
+
+env:
+  - name: RABBITMQ_HOST
+    value: aitestmate-rabbitmq-headless
+  - name: RABBITMQ_PORT
+    value: "5672"
+  - name: RABBITMQ_USER
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-rabbitmq-secret
+        key: username
+  - name: RABBITMQ_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-rabbitmq-secret
+        key: password
+  - name: RABBITMQ_VHOST
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-rabbitmq-secret
+        key: vhost
+  - name: REDIS_HOST
+    value: aitestmate-redis-headless
+  - name: REDIS_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-redis-secret
+        key: password
+
+# Additional environment passed into container
+extraEnv: []
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:

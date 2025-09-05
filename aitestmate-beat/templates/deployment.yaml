@@ -3,69 +3,75 @@ kind: Deployment
 metadata:
   name: aitestmate-beat
   labels:
-    {{- include "aitestmate-beat.labels" . | nindent 4 }}
+    # {{ include "aitestmate-beat.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "aitestmate-beat.selectorLabels" . | nindent 6 }}
+      # {{ include "aitestmate-beat.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      # {{ with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
       labels:
-        {{- include "aitestmate-beat.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        # {{ include "aitestmate-beat.labels" . | nindent 8 }}
+        # {{ with .Values.podLabels }}
+        # {{ toYaml . | nindent 8 }}
+        # {{ end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      # {{ with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.podSecurityContext }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      # {{ with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
       containers:
         - name: aitestmate-beat
-          {{- with .Values.securityContext }}
+          # {{ with .Values.securityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.livenessProbe }}
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          image: >-
+            {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: >-
+            {{ .Values.image.pullPolicy }}
+          # {{ with (concat (default list .Values.env) (default list .Values.extraEnv) | uniq) }}
+          env:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.livenessProbe }}
           livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.readinessProbe }}
           readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.resources }}
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.resources }}
           resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.volumeMounts }}
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.volumeMounts }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+      # {{ with .Values.volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.nodeSelector }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      # {{ with .Values.nodeSelector }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      # {{ with .Values.affinity }}
       affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      # {{ with .Values.tolerations }}
       tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
