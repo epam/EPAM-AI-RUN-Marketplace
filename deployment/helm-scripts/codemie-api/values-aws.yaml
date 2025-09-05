@@ -361,13 +361,6 @@ codemie:
                 - id: "mcpConnect"
                   settings:
                     enabled: true
-                - id: "applications:test-mate"
-                  settings:
-                    enabled: true
-                    name: "Test Mate"
-                    url: "/aitestmate"
-                    type: "link"
-                    description: ""
                 - id: "vendorIntegrationAWS"
                   settings:
                     enabled: true
