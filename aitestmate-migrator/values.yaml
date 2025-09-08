@@ -2,11 +2,6 @@
 
 # AI TestMate Migrator
 
-# Default values for aitestmate-migrator.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
   repository: artifactoryspb.epam.com/epm-eag-docker/aitestmate/aitestmate
   # This sets the pull policy for images.
@@ -14,23 +9,62 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
+
 # This is to override the chart name.
 nameOverride: "aitestmate-migrator"
 fullnameOverride: "aitestmate-migrator"
 
-# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: false
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+env:
+  # @param host for database connection
+  - name: ELASTICSEARCH_HOST
+    value: http://aitestmate-elasticsearch-headless:9200
+  # @param user for database connection
+  - name: ELASTICSEARCH_USER
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-elasticsearch-secret
+        key: username
+  # @param password for database connection
+  - name: ELASTICSEARCH_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-elasticsearch-secret
+        key: password
+  - name: RABBITMQ_HOST
+    value: aitestmate-rabbitmq-headless
+  - name: RABBITMQ_PORT
+    value: "5672"
+  - name: RABBITMQ_USER
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-rabbitmq-secret
+        key: username
+  - name: RABBITMQ_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-rabbitmq-secret
+        key: password
+  - name: RABBITMQ_VHOST
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-rabbitmq-secret
+        key: vhost
+  - name: REDIS_HOST
+    value: aitestmate-redis-headless
+  - name: REDIS_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-redis-secret
+        key: password
+
+  # @param loglevel, 20 - info
+  - name: AITESTMATE_LOGLEVEL
+    value: "20"
+
+# Additional environment passed into container
+extraEnv: []
+
 
 # This is for setting Kubernetes Annotations to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/

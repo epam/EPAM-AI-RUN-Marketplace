@@ -5,28 +5,50 @@ kind: Job
 metadata:
   name: aitestmate-migrator
   labels:
-    {{- include "aitestmate-migrator.labels" . | nindent 4 }}
+    # {{ include "aitestmate-migrator.labels" . | nindent 4 }}
 spec:
   backoffLimit: 3
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      # {{ with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
       labels:
-        {{- include "aitestmate-migrator.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        # {{ include "aitestmate-migrator.labels" . | nindent 8 }}
+        # {{ with .Values.podLabels }}
+        # {{ toYaml . | nindent 8 }}
+        # {{ end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      # {{ with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      # {{ with .Values.podSecurityContext }}
+      securityContext:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
       restartPolicy: OnFailure
       containers:
         - name: aitestmate-migrator
-          image: {{ .Values.image.repository }}:{{ .Chart.AppVersion }}
-          imagePullPolicy: IfNotPresent
+          image: >-
+            {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: >-
+            {{ .Values.image.pullPolicy }}
           args: ["database", "migrate"]
+          # {{ with (concat (default list .Values.env) (default list .Values.extraEnv) | uniq) }}
+          env:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.livenessProbe }}
+          livenessProbe:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.readinessProbe }}
+          readinessProbe:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.resources }}
+          resources:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
