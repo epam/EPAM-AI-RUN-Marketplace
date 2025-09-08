@@ -1,15 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "aitestmate-nginx.fullname" . }}
+  name: aitestmate-nginx
   labels:
-    {{- include "aitestmate-nginx.labels" . | nindent 4 }}
+    # {{ include "aitestmate-nginx.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: >-
+    {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - name: http
+      port:
+        {{ .Values.service.port }}
       targetPort: http
       protocol: TCP
-      name: http
   selector:
-    {{- include "aitestmate-nginx.selectorLabels" . | nindent 4 }}
+    # {{ include "aitestmate-nginx.selectorLabels" . | nindent 4 }}
