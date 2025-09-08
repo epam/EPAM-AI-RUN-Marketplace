@@ -294,6 +294,28 @@ replace_image_repository_placeholders() {
     fi
 }
 
+replace_image_version_placeholders() {
+    local values_file="$1"
+    local image_version="$2"
+    local backup_file="${values_file}.img.version.backup"
+
+    if [[ -f "$backup_file" ]]; then
+        log_message "info" "Restoring ${values_file} from backup"
+        mv "$backup_file" "$values_file"
+        log_message "info" "Deleting leftover backup file"
+        rm -f "$backup_file"
+    fi
+
+    log_message "info" "Replacing placeholders with values"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+           # macOS/BSD sed syntax (requires backup extension)
+        sed -i '.img.version.backup' "s|%%IMAGE_VERSION%%|${image_version}|g" "${values_file}"
+    else
+           # GNU sed (Linux syntax; doesn't require extension)
+        sed -i.img.version.backup "s|%%IMAGE_VERSION%%|${image_version}|g" "${values_file}"
+    fi
+}
+
 load_deployment_env() {
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   TERRAFORM_DIR="$(dirname "$SCRIPT_DIR")/terraform-scripts"
@@ -679,6 +701,7 @@ deploy_codemie_ui() {
     replace_domain_placeholders "$values_file" "$domain_value"
     replace_image_repository_placeholders "${values_file}" "${image_repository}"
     replace_image_repository_placeholders "${chart_file}" "${image_repository}"
+    replace_image_version_placeholders "${chart_file}" "${ai_run_version}"
 
     log_message "info" "Deploying AI/Run UI Helm Chart ..."
     helm upgrade --install codemie-ui codemie-ui/. \
@@ -726,6 +749,7 @@ deploy_codemie_api() {
     replace_aws_placeholders "$values_file" "${AWS_DEFAULT_REGION}" "${EKS_AWS_ROLE_ARN}" "${AWS_KMS_KEY_ID}" "${AWS_S3_BUCKET_NAME}" "${AWS_DEFAULT_REGION}"
     replace_image_repository_placeholders "${values_file}" "${image_repository}"
     replace_image_repository_placeholders "${chart_file}" "${image_repository}"
+    replace_image_version_placeholders "${chart_file}" "${ai_run_version}"
 
     log_message "info" "Deploying AI/Run API Helm Chart ..."
     helm upgrade --install codemie-api codemie-api/. \
@@ -860,6 +884,7 @@ deploy_codemie_nats_callout() {
 
     replace_image_repository_placeholders "${values_file}" "${image_repository}"
     replace_image_repository_placeholders "${chart_file}" "${image_repository}"
+    replace_image_version_placeholders "${chart_file}" "${ai_run_version}"
 
     check_and_create_namespace "$namespace"
 
@@ -899,6 +924,7 @@ deploy_codemie_mcp_connect_service() {
 
     replace_image_repository_placeholders "${values_file}" "${image_repository}"
     replace_image_repository_placeholders "${chart_file}" "${image_repository}"
+    replace_image_version_placeholders "${chart_file}" "${ai_run_version}"
 
     check_and_create_namespace "$namespace"
 
@@ -932,6 +958,7 @@ deploy_mermaid_server() {
     log_message "info" "Starting Mermaid Server deployment."
     replace_image_repository_placeholders "${values_file}" "${image_repository}"
     replace_image_repository_placeholders "${chart_file}" "${image_repository}"
+    replace_image_version_placeholders "${chart_file}" "${ai_run_version}"
 
     check_and_create_namespace "$namespace"
 
