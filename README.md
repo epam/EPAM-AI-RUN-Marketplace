@@ -1,5 +1,6 @@
 # EPAM AI/Run™ for AWS Migration and Modernization Deployment Guide
 
+
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This guide provides step-by-step instructions for deploying the EPAM AI/Run™ for AWS Migration and Modernization application to Amazon EKS and related AWS services.
