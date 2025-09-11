@@ -1,4 +1,4 @@
-# 'EPAM AI/Run™ for AWS Migration and Modernization' Deployment Guide
+# EPAM AI/Run™ for AWS Migration and Modernization Deployment Guide
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
