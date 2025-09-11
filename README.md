@@ -196,11 +196,11 @@ To deploy EPAM AI/Run™ for AWS Migration and Modernization infrastructure to A
 TF_VAR_region="<REGION>" # Example: us-east-1
 TF_VAR_subnet_azs='[<SUBNET AZS>]' # Example: '["us-east-1a", "us-east-1b", "us-east-1c"]'
 
-TF_VAR_platform_name="<PLATFORM NAME>" # Example: codemie
+TF_VAR_platform_name="<PLATFORM NAME>" # Example: ai-run
 TF_VAR_deployer_role_name="<ROLE>" # Example: AIRunDeployerRole. Ensure this is a new and unique name
 
-TF_VAR_s3_states_bucket_name="<BUCKET NAME>" # Example: codemie-terraform-states. Ensure this is a new and unique name following S3 naming rules.
-TF_VAR_table_name="<TABLE NAME>" # Example: codemie_terraform_locks. Ensure this is a new and unique name
+TF_VAR_s3_states_bucket_name="<BUCKET NAME>" # Example: ai-run-terraform-states. Ensure this is a new and unique name following S3 naming rules.
+TF_VAR_table_name="<TABLE NAME>" # Example: ai-run_terraform_locks. Ensure this is a new and unique name
 
 TF_VAR_platform_domain_name="<DOMAIN NAME>" # Example: example.com.  The value should be taken from the Route 53 hosted zone created in the previous step.
 
@@ -596,7 +596,7 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 
 | Component name | Images | Description |
 |---------------|--------|-------------|
-| Ingress Nginx Controller | registry.k8s.io/ingress-nginx/controller:<Need_Update> | Handles external traffic routing to services within the Kubernetes cluster. The EPAM AI/Run™ for AWS Migration and Modernizatione application uses oauth2-proxy, which relies on the Ingress Nginx Controller for proper routing and access control |
+| Ingress Nginx Controller | registry.k8s.io/ingress-nginx/controller:<Need_Update> | Handles external traffic routing to services within the Kubernetes cluster. The EPAM AI/Run™ for AWS Migration and Modernization application uses oauth2-proxy, which relies on the Ingress Nginx Controller for proper routing and access control |
 | Storage Class | - | Provides persistent storage capabilities |
 | Elasticsearch | docker.elastic.co/elasticsearch/elasticsearch:<Need_Update> | Database component that stores all EPAM AI/Run™ for AWS Migration and Modernization data, including datasources, projects, and other application information |
 | Kibana | docker.elastic.co/kibana/kibana:<Need_Update> | Web-based analytics and visualization platform that provides visualization of the data stored in Elasticsearch. Allows monitoring and analyzing EPAM AI/Run™ for AWS Migration and Modernization data |
@@ -621,11 +621,11 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 3. Add the Bitnami Helm repository by running the following command:
 
    ```bash
-   
    helm repo add bitnami https://charts.bitnami.com/bitnami
    helm repo update
    ```
 4. Run deployment script, possible flags:
+
    `--image-repository <need_update>.<id>.<region>.amazonaws.com/`    #required flag
 
    ` version = <Need_Update>;`                                              #required flag
