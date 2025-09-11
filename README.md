@@ -1,4 +1,4 @@
-# AWS Marketplace AI/Run Deployment Guide
+# 'EPAM AI/Run™ for AWS Migration and Modernization' Deployment Guide
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -196,15 +196,15 @@ To deploy AI/Run™ for AWS infrastructure to AWS use the following steps:
 TF_VAR_region="<REGION>" # Example: us-east-1
 TF_VAR_subnet_azs='[<SUBNET AZS>]' # Example: '["us-east-1a", "us-east-1b", "us-east-1c"]'
 
-TF_VAR_platform_name="<PLATFORM NAME>" # Example: ai-run
-TF_VAR_deployer_role_name="<ROLE>" # Example: AIRunDeployerRole
+TF_VAR_platform_name="<PLATFORM NAME>" # Example: codemie
+TF_VAR_deployer_role_name="<ROLE>" # Example: AIRunDeployerRole. Ensure this is a new and unique name
 
-TF_VAR_s3_states_bucket_name="<BUCKET NAME>" # Example: ai-run-terraform-states
-TF_VAR_table_name="<TABLE NAME>" # Example: ai_run_terraform_locks
+TF_VAR_s3_states_bucket_name="<BUCKET NAME>" # Example: codemie-terraform-states. Ensure this is a new and unique name following S3 naming rules.
+TF_VAR_table_name="<TABLE NAME>" # Example: codemie_terraform_locks. Ensure this is a new and unique name
 
-TF_VAR_platform_domain_name="<DOMAIN NAME>" # Example: example.com
+TF_VAR_platform_domain_name="<DOMAIN NAME>" # Example: example.com.  The value should be taken from the Route 53 hosted zone created in the previous step.
 
-TF_VAR_role_permissions_boundary_arn="" # Example: arn:aws:iam::012345678901:policy/role_boundary
+TF_VAR_role_permissions_boundary_arn="" # Example: arn:aws:iam::012345678901:policy/role_boundary. Leave empty if you don't have a permissions boundary or don't want to use one.
 
 # Uncomment in case Eks admin role is differ then current user
 #TF_VAR_eks_admin_role_arn=""
@@ -246,6 +246,8 @@ TF_VAR_pg_instance_class="db.c6gd.medium"
 
 AI/Run™ for AWS relies on a PostgreSQL database deployed by default in the EKS cluster.  
 Please consider whether you want to deploy the database in the EKS cluster or use AWS RDS instead.
+
+This bash script uses the default AWS profile for deploying the infrastructure. Ensure your default profile is properly configured with the necessary credentials and permissions before running the script
 
 To enable AWS RDS, use the `--rds-enable` flag during deployment.
 
@@ -495,7 +497,7 @@ This section describes the process of enabling AWS Bedrock models in AWS account
 
 > 📋 **Model Information**:
 > 1. [Find the supported model IDs (deployment_name) in the AWS Bedrock documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html)
-> 2. [Find cost information for AWS Bedrock models](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html)
+> 2. [Find cost information for AWS Bedrock models](https://aws.amazon.com/bedrock/pricing/)
 Second point need link fix 
 
 Example of providing LLM and embedding models for the custom environment:
@@ -616,16 +618,25 @@ This section describes the process of the main AI/Run™ for AWS components depl
    ```bash
    chmod +x helm-charts.sh
 
-3. Run deployment script, possible flags:
+3. Add the Bitnami Helm repository by running the following command:
+
+   ```bash
+   
+   helm repo add bitnami https://charts.bitnami.com/bitnami
+   helm repo update
+   ```
+4. Run deployment script, possible flags:
    `--image-repository <need_update>.<id>.<region>.amazonaws.com/`    #required flag
-   `--version = <Need_Update>;`                                              #required flag
+
+   ` version = <Need_Update>;`                                              #required flag
+
    `--rds-enable`                                                     # If the flag was used previously, ensure it is utilized here as well.
 
 ```bash
-  bash ./helm-charts.sh --version=<Need_Update>
+  bash ./helm-charts.sh version=<Need_Update> --image-repository <link> --rds-enable
 ```
 ```bash
-  ./helm-charts.sh --version=<Need_Update>
+  ./helm-charts.sh version=<Need_Update> --image-repository <link> --rds-enable
 ```
 
 ## 6.3. Manual Installation AI/Run™ for AWS (If the previous step has already been completed, please proceed to skip this step.)
