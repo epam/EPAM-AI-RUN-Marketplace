@@ -16,6 +16,28 @@ This guide provides step-by-step instructions for deploying the EPAM AI/Run™ f
 7. [Application Access](#7-provide-access-to-the-application) 
 8. [AWS Bedrock Configuration](#8-epam-airun-for-aws-migration-and-modernization-post-installation-configuration)
 
+# Introduction
+
+EPAM AI/Run™ or AWS  is an event-driven, cloud-native SDLC and cloud modernization methodology powered by an integrated
+agentic AI automation platform. Delivered as an AWS-native package, it provides seamless third-party integrations with 
+leading industry solutions, along with proprietary advanced code modernization capabilities. The platform accelerates 
+workflows, simplifies project onboarding, and enhances productivity across diverse SDLC roles through smart assistance
+and full automation. With tailored solutions for migrating legacy systems, databases, and virtual machines to AWS 
+environments, EPAM AI/Run™ or AWS  ensures alignment with AWS Well-Architected Framework best practices for scalable 
+and production-ready configurations.
+
+There are no specific region limitations imposed by the product itself. However, since the product is built on AWS 
+infrastructure, including services like EKS, S3, RDS, EC2, DynamoDB, KMS, ECR, Route53, ACM, and others, it is 
+recommended to verify whether all the AWS services depicted in the diagram below are supported in your region before 
+installation here: https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
+
+Additionally, as the product integrates with AWS Bedrock (including LLMs), it is advisable to ensure that at least one 
+foundational model for text, image, or video processing, and one model for embedding modality are available in your 
+region. You can verify supported models here: https://docs.aws.amazon.com/bedrock/latest/userguide/agents-supported.html
+
+Since the product is a platform that relies on a variety of AWS services, some of which may take up to 30 minutes to 
+provision resources (such as ACM), the estimated time for a complete end-to-end installation can range from 1 to 3 hours.
+
 # 1. Overview
 
 This guide provides step-by-step instructions for deploying the EPAM AI/Run™ for AWS Migration and Modernization application to Amazon EKS and related AWS services. By following these instructions, you will:
@@ -42,7 +64,8 @@ Prerequisites Checklist
 
 ### 2.1. AWS Account Access Requirements
 ✓ Active AWS Account with a preferred region for deployment  
-✓ User or Role with programmatic access to AWS account with permissions to create and manage IAM Roles and Policy Documents
+✓ User or Role with programmatic access to AWS account with permissions to create and manage IAM Roles and Policy Documents.
+WARN!!! Do not use the AWS account root user for any deployment or operations !!!
 
 ### 2.2. Domain Name
 ✓ Available wildcard DNS hosted zone in Route53  
