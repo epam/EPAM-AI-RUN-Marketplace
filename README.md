@@ -65,7 +65,7 @@ Prerequisites Checklist
 ### 2.1. AWS Account Access Requirements
 ✓ Active AWS Account with a preferred region for deployment  
 ✓ User or Role with programmatic access to AWS account with permissions to create and manage IAM Roles and Policy Documents.
-WARN!!! Do not use the AWS account root user for any deployment or operations !!!
+**WARN!!! Do not use the AWS account root user for any deployment or operations !!!**
 
 ### 2.2. Domain Name
 ✓ Available wildcard DNS hosted zone in Route53  
@@ -126,7 +126,7 @@ WARN!!! Do not use the AWS account root user for any deployment or operations !!
 The diagram below depicts the EPAM AI/Run™ for AWS Migration and Modernization infrastructure deployment in one region (AZ) of the AWS public cloud environment.
 
 
-<img src="assets/deployment-guide/AI_Run_For_AWS.drawio.svg" width="1200" style="background-color: #ffffff;">
+<img src="assets/AI_Run_For_AWS.drawio.svg" width="1200" style="background-color: #ffffff;">
 
 Container Resources Requirements
 
@@ -144,7 +144,7 @@ Container Resources Requirements
 | MCP Connect         | 1 | 1Gi | 0.5 |
 | Fluentbit           | daemonset | 128Mi | 0.1 |
 
-*The database component can also be deployed separately in AWS RDS
+*The database by default is AWS RDS, but there is an option to deploy it as EKS cluster component.
 
 # 4. AWS Infrastructure Deployment
 
@@ -273,7 +273,7 @@ Please consider whether you want to deploy the database in the EKS cluster or us
 
 This bash script uses the default AWS profile for deploying the infrastructure. Ensure your default profile is properly configured with the necessary credentials and permissions before running the script
 
-To enable AWS RDS, use the `--rds-enable` flag during deployment.
+To disable AWS RDS and use Postgres as cluster pod, use the `--rds-enable=false` flag during deployment.
 
 ```bash
   bash terraform.sh
