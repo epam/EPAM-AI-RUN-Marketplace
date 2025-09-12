@@ -6,7 +6,7 @@
 This guide provides step-by-step instructions for deploying the EPAM AI/Run™ for AWS Migration and Modernization application to Amazon EKS and related AWS services.
 
 ## Table of Contents
-
+   [Introduction](#-introduction)
 1. [Overview](#1-overview)
 2. [Prerequisites](#2-prerequisites)
 3. [EPAM AI/Run™ for AWS Migration and Modernization Architecture](#3-epam-airun-for-aws-migration-and-modernization-deployment-architecture)
@@ -14,7 +14,10 @@ This guide provides step-by-step instructions for deploying the EPAM AI/Run™ f
 5. [AI Models Integration and Configuration](#5-ai-models-integration-and-configuration)
 6. [EPAM AI/Run™ for AWS Migration and Modernization Components Deployment](#6-epam-airun-for-aws-migration-and-modernization-components-deployment) 
 7. [Application Access](#7-provide-access-to-the-application) 
-8. [AWS Bedrock Configuration](#8-epam-airun-for-aws-migration-and-modernization-post-installation-configuration)
+8. [Post Instalaltion Configuration](#8-epam-airun-for-aws-migration-and-modernization-post-installation-configuration)
+9. [Cost Management](9#-cost-management)
+10. [Monitoring and Recovery](#10-monitoring-and-recovery)
+11. [Maintenance](#11-maintenance)
 
 # Introduction
 
@@ -268,8 +271,8 @@ TF_VAR_pg_instance_class="db.c6gd.medium"
 
 ### ⚠️ Warning
 
-EPAM AI/Run™ for AWS Migration and Modernization relies on a PostgreSQL database deployed by default in the EKS cluster.  
-Please consider whether you want to deploy the database in the EKS cluster or use AWS RDS instead.
+EPAM AI/Run™ for AWS Migration and Modernization relies on manged AWS RDS (PostgreSQL) database.  
+Please consider whether you want to deploy the database as a pod in the EKS cluster or use AWS RDS instead (default behaviour).
 
 This bash script uses the default AWS profile for deploying the infrastructure. Ensure your default profile is properly configured with the necessary credentials and permissions before running the script
 
@@ -289,7 +292,7 @@ After execution, the script will:
    a. Check for required tools (kubectl, AWS CLI, Terraform)
    b. Verify AWS authentication status
    c. Validate configuration parameters
-2. Create IAM Voyager role and policy
+2. Create IAM Deployer role and policy
 3. Deploy infrastructure:
    a. Create Terraform backend storage (S3 bucket and DynamoDB table)
    b. Deploy core EPAM AI/Run™ for AWS Migration and Modernization Platform infrastructure
@@ -303,7 +306,7 @@ After execution, the script will:
          AWS_SSM_KMS_ID=1294fa78-98ab-cdef-1234-567890abcdef
          AWS_S3_BUCKET_NAME=codemie-platform-bucket
          ```
-   b. If the user includes the `--rds-enable` flag, the `deployment_outputs.env` file will be generated with the relevant infrastructure details:
+   b. If the user includes the `--rds-enable=true` (default behaviour) flag, the `deployment_outputs.env` file will be generated with the relevant infrastructure details:
         ```
         AWS_DEFAULT_REGION=eu-west-2
         ECS_AWS_ROLE_ARN=arn:aws:iam::123456789012:role/...
@@ -322,7 +325,30 @@ After execution, the script will:
 
 ⚠️ Keep the `deployment_outputs.env` file secure as it contains sensitive information. Do not commit it to version control.
 
-After successful deployment, you can proceed with the EPAM AI/Run™ for AWS Migration and Modernization components installation and start using EPAM AI/Run™ for AWS Migration and Modernization services.
+After successful deployment, you can proceed with the EPAM AI/Run™ for AWS Migration and Modernization components 
+installation and start using EPAM AI/Run™ for AWS Migration and Modernization services.
+
+⚠️ Important: after successful deployment the dedicated VPC in your AWS account is created in specified region with specified subnets' A-Zs. 
+VPC contains:
+- route tables 
+- 1 public subnet with attached Internet gateway
+- 1 private subnet with attached NAT gateway
+- NACLs and SGs created by Terraform modules.
+Please consider reviewing its configuration and adjust it according to your security policies.
+
+
+⚠️ Important: during the deployment several secrets are created in different namespaces for EKS cluster, only users with 
+proper permissions to EKS cluster can manage them: review, rotate, etc. There is no automated rotation implemented by default, 
+please consider implementing it after deployment https://aws.amazon.com/blogs/containers/aws-secrets-manager-controller-poc-an-eks-operator-for-automatic-rotation-of-secrets/.
+
+⚠️ Important: The customer manged KMS key **airun-*** is created with key rotation disabled by default. If you want to
+enable it, please do it manually after the deployment https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html.
+
+This key is used for encrypt/decrypt operation for several components: secrets, EBS, RDS.
+Also, there are AWS KMS manged keys are created for your: ACM, S3, EBS, RDS?????.
+
+The recourse policy attached to the keys by default contains only minimal required permissions. If you want to extend,
+please do it manually after deployment.
 
 ## 4.6. Manual Deployment (If the previous step has already been completed, please proceed to skip this step.)
 
@@ -334,9 +360,11 @@ After successful deployment, you can proceed with the EPAM AI/Run™ for AWS Mig
 | 2 | Terraform Backend |
 | 3 | Terraform Platform |
 
-### 4.6.2. IAM Deployer Role creation
+### 4.6.2. IAM `Deployer` Role creation
 
 This step covers the `DeployerRole` AWS IAM role creation.
+The role contains minimum necessary permissions to deploy and manage the EPAM AI/Run™ for AWS infrastructure following
+the policy of the least privilege access granted.
 
 ℹ️ The created IAM role will be used for all subsequent infrastructure deployments and contains required permissions to manage AWS resources
 
@@ -349,7 +377,7 @@ To create the role, take the following steps:
 2. Review the input variables for Terraform in the `deployment/terraform-scripts/codemie-aws-iam/variables.tf` file and create a `<fileName>.tfvars` in the repo to change default variables values there in a format of key-value. For example:
    ```
    region = "your-region"
-   role_arn = "arn:aws:iam::xxxx:role/yourRole"
+   role_arn = "arn:aws:iam::xxxx:role/DeployerRole"
    platform_domain_name = "your.domain"
    ```
 
@@ -1241,5 +1269,42 @@ To include the added `applications` unmanaged attribute as an additional claim t
    Link to fronted
    URL = https://codemie.<TF_VAR_platform_domain_name>
 
+# 9. Cost Management
+
+Please carefully review all billable services (depicted on deployment diagram) and their pricing [here](https://aws.amazon.com/pricing/).
+The product listed on AWS Marketplace is free, but usage incurs costs associated with the AWS services it utilizes. It is recommended to review the pricing details of these services to understand potential costs.
+
+# 10. Monitoring and Recovery
+
+EPAM AI/Run™ for AWS Migration and Modernization application uses built-in AWS services monitoring and alerting 
+capabilities. Please refer to the following documentation for more details:
+All logs are aggregated and published into AWS CloudWatch, categorized based on their importance:
+``
+   "*-important"
+   "*-verbose"
+``
+Please consider setup alerts after the deployment.
+By default, EBS snapshots are enabled for ``*-on-demand-*`` EBS volumes. You can disable this functionality after deployment.
+
+The user data is stored in AWS RDS and AWS EBS, AWs S3 services. You can use launch templates "worker_group_on_demand-*", "worker_group_spot-*" created during deployment to restore the environment in case of failure.
+More information about potential [issues](https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html).
+
+# 11. Maintenance
+This guide relies on valid AWS credentials with sufficient permissions to create and manage resources. 
+Users are responsible for keeping their credentials secure and up to date. We strongly recommend enabling credential rotation 
+for enhanced security. Refer to the AWS documentation on credential rotation: [Rotate Your Secrets with AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_turn-on-cli.html)
+
+The container images used in this deployment are regularly scanned for vulnerabilities. In the event of a critical vulnerability, users are responsible for updating the images in their AWS ECR repository to the latest product version and redeploying the application with the updated images. For detailed guidance, see:
+[Amazon ECR Image Scanning Documentation](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html).
+
+The compute infrastructure for the EKS cluster is based on self-managed node groups configured with Auto Scaling Groups using a Target Tracking Scaling Policy. Users may customize the default behavior to suit their specific scaling needs. More details are available here:
+[Cluster Autoscaler for Amazon EKS](https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html).
+
+The EC2 instances for the node groups use the AWS AMI version amazon-eks-node-al2023-x86_64-standard-1.33-v20250715. To ensure ongoing security, consider using AWS Systems Manager's Session Manager to enable automatic patching for AMIs. Learn more through the following documentation:
+[AWS Systems Manager Patch Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/patch-manager.html).
 
 
+# 12. Support
+This is a version for educational exploration, provided free of charge, relying on community-based assistance. 
+For deploying enterprise-grade versions and professional help with building custom-tailored AI solutions, 
+contact EPAM Systems - SupportAIRunforAWS@epam.com or [EPAM Systems Contacts](https://www.epam.com/services/artificial-intelligence/epam-ai-run-tm#contact). 
