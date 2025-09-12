@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-AWS_RDS_ENABLE=1 # 0 means true for wider compatibility
+AWS_RDS_ENABLE=0 # 0 means true for wider compatibility
 
 # Detect the absolute path of the current script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -87,8 +87,8 @@ verify_inputs() {
                 ai_run_version="${1#*=}"
                 shift
                 ;;
-            --rds-enable)
-                AWS_RDS_ENABLE=0
+            --rds-disable)
+                AWS_RDS_ENABLE=1
                 shift
                 ;;
             --image-repository)
