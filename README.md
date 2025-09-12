@@ -262,7 +262,7 @@ TF_VAR_pg_instance_class="db.c6gd.medium"
    * `--access-key ACCESS_KEY`: Use the flag if the `.aws/credentials` file has not been updated.
    * `--secret-key SECRET_KEY`: Use the flag if the `.aws/credentials` file has not been updated.
    * `--region REGION`:         Use the flag if the `.aws/credentials` file has not been updated.
-   * `--rds-enable`:            EPAM AI/Run™ for AWS Migration and Modernization by default rely on Postgres database deployed in EKS cluster. Use this key if you want switch to AWS RDS.
+   * `--rds-disable`:           EPAM AI/Run™ for AWS Migration and Modernization by default rely on AWS RDS (Postgres) database. Use this key if you want switch to Postgres Database deployed as a Pod in EKS cluster.
    * `--config-file FILE`:      Load configuration from file (default: deployment.conf)
    * `--help`
    
@@ -276,7 +276,7 @@ Please consider whether you want to deploy the database as a pod in the EKS clus
 
 This bash script uses the default AWS profile for deploying the infrastructure. Ensure your default profile is properly configured with the necessary credentials and permissions before running the script
 
-To disable AWS RDS and use Postgres as cluster pod, use the `--rds-enable=false` flag during deployment.
+To disable AWS RDS and use Postgres as cluster pod, use the `--rds-disable` flag during deployment.
 
 ```bash
   bash terraform.sh
@@ -306,7 +306,7 @@ After execution, the script will:
          AWS_SSM_KMS_ID=1294fa78-98ab-cdef-1234-567890abcdef
          AWS_S3_BUCKET_NAME=codemie-platform-bucket
          ```
-   b. If the user includes the `--rds-enable=true` (default behaviour) flag, the `deployment_outputs.env` file will be generated with the relevant infrastructure details:
+   b. If the user does not include the `--rds-disable` flag, the `deployment_outputs.env` file will be generated with the relevant infrastructure details:
         ```
         AWS_DEFAULT_REGION=eu-west-2
         ECS_AWS_ROLE_ARN=arn:aws:iam::123456789012:role/...
@@ -681,13 +681,13 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 
    ` version = 2.2.1-aws;`                                              #required flag
 
-   `--rds-enable`                                                     # If the flag was used previously, ensure it is utilized here as well.
+   `--rds-disable`                                                     # If the flag was used previously, ensure it is utilized here as well.
 
 ```bash
-  bash ./helm-charts.sh version=2.2.1-aws --image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems --rds-enable
+  bash ./helm-charts.sh version=2.2.1-aws --image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
 ```bash
-  ./helm-charts.sh version=2.2.1-aws --image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems --rds-enable
+  ./helm-charts.sh version=2.2.1-aws --image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
 
 ## 6.3. Manual Installation EPAM AI/Run™ for AWS Migration and Modernization (If the previous step has already been completed, please proceed to skip this step.)
@@ -989,9 +989,9 @@ To deploy a NATS Auth Callout service, follow the steps below:
 
 ### 6.3.12. Install PostgreSQL component:
 
-#### 6.3.12.1. If flag --rds-enable was used or RDS was set up previously during instruction, Use next step
+#### 6.3.12.1. By default, AWS RDS Database was set up previously during instruction, Use next step
 
-1. Create `codemie-postgresql` secret with postgresql passwords replace AWS_RDS values from 4.6.5 step
+1. Create `codemie-postgresql` secret with postgresql passwords replace AWS_RDS values placeholders from 4.6.5 step
 
 ```bash
   kubectl -n "codemie" create secret generic "codemie-postgresql" \
@@ -1001,7 +1001,7 @@ To deploy a NATS Auth Callout service, follow the steps below:
          --from-literal=db-name="${AWS_RDS_DATABASE_NAME}"
 ```
 
-#### 6.3.12.2. If flag --rds-enable wasn't used or RDS wasn't set up previously during instruction, Use next step
+#### 6.3.12.2. If flag --rds-disable was used, means RDS wasn't set up previously during instruction, Use next step
 
 1. Create `codemie-postgresql` secret with postgresql passwords:
 

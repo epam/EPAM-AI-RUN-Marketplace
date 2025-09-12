@@ -10,7 +10,7 @@
 set -euo pipefail
 
 # Enable AWS RDS
-AWS_RDS_ENABLE=1 # 0 means true for wider compatibility
+AWS_RDS_ENABLE=0 # 0 means true for wider compatibility
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 DEFAULT_CONFIG_FILE="$SCRIPT_DIR/deployment.conf"
@@ -70,8 +70,8 @@ parse_arguments() {
                 AWS_DEFAULT_REGION="$2"
                 shift 2
                 ;;
-            --rds-enable)
-                AWS_RDS_ENABLE=0
+            --rds-disable)
+                AWS_RDS_ENABLE=1
                 shift
                 ;;
             -f|--config-file)
