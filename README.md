@@ -80,7 +80,7 @@ Prerequisites Checklist
 
 ### 2.3. External connections
 ✓ Firewall or SG and NACLs of EKS cluster allow outbound access to:
-*  EPAM AI/Run™ for AWS Migration and Modernization container registry – <Need Update>
+*  EPAM AI/Run™ for AWS Migration and Modernization container registry – **709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie**
 * 3rd party container registries – quay.io, docker.io, registry.developer.zurich/data.com
 * Any service you're planning to use with EPAM AI/Run™ for AWS Migration and Modernization (for example, GitHub instance)
 
@@ -550,7 +550,6 @@ This section describes the process of enabling AWS Bedrock models in AWS account
 > 📋 **Model Information**:
 > 1. [Find the supported model IDs (deployment_name) in the AWS Bedrock documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html)
 > 2. [Find cost information for AWS Bedrock models](https://aws.amazon.com/bedrock/pricing/)
-Second point need link fix 
 
 Example of providing LLM and embedding models for the custom environment:
 
@@ -634,31 +633,31 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 
 ### 6.1.1. Core AI/Run CodeMie Components:
 
-ℹ️ EPAM AI/Run™ for AWS Migration and Modernization current versions of codemie: <Need_Update>
+ℹ️ EPAM AI/Run™ for AWS Migration and Modernization current versions of codemie: **2.2.1-aws**
 
 | Component name | Images | Description |
 |---------------|--------|-------------|
-| AI/Run CodeMie API | <Need Update> | The backend service of the EPAM AI/Run™ for AWS Migration and Modernization application responsible for business logic, data processing, and API operations |
-| AI/Run CodeMie UI | <Need Update> | The frontend service of the EPAM AI/Run™ for AWS Migration and Modernization application that provides the user interface for interacting with the system |
-| AI/Run CodeMie Nats Auth Callout | <Need Update> | Authorization component of EPAM AI/Run™ for AWS Migration and Modernization Plugin Engine that handles authentication and authorization for the NATS messaging system |
-| AI/Run CodeMie MCP Connect | <Need Update> | A lightweight bridge tool that enables cloud-based AI services to communicate with local Model Content Protocol (MCP) servers via protocol translation while maintaining security and flexibility |
-| AI/Run Mermaid Server | <Need Update> | Implementation of open-source service that generates image URLs for diagrams based on the provided Mermaid code for workflow visualization |
+| AI/Run CodeMie API | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie | The backend service of the EPAM AI/Run™ for AWS Migration and Modernization application responsible for business logic, data processing, and API operations |
+| AI/Run CodeMie UI | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-ui | The frontend service of the EPAM AI/Run™ for AWS Migration and Modernization application that provides the user interface for interacting with the system |
+| AI/Run CodeMie Nats Auth Callout | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-nats-auth-callout | Authorization component of EPAM AI/Run™ for AWS Migration and Modernization Plugin Engine that handles authentication and authorization for the NATS messaging system |
+| AI/Run CodeMie MCP Connect | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-mcp-connect-service | A lightweight bridge tool that enables cloud-based AI services to communicate with local Model Content Protocol (MCP) servers via protocol translation while maintaining security and flexibility |
+| AI/Run Mermaid Server | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/mermaid-server | Implementation of open-source service that generates image URLs for diagrams based on the provided Mermaid code for workflow visualization |
 
 ### 6.1.2. Required Third-Party Components:
 
 | Component name | Images | Description |
 |---------------|--------|-------------|
-| Ingress Nginx Controller | registry.k8s.io/ingress-nginx/controller:<Need_Update> | Handles external traffic routing to services within the Kubernetes cluster. The EPAM AI/Run™ for AWS Migration and Modernization application uses oauth2-proxy, which relies on the Ingress Nginx Controller for proper routing and access control |
+| Ingress Nginx Controller | registry.k8s.io/ingress-nginx/controller:x.y.z | Handles external traffic routing to services within the Kubernetes cluster. The EPAM AI/Run™ for AWS Migration and Modernization application uses oauth2-proxy, which relies on the Ingress Nginx Controller for proper routing and access control |
 | Storage Class | - | Provides persistent storage capabilities |
-| Elasticsearch | docker.elastic.co/elasticsearch/elasticsearch:<Need_Update> | Database component that stores all EPAM AI/Run™ for AWS Migration and Modernization data, including datasources, projects, and other application information |
-| Kibana | docker.elastic.co/kibana/kibana:<Need_Update> | Web-based analytics and visualization platform that provides visualization of the data stored in Elasticsearch. Allows monitoring and analyzing EPAM AI/Run™ for AWS Migration and Modernization data |
-| Postgres-operator | registry.developers.crunchydata.com/crunchydata/postgres-operator:<Need_Update> | Manages PostgreSQL database instances required by other components in the stack. Handles database lifecycle operations |
-| Keycloak-operator | quay.io/keycloak-operator:<Need_Update> | Manages Keycloak identity and access management instance and its configuration |
-| Keycloak | docker.io/keycloak:X.Y.Z, quay.io/keycloak/keycloak:<Need_Update>, registry.developers.crunchydata.com/crunchydata/crunchy-postgres:1.0.0 | Identity and access management solution that provides authentication and authorization capabilities for integration with oauth2-proxy component |
-| OAuth2-Proxy | quay.io/oauth2-proxy/oauth2-proxy:<Need_Update> | Authentication middleware that provides secure authentication for the EPAM AI/Run™ for AWS Migration and Modernization application by integrating with Keycloak or any other IdP |
-| NATS | nats:X.Y.Z, nats/nats-server-config-reloader:<Need_Update> | Message broker that serves as a crucial component of the EPAM AI/Run™ for AWS Migration and Modernization Plugin Engine, facilitating communication between services |
-| FluentBit | cr.fluentbit.io/fluent/fluent-bit:<Need_Update> | FluentBit enables logs and metrics collection from EPAM AI/Run™ for AWS Migration and Modernization enabling the agents observability |
-| PostgreSQL | docker.io/bitnami/postgresql:<Need_Update> | Database component that stores all EPAM AI/Run™ for AWS Migration and Modernization data, including datasources, projects, and other application information |
+| Elasticsearch | 	docker.elastic.co/elasticsearch/elasticsearch:x.y.z | Database component that stores all EPAM AI/Run™ for AWS Migration and Modernization data, including datasources, projects, and other application information |
+| Kibana | docker.elastic.co/kibana/kibana:x.y.z | Web-based analytics and visualization platform that provides visualization of the data stored in Elasticsearch. Allows monitoring and analyzing EPAM AI/Run™ for AWS Migration and Modernization data |
+| Postgres-operator | registry.developers.crunchydata.com/crunchydata/postgres-operator:x.y.z | Manages PostgreSQL database instances required by other components in the stack. Handles database lifecycle operations |
+| Keycloak-operator | epamedp/keycloak-operator:x.y.z | Manages Keycloak identity and access management instance and its configuration |
+| Keycloak | docker.io/busybox:x.y.z, quay.io/keycloak/keycloak:x.y.z, registry.developers.crunchydata.com/crunchydata/crunchy-postgres:x.y.z | Identity and access management solution that provides authentication and authorization capabilities for integration with oauth2-proxy component |
+| OAuth2-Proxy | quay.io/oauth2-proxy/oauth2-proxy:x.y.z | Authentication middleware that provides secure authentication for the EPAM AI/Run™ for AWS Migration and Modernization application by integrating with Keycloak or any other IdP |
+| NATS | nnats:x.y.z, natsio/nats-server-config-reloader:x.y.z | Message broker that serves as a crucial component of the EPAM AI/Run™ for AWS Migration and Modernization Plugin Engine, facilitating communication between services |
+| FluentBit | cr.fluentbit.io/fluent/fluent-bit:x.y.z | FluentBit enables logs and metrics collection from EPAM AI/Run™ for AWS Migration and Modernization enabling the agents observability |
+| PostgreSQL | docker.io/bitnami/postgresql | Database component that stores all EPAM AI/Run™ for AWS Migration and Modernization data, including datasources, projects, and other application information |
 
 ## 6.2. Scripted EPAM AI/Run™ for AWS Migration and Modernization Components Installation
 
@@ -678,17 +677,17 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
    ```
 4. Run deployment script, possible flags:
 
-   `--image-repository <need_update>.<id>.<region>.amazonaws.com/`    #required flag
+   `--image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`    #required flag
 
-   ` version = <Need_Update>;`                                              #required flag
+   ` version = 2.2.1-aws;`                                              #required flag
 
    `--rds-enable`                                                     # If the flag was used previously, ensure it is utilized here as well.
 
 ```bash
-  bash ./helm-charts.sh version=<Need_Update> --image-repository <link> --rds-enable
+  bash ./helm-charts.sh version=2.2.1-aws --image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems --rds-enable
 ```
 ```bash
-  ./helm-charts.sh version=<Need_Update> --image-repository <link> --rds-enable
+  ./helm-charts.sh version=2.2.1-aws --image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems --rds-enable
 ```
 
 ## 6.3. Manual Installation EPAM AI/Run™ for AWS Migration and Modernization (If the previous step has already been completed, please proceed to skip this step.)
@@ -969,8 +968,8 @@ To deploy a NATS Auth Callout service, follow the steps below:
 
 ```bash
   helm upgrade --install codemie-nats-auth-callout \
-  "oci://<Need Update>/helm-charts/codemie-nats-auth-callout" \
-  --version "x.y.z" \
+  "oci://709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/codemie-nats-auth-callout" \
+  --version "2.2.1-aws" \
   --namespace "codemie" \
   -f "./codemie-nats-auth-callout/values-aws.yaml" \
   --wait --timeout 600s
@@ -981,8 +980,8 @@ To deploy a NATS Auth Callout service, follow the steps below:
 1. Install `mcp-connect` helm chart with the command:
 
 ```bash
-  helm upgrade --install codemie-mcp-connect-service <Need Update>/helm-charts/codemie-mcp-connect-service \
-  --version x.y.z \
+  helm upgrade --install codemie-mcp-connect-service 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/codemie-mcp-connect-service \
+  --version 2.2.1-aws \
   --namespace "codemie" \
   -f "./codemie-mcp-connect-service/values.yaml" \
   --wait --timeout 600s
@@ -1086,8 +1085,8 @@ type: Opaque
 2. Install `codemie-ui` helm chart in created namespace, applying custom values file with the command:
 
 ```bash
-  helm upgrade --install codemie-ui <Need Update>/helm-charts/codemie-ui \
-  --version x.y.z \
+  helm upgrade --install codemie-ui 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/codemie-ui \
+  --version 2.2.1-aws \
   --namespace "codemie" \
   -f "./codemie-ui/values-aws.yaml" \
   --wait --timeout 180s
@@ -1097,8 +1096,8 @@ type: Opaque
 1. Install mermaid-server helm chart with the command:
 
 ```bash
-  helm upgrade --install mermaid-server <Need Update>/helm-charts/mermaid-server \
-  --version x.y.z \
+  helm upgrade --install mermaid-server 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/mermaid-server \
+  --version 2.2.1-aws \
   --namespace "codemie" \
   -f "./mermaid-server/values.yaml" \
   --wait --timeout 600s
@@ -1119,8 +1118,8 @@ kubectl get secret elasticsearch-master-credentials -n elastic -o yaml | sed '/n
 ```
 3. Install codemie-api helm chart, applying custom values file with the command:
 ```bash
-  helm upgrade --install codemie-api <Need Update>/helm-charts/codemie \
-  --version x.y.z \
+  helm upgrade --install codemie-api 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/codemie \
+  --version 2.2.1-aws \
   --namespace "codemie" \
   -f "./codemie-api/values-aws.yaml" \
   --wait --timeout 600s
