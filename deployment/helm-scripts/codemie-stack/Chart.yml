@@ -1,0 +1,27 @@
+apiVersion: v2
+name: codemie-stack
+description: A Helm chart for AI/Run
+type: application
+version: %%IMAGE_VERSION%%
+appVersion: "%%IMAGE_VERSION%%"
+
+dependencies:
+  - name: codemie
+    version: %%IMAGE_VERSION%%
+    repository: "oci://%%IMAGE_REPOSITORY%%/helm-charts"
+
+  - name: codemie-mcp-connect-service
+    version: %%IMAGE_VERSION%%
+    repository: "oci://%%IMAGE_REPOSITORY%%/helm-charts"
+
+  - name: codemie-nats-auth-callout
+    version: %%IMAGE_VERSION%%
+    repository: "oci://%%IMAGE_REPOSITORY%%/helm-charts"
+
+  - name: codemie-ui
+    version: %%IMAGE_VERSION%%
+    repository: "oci://%%IMAGE_REPOSITORY%%/helm-charts"
+
+  - name: mermaid-server
+    version: %%IMAGE_VERSION%%
+    repository: "oci://%%IMAGE_REPOSITORY%%/helm-charts"

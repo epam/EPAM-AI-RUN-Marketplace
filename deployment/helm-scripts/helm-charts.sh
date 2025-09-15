@@ -1044,6 +1044,61 @@ deploy_codemie_aws_rds() {
     fi
 }
 
+deploy_codemie_stack() {
+    local namespace="codemie"
+    local domain_value="$1"
+    local ai_run_version="$2"
+    local image_repository="$3"
+    local values_file="codemie-stack/values.yaml"
+    local chart_file="codemie-stack/Chart.yaml"
+
+    check_and_create_namespace "$namespace"
+
+    replace_domain_placeholders "$values_file" "$domain_value"
+    replace_aws_placeholders "$values_file" "${AWS_DEFAULT_REGION}" "${EKS_AWS_ROLE_ARN}" "${AWS_KMS_KEY_ID}" "${AWS_S3_BUCKET_NAME}" "${AWS_DEFAULT_REGION}"
+    replace_image_repository_placeholders "${values_file}" "${image_repository}"
+    replace_image_repository_placeholders "${chart_file}" "${image_repository}"
+    replace_image_version_placeholders "${chart_file}" "${ai_run_version}"
+
+    # Codemie NATS Callout
+    local secret_name="codemie-nats-secrets"
+
+    if ! check_k8s_secret_exists "$namespace" "$secret_name"; then
+        log_message "fail" "Failed to get secret '$secret_name'."
+        exit 1
+    fi
+
+    # Codemie API
+    if ! check_k8s_secret_exists "$namespace" "elasticsearch-master-credentials"; then
+        kubectl get secret elasticsearch-master-credentials -n elastic -o yaml | sed '/namespace:/d' | kubectl apply -n "$namespace" -f - > /dev/null
+        # shellcheck disable=SC2181
+        if [ $? -eq 0 ]; then
+            log_message "success" "Secret 'elasticsearch-master-credentials' created successfully."
+        else
+            log_message "fail" "Failed to create secret 'elasticsearch-master-credentials'."
+            exit 1
+        fi
+    fi
+
+    # Deploy Codemie Stack
+    helm upgrade --install codemie-stack codemie-stack/. \
+      --version "${ai_run_version}" \
+      --namespace "$namespace" \
+      -f "${values_file}" \
+      --wait \
+      --timeout 600s \
+      --dependency-update > /dev/null
+
+    # shellcheck disable=SC2181
+    if [ $? -eq 0 ]; then
+        log_message "success" "CodeMie Stack deployment completed."
+    else
+        log_message "fail" "Failed to deploy CodeMie Stack."
+        exit 1
+    fi
+
+}
+
 ################
 # Main Function
 ################
@@ -1076,9 +1131,9 @@ main() {
     deploy_keycloak "aws" "${TF_VAR_platform_domain_name}"
     deploy_oauth2_proxy "aws" "${TF_VAR_platform_domain_name}"
     deploy_nats "aws"
-    deploy_codemie_nats_callout "aws" "$ai_run_version" "$image_repository"
-    deploy_codemie_mcp_connect_service "aws" "$ai_run_version" "$image_repository"
-    deploy_mermaid_server "aws" "$ai_run_version" "$image_repository"
+#    deploy_codemie_nats_callout "aws" "$ai_run_version" "$image_repository"
+#    deploy_codemie_mcp_connect_service "aws" "$ai_run_version" "$image_repository"
+#    deploy_mermaid_server "aws" "$ai_run_version" "$image_repository"
 
     if [ "$AWS_RDS_ENABLE" -eq 0 ]; then
         deploy_codemie_aws_rds
@@ -1086,8 +1141,9 @@ main() {
         deploy_codemie_postgresql "aws"
     fi
 
-    deploy_codemie_ui "aws" "${TF_VAR_platform_domain_name}" "$image_repository" "$ai_run_version"
-    deploy_codemie_api "aws" "${TF_VAR_platform_domain_name}" "$image_repository" "$ai_run_version"
+#    deploy_codemie_ui "aws" "${TF_VAR_platform_domain_name}" "$image_repository" "$ai_run_version"
+#    deploy_codemie_api "aws" "${TF_VAR_platform_domain_name}" "$image_repository" "$ai_run_version"
+    deploy_codemie_stack "${TF_VAR_platform_domain_name}" "$ai_run_version" "$image_repository"
     print_summary
 
 }
