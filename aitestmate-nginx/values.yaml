@@ -57,7 +57,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: aitestmate.example.local
+    - host: aws-dev.aitestmate.epm-eag.projects.epam.com
       paths:
         - path: /
           pathType: ImplementationSpecific

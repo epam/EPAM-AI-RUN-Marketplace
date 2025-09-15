@@ -24,6 +24,3 @@ if ! namespace-p "$NAMESPACE"; then
     echo "'$NAMESPACE' does not exist"
     exit 1
 fi
-
-create-secret aitestmate-redis-secret \
-              --from-literal="REDIS_PASSWORD=$(pwgen 24 1)"
