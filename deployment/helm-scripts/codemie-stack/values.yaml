@@ -1,12 +1,8 @@
-global:
-  registry: "%%IMAGE_REPOSITORY%%"
-  namespace: production
-
 codemie:
   replicaCount: 1
 
   image:
-    repository: "{{ .Values.global.registry }}/codemie"
+    repository: "%%IMAGE_REPOSITORY%%/codemie"
 
   argoRollout:
     enabled: false
@@ -396,15 +392,15 @@ codemie:
 
 codemie-mcp-connect-service:
   image:
-    repository: "{{ .Values.global.registry }}/codemie-mcp-connect-service"
+    repository: "%%IMAGE_REPOSITORY%%/codemie-mcp-connect-service"
 
 codemie-nats-auth-callout:
   image:
-    repository: "{{ .Values.global.registry }}/codemie-nats-auth-callout"
+    repository: "%%IMAGE_REPOSITORY%%/codemie-nats-auth-callout"
 
 codemie-ui:
   image:
-    repository: "{{ .Values.global.registry }}/codemie-ui"
+    repository: "%%IMAGE_REPOSITORY%%/codemie-ui"
 
   viteApiUrl: https://codemie.%%DOMAIN%%/code-assistant-api
 
@@ -415,7 +411,7 @@ mermaid-server:
   replicaCount: 1
 
   image:
-    repository: "{{ .Values.global.registry }}/mermaid-server"
+    repository: "%%IMAGE_REPOSITORY%%/mermaid-server"
     pullPolicy: IfNotPresent
     tag: ""
 
