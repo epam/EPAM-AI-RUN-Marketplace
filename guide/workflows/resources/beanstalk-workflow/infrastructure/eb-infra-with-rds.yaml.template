@@ -1,0 +1,250 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Complete VPN-only infrastructure for Elastic Beanstalk with RDS'
+
+Parameters:
+  DBUsername:
+    Type: String
+    Default: xxxxxxxxxxxxx
+    Description: Database master username
+    MinLength: 1
+    MaxLength: 16
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: Must begin with a letter and contain only alphanumeric characters
+
+  DBPassword:
+    Type: String
+    Default: xxxxxxxxxxxxx
+    Description: Database master password
+    MinLength: 8
+    MaxLength: 41
+    NoEcho: true
+    AllowedPattern: '[a-zA-Z0-9]*'
+    ConstraintDescription: Must contain only alphanumeric characters
+
+Resources:
+  # VPC
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: xx.xx.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: eb-vpn-vpc
+
+  # Internet Gateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: eb-vpn-igw
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Public Subnet for EB
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: xx.xx.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: eb-vpn-public-subnet
+
+  # Private Subnet 1 for RDS (required for DB subnet group)
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: xx.xx.10.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: eb-vpn-private-subnet-1
+
+  # Private Subnet 2 for RDS (required for DB subnet group - needs 2 AZs)
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: xx.xx.11.0/24
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: eb-vpn-private-subnet-2
+
+  # Route Table for Public Subnet
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: eb-vpn-public-rt
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # Security Group for EB with Corporate Prefix List
+  EBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${AWS::StackName}-eb-sg'
+      GroupDescription: Elastic Beanstalk security group with corporate prefix list only
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourcePrefixListId: pl-xxxxxxxxxxxxx
+          Description: Corporate Prefix List Access
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+          Description: Allow all outbound
+      Tags:
+        - Key: Name
+          Value: eb-vpn-sg
+
+  # Security Group for RDS
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${AWS::StackName}-db-sg'
+      GroupDescription: Security group for RDS database
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        # Allow access from EB instances only
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref EBSecurityGroup
+          Description: PostgreSQL access from EB instances
+      Tags:
+        - Key: Name
+          Value: eb-vpn-db-sg
+
+  # DB Subnet Group
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub '${AWS::StackName}-db-subnet-group'
+      DBSubnetGroupDescription: Subnet group for RDS database
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      Tags:
+        - Key: Name
+          Value: eb-vpn-db-subnet-group
+
+  # RDS PostgreSQL Instance
+  Database:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete  # Change to Snapshot for production
+    Properties:
+      DBInstanceIdentifier: !Sub '${AWS::StackName}-xxxxxxxxxxxxx-db'
+      DBName: xxxxxxxxxxxxx
+      Engine: postgres
+      EngineVersion: '15.10'
+      DBInstanceClass: db.t3.micro  # Free tier eligible
+      AllocatedStorage: 20
+      StorageType: gp3
+      StorageEncrypted: true  # ENCRYPTION ENABLED
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      BackupRetentionPeriod: 0  # Disable backups for dev (enable for production)
+      MultiAZ: false  # Set to true for production
+      PubliclyAccessible: false  # Keep database private
+      Tags:
+        - Key: Name
+          Value: eb-vpn-xxxxxxxxxxxxx-db
+
+  # IAM Role for the EC2 instances created by Elastic Beanstalk
+  AWSElasticBeanstalkEC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/eo_role_boundary'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        # These policies grant standard permissions needed by Elastic Beanstalk instances
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker
+
+  # The Instance Profile is a container for the IAM Role that allows EC2 to use it
+  AWSEBInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref AWSElasticBeanstalkEC2Role
+
+Outputs:
+  VPCId:
+    Description: VPC ID for EB deployment
+    Value: !Ref VPC
+    Export:
+      Name: !Sub '${AWS::StackName}-VPC-ID'
+
+  SubnetId:
+    Description: Subnet ID for EB deployment
+    Value: !Ref PublicSubnet
+    Export:
+      Name: !Sub '${AWS::StackName}-Subnet-ID'
+
+  SecurityGroupId:
+    Description: Security Group ID with corporate prefix list access
+    Value: !Ref EBSecurityGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-SG-ID'
+
+  DBEndpoint:
+    Description: Database endpoint
+    Value: !GetAtt Database.Endpoint.Address
+    Export:
+      Name: !Sub '${AWS::StackName}-DB-Endpoint'
+
+  DBPort:
+    Description: Database port
+    Value: !GetAtt Database.Endpoint.Port
+    Export:
+      Name: !Sub '${AWS::StackName}-DB-Port'
+
+  DBName:
+    Description: Database name
+    Value: xxxxxxxxxxxxx
+    Export:
+      Name: !Sub '${AWS::StackName}-DB-Name'
+
+  InstanceProfileName:
+    Description: The name of the created EC2 Instance Profile for Beanstalk
+    Value: !Ref AWSEBInstanceProfile
+    Export:
+      Name: !Sub '${AWS::StackName}-InstanceProfileName'

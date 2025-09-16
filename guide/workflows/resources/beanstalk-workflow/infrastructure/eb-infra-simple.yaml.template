@@ -1,0 +1,137 @@
+# Updated eb-infra-final.yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Complete VPN-only infrastructure for Elastic Beanstalk'
+
+Resources:
+  # VPC
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: xx.xx.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: eb-vpn-vpc
+
+  # Internet Gateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: eb-vpn-igw
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Public Subnet
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: xx.xx.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: eb-vpn-public-subnet
+
+  # Route Table
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: eb-vpn-public-rt
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  # Security Group with Corporate Prefix List ONLY
+  EBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${AWS::StackName}-eb-sg'
+      GroupDescription: Elastic Beanstalk security group with corporate prefix list only
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        # ONLY use prefix list - NO CIDR ranges
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourcePrefixListId: pl-xxxxxxxxxxxxx
+          Description: Corporate Prefix List Access
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+          Description: Allow all outbound
+      Tags:
+        - Key: Name
+          Value: eb-vpn-sg
+
+  # IAM Role for the EC2 instances created by Elastic Beanstalk
+  AWSElasticBeanstalkEC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/eo_role_boundary'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        # These policies grant standard permissions needed by Elastic Beanstalk instances
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker
+
+  # The Instance Profile is a container for the IAM Role that allows EC2 to use it
+  AWSEBInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref AWSElasticBeanstalkEC2Role
+
+
+Outputs:
+  VPCId:
+    Description: VPC ID for EB deployment
+    Value: !Ref VPC
+    Export:
+      Name: !Sub '${AWS::StackName}-VPC-ID'
+
+  SubnetId:
+    Description: Subnet ID for EB deployment
+    Value: !Ref PublicSubnet
+    Export:
+      Name: !Sub '${AWS::StackName}-Subnet-ID'
+
+  SecurityGroupId:
+    Description: Security Group ID with corporate prefix list access
+    Value: !Ref EBSecurityGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-SG-ID'
+
+  InstanceProfileName:
+    Description: The name of the created EC2 Instance Profile for Beanstalk
+    Value: !Ref AWSEBInstanceProfile
+    Export:
+      Name: !Sub '${AWS::StackName}-InstanceProfileName'
