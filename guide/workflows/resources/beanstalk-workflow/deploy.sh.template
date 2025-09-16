@@ -1,0 +1,245 @@
+#!/bin/bash
+set -e
+# Unified EB Deployment Script - Create-only and Fully Hardened
+# This script will exit if the environment already exists.
+
+# Get the absolute path to the directory where this script is located.
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+# Default values
+STACK_NAME="${STACK_NAME:-eb-vpn-infrastructure}"
+APP_NAME="${APP_NAME:-my-eb-app}"
+ENV_NAME="${ENV_NAME:-my-eb-env}"
+REGION="${AWS_REGION:-eu-central-1}"
+PLATFORM="${PLATFORM:-corretto-17}"
+DEPLOYMENT_TYPE="${DEPLOYMENT_TYPE:-simple}"  # 'simple' or 'rds'
+DB_USERNAME="${DB_USERNAME:-xxxxxxxxxxxxx}"
+DB_PASSWORD="${DB_PASSWORD:-xxxxxxxxxxxxx}"
+DB_ENGINE="${DB_ENGINE:-postgres}"  # postgres or mysql
+
+# Determine CF template based on deployment type, using an absolute path.
+set_cf_template() {
+    if [ "$DEPLOYMENT_TYPE" = "rds" ]; then
+        CF_TEMPLATE="${CF_TEMPLATE:-${SCRIPT_DIR}/infrastructure/eb-infra-with-rds.yaml}"
+    else
+        CF_TEMPLATE="${CF_TEMPLATE:-${SCRIPT_DIR}/infrastructure/eb-infra-simple.yaml}"
+    fi
+}
+
+# Color codes
+CYAN='\033[1;36m'
+YELLOW='\033[1;33m'
+GREEN='\033[1;32m'
+RED='\033[1;31m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_color() {
+    color=$1
+    message=$2
+    echo -e "${color}${message}${NC}"
+}
+
+# Function to print usage
+print_usage() {
+    echo "Usage: $0 [OPTIONS]"
+    echo ""
+    echo "Deployment Type Options:"
+    echo "  --with-rds              Deploy with RDS database (PostgreSQL by default)"
+    echo "  --with-mysql            Deploy with MySQL RDS database"
+    echo "  --simple                Deploy without database (default)"
+    echo ""
+    echo "Common Options:"
+    echo "  --stack-name NAME       CloudFormation stack name (e.g.
+    eb-vpn-infrastructure)"
+    echo "  --app-name NAME         EB application name (e.g. my-eb-app)"
+    echo "  --env-name NAME         EB environment name (e.g. my-eb-env)"
+    echo "  --region REGION         AWS region (e.g. eu-central-1)"
+    echo "  --platform PLATFORM     Platform version (e.g. corretto-17)"
+    echo ""
+    echo "Database Options (when using --with-rds):"
+    echo "  --db-username USER      Database username"
+    echo "  --db-password PASS      Database password"
+    echo ""
+    echo "Other Options:"
+    echo "  --cf-template FILE      Custom CloudFormation template"
+    echo "  -h, --help              Show this help message"
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --with-rds)
+            DEPLOYMENT_TYPE="rds"
+            DB_ENGINE="postgres"
+            shift
+            ;;
+        --with-mysql)
+            DEPLOYMENT_TYPE="rds"
+            DB_ENGINE="mysql"
+            shift
+            ;;
+        --simple)
+            DEPLOYMENT_TYPE="simple"
+            shift
+            ;;
+        --stack-name)
+            STACK_NAME="$2"
+            shift 2
+            ;;
+        --app-name)
+            APP_NAME="$2"
+            shift 2
+            ;;
+        --env-name)
+            ENV_NAME="$2"
+            shift 2
+            ;;
+        --region)
+            REGION="$2"
+            shift 2
+            ;;
+        --platform)
+            PLATFORM="$2"
+            shift 2
+            ;;
+        --cf-template)
+            CF_TEMPLATE="$2"
+            CUSTOM_TEMPLATE=true
+            shift 2
+            ;;
+        --db-username)
+            DB_USERNAME="$2"
+            shift 2
+            ;;
+        --db-password)
+            DB_PASSWORD="$2"
+            shift 2
+            ;;
+        -h|--help)
+            print_usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use -h or --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+# Set CF template if not custom
+if [ -z "$CUSTOM_TEMPLATE" ]; then
+    set_cf_template
+fi
+
+# Validate template exists
+if [ ! -f "$CF_TEMPLATE" ]; then
+    print_color "$RED" "Error: CloudFormation template not found at path: $CF_TEMPLATE"
+    exit 1
+fi
+
+print_color "$CYAN" "=========================================="
+if [ "$DEPLOYMENT_TYPE" = "rds" ]; then
+    print_color "$CYAN" "EB Deployment with RDS Database"
+    print_color "$CYAN" "Database Engine: $DB_ENGINE"
+else
+    print_color "$CYAN" "EB Simple Deployment (No Database)"
+fi
+print_color "$CYAN" "=========================================="
+
+# Step 1: Check if environment exists
+print_color "$YELLOW" "\n[1/6] Checking environment status..."
+env_exists=$(aws elasticbeanstalk describe-environments --environment-names "$ENV_NAME" --query "Environments[?Status!='Terminated']" --output json --region "$REGION" | jq -r '. | length')
+if [ "$env_exists" -ne 0 ]; then
+    print_color "$RED" "ERROR: Environment '$ENV_NAME' already exists."
+    print_color "$YELLOW" "This script is designed to create a new environment only."
+    print_color "$YELLOW" "Please run the cleanup script first or choose a different environment name with --env-name."
+    exit 1
+fi
+print_color "$GREEN" "✓ Environment does not exist. Proceeding."
+
+# Step 2: Create or verify infrastructure stack
+print_color "$YELLOW" "\n[2/6] Creating infrastructure via CloudFormation..."
+if ! aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$REGION" &>/dev/null; then
+    if [ "$DEPLOYMENT_TYPE" = "rds" ]; then
+        print_color "$YELLOW" "Creating infrastructure with RDS..."
+        aws cloudformation create-stack \
+            --stack-name "$STACK_NAME" \
+            --template-body "file://$CF_TEMPLATE" \
+            --parameters ParameterKey=DBUsername,ParameterValue="$DB_USERNAME" ParameterKey=DBPassword,ParameterValue="$DB_PASSWORD" \
+            --capabilities CAPABILITY_IAM \
+            --region "$REGION"
+    else
+        print_color "$YELLOW" "Creating simple infrastructure..."
+        aws cloudformation create-stack \
+            --stack-name "$STACK_NAME" \
+            --template-body "file://$CF_TEMPLATE" \
+            --capabilities CAPABILITY_IAM \
+            --region "$REGION"
+    fi
+    print_color "$YELLOW" "Waiting for stack creation..."
+    aws cloudformation wait stack-create-complete --stack-name "$STACK_NAME" --region "$REGION"
+fi
+print_color "$GREEN" "✓ Infrastructure stack is ready."
+
+# Step 3: Get infrastructure details from stack outputs
+print_color "$YELLOW" "\n[3/6] Getting infrastructure details from CloudFormation..."
+stack_outputs=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query "Stacks[0].Outputs" --region "$REGION")
+vpc_id=$(echo "$stack_outputs" | jq -r '.[] | select(.OutputKey=="VPCId") | .OutputValue')
+subnet_id=$(echo "$stack_outputs" | jq -r '.[] | select(.OutputKey=="SubnetId") | .OutputValue')
+eb_sg_id=$(echo "$stack_outputs" | jq -r '.[] | select(.OutputKey=="SecurityGroupId") | .OutputValue')
+instance_profile_name=$(echo "$stack_outputs" | jq -r '.[] | select(.OutputKey=="InstanceProfileName") | .OutputValue')
+
+if [ -z "$vpc_id" ] || [ -z "$subnet_id" ] || [ -z "$eb_sg_id" ] || [ -z "$instance_profile_name" ]; then
+    print_color "$RED" "FATAL: Could not retrieve all necessary outputs from CloudFormation stack."
+    exit 1
+fi
+print_color "$GREEN" "✓ Retrieved all infrastructure details."
+
+# Step 4: Initialize EB CLI
+print_color "$YELLOW" "\n[4/6] Initializing EB CLI..."
+if [ ! -d ".elasticbeanstalk" ]; then
+    eb init -p "$PLATFORM" "$APP_NAME" --region "$REGION"
+else
+    print_color "$GREEN" "✓ EB CLI already initialized."
+fi
+
+# Step 5: Create the Elastic Beanstalk Environment
+print_color "$YELLOW" "\n[5/6] Creating Elastic Beanstalk environment..."
+if [ "$DEPLOYMENT_TYPE" = "rds" ]; then
+    db_endpoint=$(echo "$stack_outputs" | jq -r '.[] | select(.OutputKey=="DBEndpoint") | .OutputValue')
+    db_port=$(echo "$stack_outputs" | jq -r '.[] | select(.OutputKey=="DBPort") | .OutputValue')
+    if [ "$DB_ENGINE" = "mysql" ]; then
+        db_url="jdbc:mysql://${db_endpoint}:${db_port}/petclinic"
+        spring_profile="mysql"
+    else
+        db_url="jdbc:postgresql://${db_endpoint}:${db_port}/petclinic"
+        spring_profile="postgres"
+    fi
+    eb create "$ENV_NAME" --single --instance_profile "$instance_profile_name" --vpc.id "$vpc_id" --vpc.publicip --vpc.ec2subnets "$subnet_id" --vpc.securitygroups "$eb_sg_id" --envvars SPRING_PROFILES_ACTIVE="$spring_profile",POSTGRES_URL="$db_url",POSTGRES_USER="$DB_USERNAME",POSTGRES_PASS="$DB_PASSWORD",MYSQL_URL="$db_url",MYSQL_USER="$DB_USERNAME",MYSQL_PASS="$DB_PASSWORD"
+else
+    eb create "$ENV_NAME" --single --instance_profile "$instance_profile_name" --vpc.id "$vpc_id" --vpc.publicip --vpc.ec2subnets "$subnet_id" --vpc.securitygroups "$eb_sg_id"
+fi
+
+# Step 6: Secure the Elastic Beanstalk S3 Bucket
+print_color "$YELLOW" "\n[6/6] Applying security settings to the S3 bucket..."
+account_id=$(aws sts get-caller-identity --query Account --output text)
+s3_bucket="elasticbeanstalk-${REGION}-${account_id}"
+
+aws s3api put-public-access-block \
+    --bucket "$s3_bucket" \
+    --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true \
+    --region "$REGION" 2>/dev/null
+aws s3api put-bucket-acl \
+    --bucket "$s3_bucket" \
+    --acl private \
+    --region "$REGION" 2>/dev/null
+print_color "$GREEN" "✓ S3 security settings applied."
+
+# Final Summary
+env_url=$(aws elasticbeanstalk describe-environments --environment-names "$ENV_NAME" --query "Environments[0].CNAME" --output text --region "$REGION")
+print_color "$CYAN" "\n=========================================="
+print_color "$CYAN" "Deployment Complete!"
+print_color "$CYAN" "=========================================="
+print_color "$CYAN" "Application URL: http://$env_url"
