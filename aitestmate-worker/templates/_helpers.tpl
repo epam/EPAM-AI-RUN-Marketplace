@@ -49,14 +49,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "aitestmate-worker.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "aitestmate-worker.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "aitestmate-worker.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}

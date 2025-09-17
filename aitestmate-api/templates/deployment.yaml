@@ -26,8 +26,7 @@ spec:
       imagePullSecrets:
        # {{ toYaml . | nindent 8 }}
      # {{ end }}
-      serviceAccountName: >-
-        {{ include "aitestmate-api.serviceAccountName" . }}
+      serviceAccountName: aitestmate-api-sa
      # {{ with .Values.podSecurityContext }}
       securityContext:
        # {{ toYaml . | nindent 8 }}
