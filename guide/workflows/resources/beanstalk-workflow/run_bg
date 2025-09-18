@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <script_path> [arguments...]"
+    exit 1
+fi
+
+# Extract just the command/script name for log/pid files
+BASENAME=$(basename "$1")
+LOG_FILE="${BASENAME%.sh}.log"
+PID_FILE="${BASENAME%.sh}.pid"
+
+# Check if it's a command in PATH (portable way)
+if command -v "$1" >/dev/null 2>&1 && [ ! -f "$1" ]; then
+    # It's a command in PATH, not a local file
+    echo "Running command from PATH: $1"
+    nohup "$@" > "$LOG_FILE" 2>&1 &
+elif [ -f "$1" ]; then
+    # It's a file
+    if [ ! -x "$1" ]; then
+        echo "Warning: '$1' is not executable. Attempting to run with bash..."
+        nohup bash "$@" > "$LOG_FILE" 2>&1 &
+    else
+        nohup "$@" > "$LOG_FILE" 2>&1 &
+    fi
+else
+    echo "Error: '$1' not found in PATH or as a file"
+    exit 1
+fi
+
+pid=$!
+echo "Started '$1' with PID: $pid"
+echo "Log file: $LOG_FILE"
+echo "PID file: $PID_FILE"
+echo $pid > "$PID_FILE"
