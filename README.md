@@ -374,10 +374,10 @@ To create the role, take the following steps:
    ```bash
    cd codemie-aws-iam
    ```
-2. Review the input variables for Terraform in the `deployment/terraform-scripts/codemie-aws-iam/variables.tf` file and create a `<fileName>.tfvars` in the repo to change default variables values there in a format of key-value. For example:
+2. Open the deployment/terraform-scripts/codemie-aws-iam/variables.tf file and review the input variables. If any default values need to be adjusted, create a <fileName>.tfvars file in the repository. Use the key-value pair format below to define custom values:
    ```
    region = "your-region"
-   role_arn = "arn:aws:iam::xxxx:role/DeployerRole"
+   deployer_role_name = "your.role"
    platform_domain_name = "your.domain"
    ```
 
@@ -405,8 +405,9 @@ To create an S3 bucket for storing Terraform state files, follow the steps below
 2. Review the input variables for Terraform in the `deployment/terraform-scripts/columbia-sre-remote-backend/variables.tf` file and create a `<filename>.tfvars` in the repo to change default variables values there in a format of key-value. For example:
  ```
    region = "your-region"
-   role_arn = "arn:aws:iam::xxxx:role/yourRole"
-   platform_domain_name = "your.domain"
+   role_arn = "arn:aws:iam::xxxxxxxx:role/AIRunDeployerRole" # The ARN of the IAM role that will be used for deployment. Note: This value becomes available after running the terraform apply command in Step 4.6.2.
+   s3_states_bucket_name = "" # Example: ai-run-terraform-states. Ensure this is a new and unique name following S3 naming rules.
+   table_name = "" # Example: ai-run_terraform_locks. Ensure this is a new and unique name
 ```
 ℹ️ Ensure you have carefully reviewed all variables and replaced mock values with yours.
 
@@ -437,56 +438,39 @@ To accomplish the tasks outlined above, follow these steps:
    ```
 2. Review the input variables for Terraform in the `deployment/terraform-scripts/codemie-aws-platform/variables.tf` file and create a `<filename>.tfvars` in the repo to manage custom variables there in a format of key-value. For example:   
 ```
-region = "us-east-1"
-s3_states_bucket_name = "codemie-us-terraform-states"
-table_name = "codemie_us_terraform_locks"
-role_arn = "arn:aws:iam::111111111111:role/<RoleName>"
-platform_domain_name = "opt.gosai-run-learn.click"
-platform_name = "codemie-opt"
-platform_cidr = "10.0.0.0/16"
-subnet_azs = ["us-east-1a", "us-east-1b", "us-east-1c"]
-private_cidrs = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24"]
+region                        = "<REGION>" # Example: us-east-1
+role_arn                      = "arn:aws:iam::xxxxxxxx:role/AIRunDeployerRole" # The ARN of the IAM role that will be used for deployment. Note: This value becomes available after running the terraform apply command in Step 4.6.2.
+platform_domain_name          = "<DOMAIN NAME>" # Example: example.com.  The value should be taken from the Route 53 hosted zone created in the previous
+platform_name                 = "<Any Value>"
+platform_cidr                 = "10.0.0.0/16"
+subnet_azs = [<SUBNET AZS>] # Example: '["us-east-1a", "us-east-1b", "us-east-1c"]'
+private_cidrs = ["10.0.0.0/22", "10.0.4.0/22", "10.0.8.0/22"]
 public_cidrs = ["10.0.12.0/24", "10.0.13.0/24", "10.0.14.0/24"]
-ssl_policy = "ELBSecurityPolicy-TLS-1-2-2017-01"
-eks_admin_role_arn = "arn:aws:iam::111111111111:user/<UserName>"
-add_userdata = ""
+ssl_policy                    = "ELBSecurityPolicy-TLS-1-2-2017-01"
+eks_admin_role_arn            =  "<eks_admin_role_arn>" # Specify the ARN of the IAM role with permissions to manage the EKS cluster.
+add_userdata                  = ""
 spot_instance_types = [{ instance_type = "c5.2xlarge" }]
-spot_max_nodes_count = 0
-spot_desired_nodes_count = 0
-spot_min_nodes_count = 0
+spot_max_nodes_count          = 0
+spot_desired_nodes_count      = 0
+spot_min_nodes_count          = 0
 demand_instance_types = [{ instance_type = "c5.2xlarge" }]
-demand_max_nodes_count = 2
-demand_desired_nodes_count = 2
-demand_min_nodes_count = 1
-cluster_identity_providers = {}
-aws_auth_users = []
-aws_auth_roles = []
-tags = {
-"System" = "Codemie"
-"Environment" = "opt"
-"Project" = "Codemie"
-}
-node_iam_role_additional_policies = [
-{
-sid = "CloudWatchServerPermissions",
-effect = "Allow",
-actions = [
-"logs:PutLogEvents",
-"logs:DescribeLogStreams",
-"logs:DescribeLogGroups",
-"logs:CreateLogStream",
-"logs:CreateLogGroup"
-],
-resources = ["*"]
-}
-]
+demand_max_nodes_count        = 2
+demand_desired_nodes_count    = 2
+demand_min_nodes_count        = 1
 ```
 ℹ️ Ensure you have carefully reviewed all variables and replaced mock values with yours
 
 3. Initialize the platform and apply the changes:
+   The bucket_name and dynamodb_table_name values becomes available after running the terraform apply command in Step 4.6.2
 ```bash
-
-  terraform init --var-file <fileName>.tfvars
+  terraform init \
+        -backend-config="bucket=<bucket_name>" \
+        -backend-config="key=<aws_region>/codemie/platform_terraform.tfstate" \
+        -backend-config="region=<aws_region>" \
+        -backend-config="acl=bucket-owner-full-control" \
+        -backend-config="dynamodb_table=<dynamodb_table_name>" \
+        -backend-config="encrypt=true" \
+	--var-file <fileName>.tfvars
   terraform plan --var-file <fileName>.tfvars
   terraform apply --var-file <fileName>.tfvars
 ```
@@ -498,11 +482,12 @@ resources = ["*"]
    
 2. Review the input variables for Terraform in the deployment/terraform-scripts/codemie-aws-rds/variables.tf file and create a <filename>.tfvars in the repo to change default variables values there in a format of key-value. For example:
 ```
-region              = "your-region"
-role_arn            = "arn:aws:iam::1000:role/yourRole"
-platform_domain_name = "your-domain"
-vpc_state_bucket     = "your-vpc_state_bucket"
-vpc_state_key        = "your-vpc_state_key"
+region                      = "<aws_region>"
+role_arn                    = "arn:aws:iam::xxxxxxxx:role/AIRunDeployerRole" # The ARN of the IAM role that will be used for deployment. Note: This value becomes available after running the terraform apply command in Step 4.6.2.
+platform_name               = "<platform_name>" # Use the value from step 4.6.4. .tfvars file
+vpc_state_bucket            = "<bucket_name>" # The value becomes available after running the terraform apply command in Step 4.6.2
+vpc_state_key               = "<aws_region>/codemie/platform_terraform.tfstate" # Replace <aws_region> before run command
+backend_lock_dynamodb_table = "<dynamodb_table_name>"  # The value becomes available after running the terraform apply command in Step 4.6.2
 ...
 ```
 3. Initialize the RDS and apply the changes:
@@ -756,7 +741,9 @@ Secret example:
 
 ### 6.3.5. Install Kibana component:
 
-1. Fill in missing values in values.yaml file by replacing `%%DOMAIN%%` with your domain name, e.g. `example.com`
+1. Fill in missing values in values-aws.yaml in `kibana/values-aws.yaml` file:
+   a. Replace `%%DOMAIN%%` with your domain name, e.g. `example.com`. The value should be taken from the Route 53 hosted zone that was created during an earlier step of this guide.
+
 2. Install `kibana` helm chart with the command:
 
    ```bash 
@@ -785,7 +772,10 @@ Apply postgres-operator chart:
    helm upgrade --install keycloak-operator-helm keycloak-operator-helm/. -n security --create-namespace --values keycloak-operator-helm/values.yaml --wait --timeout 900s --dependency-update
     ```
 ### 6.3.8. Install Keycloak component:
-Fill in <values> placeholders in values.yaml and apply `keycloak` helm chart with the command:
+1. Fill in missing values in values-aws.yaml file in `keycloak-helm/values-aws.yaml` file:
+   a. Replace `%%DOMAIN%%` with your domain name, e.g. `example.com`. The value should be taken from the Route 53 hosted zone that was created during an earlier step of this guide.
+
+2. Apply `keycloak` helm chart with the command:
 
    ```bash  
    helm upgrade --install keycloak keycloak-helm/. -n security --values keycloak-helm/values-aws.yaml --wait --timeout 900s --dependency-update
@@ -796,7 +786,13 @@ Keycloak Admin UI can be accessed by the following URL: https://keycloak.%%DOMAI
 
 To deploy a NATS, follow the steps below:
 
-1. Create `codemie-nats-secrets` Kubernetes secret. To set up it, follow these steps to generate and encode the necessary values:
+1. Create `codemie` namespace with the command:
+
+  ```bash 
+   kubectl create namespace codemie
+   ```
+
+2. Create `codemie-nats-secrets` Kubernetes secret. To set up it, follow these steps to generate and encode the necessary values:
    a. NATS_URL
     * Once the NATS is deployed in the same namespace as the AI/Run CodeMie and NATS Callout services, use the internal URL `https://codemie-nats:4222`
     * Base64 encode this URL before using it in the secret.
@@ -942,7 +938,7 @@ kubectl -n "$namespace" create secret generic "$secret_name" \
 --type=Opaque -o yaml
 ```
 
-2. Install codemie-nats helm chart in created namespace, applying custom values file with the command:
+3. Install codemie-nats helm chart in created namespace, applying custom values file with the command:
 ```bash
   helm repo add nats https://nats-io.github.io/k8s/helm/charts/
   helm repo update nats
@@ -958,41 +954,54 @@ kubectl -n "$namespace" create secret generic "$secret_name" \
 
 To deploy a NATS Auth Callout service, follow the steps below:
 
-1. Create `codemie` namespace with the command:
-
-   ```bash 
-   kubectl create namespace codemie
-   ```
+1. Fill in missing values in values.yaml and Chart.yaml files in `codemie-nats-auth-callout` folder:
+   a. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
+   b. Replace `%%IMAGE_REPOSITORY%%` with next value `709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
 
 2. Install `codemie-nats-auth-callout` helm chart, applying custom values file with the command:
 
 ```bash
-  helm upgrade --install codemie-nats-auth-callout \
-  "oci://709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/codemie-nats-auth-callout" \
+  helm upgrade --install codemie-nats-auth-callout codemie-nats-auth-callout/. \
   --version "2.2.1-aws" \
   --namespace "codemie" \
-  -f "./codemie-nats-auth-callout/values-aws.yaml" \
-  --wait --timeout 600s
+  -f "codemie-nats-auth-callout/values-aws.yaml" \
+  --wait \
+  --timeout 600s \
+  --dependency-update
 ```
 
 ### 6.3.11. Install AI/Run CodeMie MCP Connect component:
 
-1. Install `mcp-connect` helm chart with the command:
+1. Fill in missing values in values.yaml and Chart.yaml files in `codemie-mcp-connect-service` folder:
+   a. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
+   b. Replace `%%IMAGE_REPOSITORY%%` with next value `709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
+
+2. Install `mcp-connect` helm chart with the command:
 
 ```bash
-  helm upgrade --install codemie-mcp-connect-service 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/codemie-mcp-connect-service \
-  --version 2.2.1-aws \
-  --namespace "codemie" \
-  -f "./codemie-mcp-connect-service/values.yaml" \
-  --wait --timeout 600s
+  helm upgrade --install codemie-mcp-connect-service codemie-mcp-connect-service/. \
+    --version 2.2.1-aws \
+    --namespace "codemie" \
+    -f "./codemie-mcp-connect-service/values.yaml" \
+    --wait \
+    --timeout 600s \
+    --dependency-update
 ```
 
 ### 6.3.12. Install PostgreSQL component:
 
 #### 6.3.12.1. By default, AWS RDS Database was set up previously during instruction, Use next step
 
-1. Create `codemie-postgresql` secret with postgresql passwords replace AWS_RDS values placeholders from 4.6.5 step
+1. Navigate to `deployment/terraform-scripts/codemie-aws-rds` and run next command for get credentials ro RDS
+```bash
+   terraform output -raw address
+   terraform output -raw database_name
+   terraform output -raw database_user
+   terraform output -raw database_password
+```   
 
+2. Create `codemie-postgresql` secret with postgresql passwords replace AWS_RDS values placeholders from 4.6.5 step
+   
 ```bash
   kubectl -n "codemie" create secret generic "codemie-postgresql" \
          --from-literal=password="${AWS_RDS_DATABASE_PASSWORD}" \
@@ -1074,41 +1083,56 @@ type: Opaque
   kubectl get secret keycloak-admin -n security -o yaml | sed '/namespace:/d' | kubectl apply -n oauth2-proxy -f -
 ```
 
-4. Fill in missing values in values.yaml file by replace %%DOMAIN%% with your domain name, e.g. example.com
+4. Fill in missing values in values-aws.yaml in `kibana/values-aws.yaml` file:
+   a. Replace `%%DOMAIN%%` with your domain name, e.g. `example.com`. The value should be taken from the Route 53 hosted zone that was created during an earlier step of this guide.
+
 5. Install oauth2-proxy helm chart in created namespace with the command:
 ```bash
   helm upgrade --install oauth2-proxy oauth2-proxy/. -n oauth2-proxy --values oauth2-proxy/values-aws.yaml --wait --timeout 900s --dependency-update
 ```
 ### 6.3.14. Install AI/Run CodeMie UI component:
 
-1. Fill in missing values in values.yaml file in `codemie-helm-charts/codemie-ui` by replacing `%%DOMAIN%%` with your domain name, e.g. `example.com`
+1. Fill in missing values in values-aws.yaml and Chart.yaml files in `codemie-ui` folder:
+   a. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
+   b. Replace `%%IMAGE_REPOSITORY%%` with next value `709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
+   c. Replace `%%DOMAIN%%` with your domain name, e.g. `example.com`. The value should be taken from the Route 53 hosted zone that was created during an earlier step of this guide.
+
 2. Install `codemie-ui` helm chart in created namespace, applying custom values file with the command:
 
 ```bash
-  helm upgrade --install codemie-ui 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/codemie-ui \
+  helm upgrade --install codemie-ui codemie-ui/. \
   --version 2.2.1-aws \
   --namespace "codemie" \
   -f "./codemie-ui/values-aws.yaml" \
-  --wait --timeout 180s
+  --wait \
+  --timeout 180s \
+  --dependency-update
 ```
 ### 6.3.15. Install AI/Run Mermaid Server component:
+1. Fill in missing values in values.yaml and Chart.yaml files in `mermaid-server` folder:
+   a. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
+   b. Replace `%%IMAGE_REPOSITORY%%` with next value`709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
 
-1. Install mermaid-server helm chart with the command:
+2. Install mermaid-server helm chart with the command:
 
 ```bash
-  helm upgrade --install mermaid-server 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/mermaid-server \
+  helm upgrade --install mermaid-server mermaid-server/. \
   --version 2.2.1-aws \
   --namespace "codemie" \
   -f "./mermaid-server/values.yaml" \
-  --wait --timeout 600s
+  --wait --timeout 600s \
+  --dependency-update
 ```
 ### 6.3.16. Install AI/Run CodeMie API component:
 
-1. Fill in missing values in values.yaml file in `codemie-helm-charts/codemie-api`:
-   a. Replace `%%DOMAIN%%` with your domain name, e.g. `example.com`
-   b. Replace `%%AWS_DEFAULT_REGION%%` with your AWS region, e.g. `us-west-2`
-   c. Replace `%%BIS_AWS_ROLE_ARN%%` with your AWS IAM Role arn, e.g. `arn:aws:iam::0123456789012:role/AWSIRSA_AI_RUN`
-   d. Replace `%%AWS_KMS_KEY_ID%%` with your KMS Key ID, e.g. `50f3f093-dc86-48de-8f2d-7a76e480348e`
+1. Fill in missing values in values.yaml and Cart.yaml files in `codemie-api` folder:
+   a. Replace `%%DOMAIN%%` with your domain name, e.g. `example.com`. The value should be taken from the Route 53 hosted zone that was created during an earlier step of this guide.
+   b. Replace `%%AWS_DEFAULT_REGION%%` with your AWS region, the value becomes available after running the terraform apply command in Step 4.6.5, e.g. `us-west-2`
+   c. Replace `%%EKS_AWS_ROLE_ARN%%` with your AWS IAM Role arn, the value becomes available after running the terraform apply command in Step 4.6.5, e.g. `arn:aws:iam::0123456789012:role/AWSIRSA_AI_RUN`
+   d. Replace `%%AWS_KMS_KEY_ID%%` with your KMS Key ID, the value becomes available after running the terraform apply command in Step 4.6.5, e.g. `50f3f093-dc86-48de-8f2d-7a76e480348e`
+   e. Replace `%%AWS_S3_BUCKET_NAME%%`  The value becomes available after running the terraform apply command in Step 4.6.5
+   f. Replace `%%IMAGE_REPOSITORY%%` with next value`709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
+   g. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
 
 2. Copy Elasticsearch credentials to the application namespace with the command:
 
@@ -1118,11 +1142,12 @@ kubectl get secret elasticsearch-master-credentials -n elastic -o yaml | sed '/n
 ```
 3. Install codemie-api helm chart, applying custom values file with the command:
 ```bash
-  helm upgrade --install codemie-api 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/helm-charts/codemie \
+  helm upgrade --install codemie-api codemie-api/. \
   --version 2.2.1-aws \
   --namespace "codemie" \
-  -f "./codemie-api/values-aws.yaml" \
-  --wait --timeout 600s
+  -f "./codemie-api/values-aws.yaml"  \
+  --wait --timeout 600s \
+  --dependency-update
 ```
 4. AI/Run CodeMie UI can be accessed by the following URL: https://codemie.%%DOMAIN%% , e.g. https://codemie.example.com 
 
@@ -1140,11 +1165,13 @@ If you do not have your own logging system then consider installing Fluentbit co
 ```bash
   kubectl get secret elasticsearch-master-credentials -n elastic -o yaml | sed '/namespace:/d' | kubectl apply -n fluentbit -f -
 ```
-3. Install fluentbit with the command:
+3. Fill in missing values in values.yaml file in `fluent-bit/values-aws.yaml` file:
+   a. Replace `%%AWS_REGION%%` with your AWS region, the value becomes available after running the terraform apply command in Step 4.6.5, e.g. `us-west-2`
+
+4. Install fluentbit with the command:
 ```bash
   helm upgrade --install fluent-bit fluent-bit/. -n fluentbit --values fluent-bit/values.yaml --wait --timeout 900s --dependency-update
 ```
-4. Go to Kibana and setup codemie_infra_logs* index to view historical logs.
 
 
 # 7. Provide access to the application
