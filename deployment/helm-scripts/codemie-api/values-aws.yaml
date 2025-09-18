@@ -393,3 +393,35 @@ codemie:
                   project: demo
                   settings:
                     enabled: true
+                - id: "amna-template-ba-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-template-code-reviewer-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-template-epic-user-story-composer-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-template-gitlab-cicd-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-template-developer-via-plugin-engine-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-template-qa-checklist-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-template-qa-test-case-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-template-release-manager-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
