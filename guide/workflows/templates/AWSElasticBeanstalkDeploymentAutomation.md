@@ -26,7 +26,7 @@
   mv infrastructure/eb-infra-with-rds.yaml.template infrastructure/eb-infra-with-rds.yaml
 
   # Make scripts executable
-  chmod +x deploy.sh cleanup.sh run_bg check_b
+  chmod -R 777 beanstalker
   
   # If you use WSL, make sure to run the following commands 
   dos2unix cleanup.sh
@@ -43,6 +43,11 @@ cp -r /path/to/your/java/app ./java_app
 cp -r /path/to/your/python/app ./python_app
 ```
 **Important**: For Python applications, ensure `requirements.txt` is in the root folder of your application.
+For example 
+```
+Flask==2.3.2
+gunicorn==21.2.0
+```
 
 9. Update default values in deploy.sh and cleanup.sh files 
 ```
