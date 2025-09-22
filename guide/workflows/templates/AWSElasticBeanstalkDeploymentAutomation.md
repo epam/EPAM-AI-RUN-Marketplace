@@ -117,7 +117,7 @@ web: gunicorn --bind :8000 myproject.wsgi
   export ALLOWED_DIRS="<unix_like_absolute_path_to_your_project>"
   export ALLOWED_DIR="<unix_like_absolute_path_to_your_project>"
   export FILE_PATHS="<unix_like_absolute_path_to_your_project>,/tmp"
-  codemie-plugins mcp run -s filesystem,noinput_cli -e filesystem=FILE_PATHS -e noinput_cli=ALLOWED_DIR
+  codemie-plugins mcp run -s filesystem,cli-mcp-server -e filesystem=FILE_PATHS -e cli-mcp-server=ALLOWED_DIR
 ```
 20. Create new Plugin integration with ```PLUGIN_KEY``` from step 16 for your project
 21. Go to assistant templates and find the ```Bean: AWS Elastic Beanstalk Agentic Assistant``` template
