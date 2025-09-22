@@ -26,7 +26,7 @@
   mv infrastructure/eb-infra-with-rds.yaml.template infrastructure/eb-infra-with-rds.yaml
 
   # Make scripts executable
-  chmod -R 777 beanstalker
+  chmod +x deploy.sh cleanup.sh run_bg check_b
   
   # If you use WSL, make sure to run the following commands 
   dos2unix cleanup.sh
@@ -97,48 +97,14 @@ web: gunicorn --bind :8000 myproject.wsgi
 ```
 14. Create ```.codemie``` folder at ```<user_home_directory>``` folder
 15. Create ```config.json``` file at ```<user_home_directory>\.codemie``` folder
-16. Define MCP servers and connection to nats catalogue at ```<user_home_directory>\.codemie\config.json``` file
+16. Define MCP connection to nats catalogue at ```<user_home_directory>\.codemie\config.json``` file
 ```
- {
-  "PLUGIN_KEY": "<Any value>",
-  "PLUGIN_ENGINE_URI": "tls://codemie-nats.<url>:30422",
-  "mcpServers": {
-    "filesystem_ext": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "mcp-filesystem-extra",
-        "filesystem-extra"
-        ]
-    },
-    "tree_sitter": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "mcp-server-tree-sitter-extra",
-        "mcp-server-tree-sitter"
-        ]
-    },
-    "noinput_cli": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "noinput_cli_mcp_server",
-        "noinput-cli-mcp-server"
-        ],
-      "env": {
-        "ALLOWED_COMMANDS": "all",
-        "ALLOWED_FLAGS": "all",
-        "MAX_COMMAND_LENGTH": "2048",
-        "COMMAND_TIMEOUT": "300",
-        "TIMEOUT": "300",
-        "ALLOW_SHELL_OPERATORS": "true"
-      }
-    }
-  }
+{
+ "PLUGIN_KEY": "<Any value>",
+ "PLUGIN_ENGINE_URI": "tls://codemie-nats.<url>:30422",
 }
    ```
-17. Check list of availability MCP server. Should be present "filesystem_ext", "noinput-cli-mcp-server" and "tree_sitter"
+17. Check list of availability MCP server
 ```bash
   codemie-plugins mcp list
 ```
@@ -151,7 +117,7 @@ web: gunicorn --bind :8000 myproject.wsgi
   export ALLOWED_DIRS="<unix_like_absolute_path_to_your_project>"
   export ALLOWED_DIR="<unix_like_absolute_path_to_your_project>"
   export FILE_PATHS="<unix_like_absolute_path_to_your_project>,/tmp"
-  codemie-plugins mcp run -s filesystem,filesystem_ext -e filesystem=FILE_PATHS -e filesystem_ext=ALLOWED_DIR,PROJECT_BOOTSTRAP
+  codemie-plugins mcp run -s filesystem,noinput_cli -e filesystem=FILE_PATHS -e noinput_cli=ALLOWED_DIR
 ```
 20. Create new Plugin integration with ```PLUGIN_KEY``` from step 16 for your project
 21. Go to assistant templates and find the ```Bean: AWS Elastic Beanstalk Agentic Assistant``` template
