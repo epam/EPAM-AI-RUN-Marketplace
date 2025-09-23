@@ -46,7 +46,7 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
   }
  } 
    ```
-6. Check list of availability MCP server. Should be present "filesystem_ext", "cli-mcp-server" and "tree_sitter"
+6. Check list of availability MCP server. Should be present "filesystem_ext" and "tree_sitter"
 ```bash
   codemie-plugins mcp list
 ```

@@ -3,7 +3,7 @@
 Unit tests can be generated using two efficient methods flow by flow or one general flow for full proces 
 
 1. Using flow by flow you can see what happen every iteration and can affect on any stage 
-2. Using only one flow you can provide all necessary data and config one time and you can get your output 
+2. Using only one flow you can provide all necessary data and config one time, and you can get your output 
 
 ## ⚠️ Warning
 
@@ -46,7 +46,7 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
   }
  } 
    ```
-6. Check list of availability MCP server. Should be present "filesystem_ext", "cli-mcp-server" and "tree_sitter"
+6. Check list of availability MCP server. Should be present "filesystem_ext", "tree_sitter"
 ```bash
   codemie-plugins mcp list
 ```
