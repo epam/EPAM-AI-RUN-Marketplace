@@ -47,6 +47,8 @@ application to Amazon EKS and related AWS services. By following these instructi
 * Configure and deploy all EPAM AI/Run™ for AWS Migration and Modernization application components by installing Helm Charts.
 * Integrate and configure Bedrock LLMs.
 
+[![Walkthrough Deployment Guide](assets/Deployment_Guide.jpg)](assets/video/Deployment_Guide_v.1.0.mov)
+
 ## 1.1. How to Use This Guide
 
 For successful deployment, please follow these steps in sequence:
