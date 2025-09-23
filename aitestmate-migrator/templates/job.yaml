@@ -3,11 +3,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: aitestmate-migrator
+  name: >-
+    aitestmate-migrator-{{ uuidv4  }}
   labels:
-    # {{ include "aitestmate-migrator.labels" . | nindent 4 }}
+    # labels: {{ include "aitestmate-migrator.labels" . | nindent 4 }}
 spec:
   backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
   template:
     metadata:
       # {{ with .Values.podAnnotations }}
