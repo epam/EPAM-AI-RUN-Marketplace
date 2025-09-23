@@ -1,5 +1,10 @@
 # Windup Rules Generation Workflow
 
+## ⚠️ Warning
+
+- Keep track of your token and budget usage by regularly checking the details via the "Usage details" button on workflow-executions page after step 13.
+- Project integration and workflow should be created within the same "project". It is recommended to name the project after your specific use case (e.g., "example@email.com").
+  A project property is a special attribute in EPAM AI/Run™ for AWS , created by the admin. Each user has their own project, which is automatically named based on their email address
 
 # Step for run
 1. Install Python 3.12 or higher
@@ -47,7 +52,7 @@
 ```bash
   codemie-plugins mcp list
 ```
-11. Update plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY
+11. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
 
 12. Run MCP servers and codemie-plugins
     For MacOS & Linux
