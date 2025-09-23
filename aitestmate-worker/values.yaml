@@ -1,6 +1,6 @@
 ---
 
-# AI TestMate Redis Server
+# AI TestMate Worker Server
 
 replicaCount: 3
 
