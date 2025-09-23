@@ -3,11 +3,15 @@
 ## ⚠️ Warning
 
 - The workflow works only on Unix-like operating systems. If you are using Windows, please run all commands from WSL (Windows Subsystem for Linux).
+- Keep track of your token and budget usage by regularly checking the details via the "Usage details" button on workflow-executions page after step 25.
+- Project integration and workflow should be created within the same "project". It is recommended to name the project after your specific use case (e.g., "example@email.com").
+  A project property is a special attribute in EPAM AI/Run™ for AWS , created by the admin. Each user has their own project, which is automatically named based on their email address
 - AWS CLI - should be installed and configured
 - Workflow use only default AWS profile which is configured on your machine (or WSL)
 - eb (awsebcli) - should be installed on your machine (or WSL)
 - dos2unix - if you are using WSL, it should be installed within your WSL
 - jq - should be installed on your machine (or WSL)
+- uvx - should be installed on your machine (or WSL)
 
 # Step for run
 1. Go to WSL(if you use Windows)
