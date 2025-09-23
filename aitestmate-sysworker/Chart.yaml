@@ -3,5 +3,5 @@ name: aitestmate-sysworker
 description: AI TestMate Sys Worker Helm chart for Kubernetes
 
 type: application
-version: "0.1.3"
-appVersion: "1.6.0"
+version: "0.1.4"
+appVersion: "1.6.4"
