@@ -19,7 +19,7 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 3. Install Node.js 22 or higher
 4. Run command for install codemie-plugins
 ```bash
-  uvx pip install codemie-plugins
+  pip install codemie-plugins
 ```
 
 5. Define default MCP servers and connection to nats catalogue  at ```<user_home_directory>\.codemie\config.json``` file
