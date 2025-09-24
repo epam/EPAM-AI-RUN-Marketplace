@@ -8,7 +8,7 @@
   A project property is a special attribute in EPAM AI/Run™ for AWS , created by the admin. Each user has their own project, which is automatically named based on their email address
 
 
-1. Create folder scratchpad on C disk for example "C:\scratchpad"
+1. Create a scratchpad folder in the root directory, e.g., C:\scratchpad on Windows or /scratchpad on Unix-like systems
 2. Install Python 3.12 or higher
 4. Install uvx
 4. Install Node.js 22 or higher
@@ -50,7 +50,7 @@
 8. Create in scratchpad file ```Perl2Py```
 9. Create next three sub folder in Perl2Py: ```airun```, ```Perl```, ```Python```
 10. Create plugin project integration on EPAM AI/Run™ for AWS  with value from config.json files using PLUGIN_KEY
-11. Add ```00bootstrap.json``` files with next values
+11. Add ```00bootstrap.json``` files with next values in airun folder 
 ```
  {
    "project_base": "<path_to>\Perl2Py",
