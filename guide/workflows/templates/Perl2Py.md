@@ -49,8 +49,8 @@
 ```
 8. Create in scratchpad file ```Perl2Py```
 9. Create next three sub folder in Perl2Py: ```airun```, ```Perl```, ```Python```
-10. Create plugin project integration on EPAM AI/Run™ for AWS  with value from config.json files using PLUGIN_KEY
-11. Add ```00bootstrap.json``` files with next values in airun folder 
+10. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
+11. Add ```00bootstrap.json``` files with next values in airun folder
 ```
  {
    "project_base": "<path_to>\Perl2Py",

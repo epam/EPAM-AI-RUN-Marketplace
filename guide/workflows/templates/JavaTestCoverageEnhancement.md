@@ -51,7 +51,7 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 ```bash
   codemie-plugins mcp list
 ```
-7. Update plugin project integration on EPAM AI/Run™ for AWS with value from config.json files using PLUGIN_KEY
+7. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
 8. Create folder in root of your project ```airun```
 9. Add ```00bootstrap.json``` files with next values in ```airun```
 ```
