@@ -13,7 +13,11 @@ secret-p() {
 }
 
 create-secret() {
-    kubectl --namespace "$NAMESPACE" create secret generic --type opaque "$@"
+    if secret-p "$1"; then
+        echo "Secret $1 already exists"
+    else
+        kubectl --namespace "$NAMESPACE" create secret generic --type Opaque "$@"
+    fi
 }
 
 if ! namespace-p "$NAMESPACE"; then
