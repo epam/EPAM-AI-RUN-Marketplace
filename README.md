@@ -79,7 +79,7 @@ EPAM AI/Run™ for AWS Migration and Modernization terraform modules will automa
 
 ## 2.3. External connections
 ✓ Verify that firewall rules, SG and NACLs of EKS cluster allow outbound access to:
-*  EPAM AI/Run™ for AWS Migration and Modernization container registry: **709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie**.
+*  EPAM AI/Run™ for AWS Migration and Modernization container registry: **xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie**.
 * 3rd party container registries: quay.io, docker.io, registry.developer.zurich/data.com.
 * Any service you're planning to use with EPAM AI/Run™ for AWS Migration and Modernization (for example, GitHub instance).
 
@@ -667,11 +667,11 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 
 | Component name | Images | Description |
 |---------------|--------|-------------|
-| AI/Run CodeMie API | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie | The backend service of the EPAM AI/Run™ for AWS Migration and Modernization application responsible for business logic, data processing, and API operations |
-| AI/Run CodeMie UI | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-ui | The frontend service of the EPAM AI/Run™ for AWS Migration and Modernization application that provides the user interface for interacting with the system |
-| AI/Run CodeMie Nats Auth Callout | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-nats-auth-callout | Authorization component of EPAM AI/Run™ for AWS Migration and Modernization Plugin Engine that handles authentication and authorization for the NATS messaging system |
-| AI/Run CodeMie MCP Connect | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-mcp-connect-service | A lightweight bridge tool that enables cloud-based AI services to communicate with local Model Content Protocol (MCP) servers via protocol translation while maintaining security and flexibility |
-| AI/Run Mermaid Server | 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems/mermaid-server | Implementation of open-source service that generates image URLs for diagrams based on the provided Mermaid code for workflow visualization |
+| AI/Run CodeMie API | xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie | The backend service of the EPAM AI/Run™ for AWS Migration and Modernization application responsible for business logic, data processing, and API operations |
+| AI/Run CodeMie UI | xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-ui | The frontend service of the EPAM AI/Run™ for AWS Migration and Modernization application that provides the user interface for interacting with the system |
+| AI/Run CodeMie Nats Auth Callout | xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-nats-auth-callout | Authorization component of EPAM AI/Run™ for AWS Migration and Modernization Plugin Engine that handles authentication and authorization for the NATS messaging system |
+| AI/Run CodeMie MCP Connect | xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems/codemie-mcp-connect-service | A lightweight bridge tool that enables cloud-based AI services to communicate with local Model Content Protocol (MCP) servers via protocol translation while maintaining security and flexibility |
+| AI/Run Mermaid Server | xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems/mermaid-server | Implementation of open-source service that generates image URLs for diagrams based on the provided Mermaid code for workflow visualization |
 
 </details>
 
@@ -714,17 +714,17 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
    ```
 4. Run deployment script, possible flags:
 
-   `--image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`    #required flag
+   `--image-repository xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems`    #required flag
 
    ` version = 2.2.1-aws;`                                              #required flag
 
    `--rds-disable`                                                     # If the flag was used previously, ensure it is utilized here as well.
 
 ```bash
-  bash ./helm-charts.sh version=2.2.1-aws --image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems
+  bash ./helm-charts.sh version=2.2.1-aws --image-repository xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
 ```bash
-  ./helm-charts.sh version=2.2.1-aws --image-repository 709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems
+  ./helm-charts.sh version=2.2.1-aws --image-repository xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
 
 ## 6.3. Manual Components Installation
@@ -1013,7 +1013,7 @@ To deploy a NATS Auth Callout service, follow the steps below:
 
 1. Fill in missing values in values.yaml and Chart.yaml files in `codemie-nats-auth-callout` folder:
    a. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
-   b. Replace `%%IMAGE_REPOSITORY%%` with next value `709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
+   b. Replace `%%IMAGE_REPOSITORY%%` with next value `xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
 
 2. Install `codemie-nats-auth-callout` helm chart, applying custom values file with the command:
 
@@ -1031,7 +1031,7 @@ To deploy a NATS Auth Callout service, follow the steps below:
 
 1. Fill in missing values in values.yaml and Chart.yaml files in `codemie-mcp-connect-service` folder:
    a. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
-   b. Replace `%%IMAGE_REPOSITORY%%` with next value `709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
+   b. Replace `%%IMAGE_REPOSITORY%%` with next value `xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
 
 2. Install `mcp-connect` helm chart with the command:
 
@@ -1151,7 +1151,7 @@ type: Opaque
 
 1. Fill in missing values in values-aws.yaml and Chart.yaml files in `codemie-ui` folder:
    a. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
-   b. Replace `%%IMAGE_REPOSITORY%%` with next value `709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
+   b. Replace `%%IMAGE_REPOSITORY%%` with next value `xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
    c. Replace `%%DOMAIN%%` with your domain name, e.g. `example.com`. The value should be taken from the Route 53 hosted zone that was created during an earlier step of this guide.
 
 2. Install `codemie-ui` helm chart in created namespace, applying custom values file with the command:
@@ -1168,7 +1168,7 @@ type: Opaque
 ### 6.3.15. Install AI/Run Mermaid Server component:
 1. Fill in missing values in values.yaml and Chart.yaml files in `mermaid-server` folder:
    a. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
-   b. Replace `%%IMAGE_REPOSITORY%%` with next value`709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
+   b. Replace `%%IMAGE_REPOSITORY%%` with next value`xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
 
 2. Install mermaid-server helm chart with the command:
 
@@ -1188,7 +1188,7 @@ type: Opaque
    c. Replace `%%EKS_AWS_ROLE_ARN%%` with your AWS IAM Role arn, the value becomes available after running the terraform apply command in Step 4.6.5, e.g. `arn:aws:iam::0123456789012:role/AWSIRSA_AI_RUN`
    d. Replace `%%AWS_KMS_KEY_ID%%` with your KMS Key ID, the value becomes available after running the terraform apply command in Step 4.6.5, e.g. `50f3f093-dc86-48de-8f2d-7a76e480348e`
    e. Replace `%%AWS_S3_BUCKET_NAME%%`  The value becomes available after running the terraform apply command in Step 4.6.5
-   f. Replace `%%IMAGE_REPOSITORY%%` with next value`709825985650.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
+   f. Replace `%%IMAGE_REPOSITORY%%` with next value`xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/epam-systems`
    g. Replace `%%IMAGE_VERSION%%` with next value `2.2.1-aws`
 
 2. Copy Elasticsearch credentials to the application namespace with the command:
