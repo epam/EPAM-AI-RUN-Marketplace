@@ -11,7 +11,8 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 - Keep track of your token and budget usage by regularly checking the details via the "Usage details" button on workflow-executions page after step 13.
 - Project integration and workflow should be created within the same "project". It is recommended to name the project after your specific use case (e.g., "example@email.com"). 
   A project property is a special attribute in EPAM AI/Run™ for AWS , created by the admin. Each user has their own project, which is automatically named based on their email address
-
+- NodeJS - should be installed on your machine
+- NPM - should be installed on your machine
 
 # Step for run
 1. Install Python 3.12 or higher

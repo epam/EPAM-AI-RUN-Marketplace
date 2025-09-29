@@ -8,7 +8,7 @@
   A project property is a special attribute in EPAM AI/Run™ for AWS , created by the admin. Each user has their own project, which is automatically named based on their email address
 
 
-1. Create folder scratchpad on C disk for example "C:\scratchpad"
+1. Create a scratchpad folder in the root directory, e.g., C:\scratchpad on Windows or /scratchpad on Unix-like systems
 2. Install Python 3.12 or higher
 4. Install uvx
 4. Install Node.js 22 or higher
@@ -17,7 +17,7 @@
   pip install codemie-plugins
 ```
 
-6. Define default MCP servers and connection to nats catalogue at ```<user_home_directory>\.codemie\config.json``` file
+6. Define default MCP servers and connection to nats catalogue at ```<user_home_directory>\.codemie\config.json``` file in airun folder
 ```
  {
   "PLUGIN_KEY": "<Any value>",

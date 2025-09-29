@@ -10,7 +10,8 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 - Keep track of your token and budget usage by regularly checking the details via the "Usage details" button on workflow-executions page after step 13.
 - Project integration and workflow should be created within the same "project". It is recommended to name the project after your specific use case (e.g., "example@email.com").
   A project property is a special attribute in EPAM AI/Run™ for AWS , created by the admin. Each user has their own project, which is automatically named based on their email address
-
+- Java - should be installed on your machine
+- MVN or Gradle - should be installed on your machine
 
 # Step for run
 1. Install Python 3.12 or higher
@@ -18,7 +19,7 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 3. Install Node.js 22 or higher
 4. Run command for install codemie-plugins
 ```bash
-  uvx pip install codemie-plugins
+  pip install codemie-plugins
 ```
 
 5. Define default MCP servers and connection to nats catalogue  at ```<user_home_directory>\.codemie\config.json``` file
