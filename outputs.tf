@@ -1,6 +1,6 @@
 output "account_id" {
   description = "Detected account id"
-  value       = data.aws_caller_identity.current
+  value       = data.aws_caller_identity.current.account_id
 }
 
 output "worker_role_arn" {
@@ -17,13 +17,12 @@ output "api_role_arn" {
   value       = module.api_role.arn
 }
 
-# output "deployer_iam_role_arn" {
+output "kms_main_key_id" {
+  description = "KMS Main key id for AI/Run TestMate"
+  value       = module.main_key.key_id
+}
 
-#   description = "IAM role arn for EKS cluster deployment"
-#   value       = aws_iam_role.deployer.arn
-# }
-
-# output "deployer_iam_role_name" {
-#   description = "IAM role name for EKS cluster deployment"
-#   value       = aws_iam_role.deployer.name
-# }
+output "kms_codemie_key_id" {
+  description = "KMS Codemie integration key id for AI/Run TestMate"
+  value       = module.codemie_key.key_id
+}

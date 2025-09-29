@@ -27,9 +27,7 @@ module "sysworker_role" {
     }
   }
 
-  policies = {
-    AmazonBedrockFullAccess = "arn:aws:iam::aws:policy/AmazonBedrockFullAccess"
-  }
+  policies = {}
 }
 
 module "worker_role" {
@@ -67,7 +65,40 @@ module "api_role" {
     }
   }
 
-  policies = {
-    AmazonBedrockFullAccess = "arn:aws:iam::aws:policy/AmazonBedrockFullAccess"
-  }
+  policies = {}
+}
+
+module "main_key" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 4.0"
+
+  description = "AI Run TestMate Main Key"
+  key_usage   = "ENCRYPT_DECRYPT"
+  aliases     = ["aitestmate-main-key"]
+
+  enable_key_rotation = false
+
+  key_users = [
+    module.sysworker_role.arn,
+    module.worker_role.arn,
+    module.api_role.arn
+  ]
+}
+
+module "codemie_key" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 4.0"
+
+  description              = "AI Run TestMate Codemie Integration Key"
+  key_usage                = "ENCRYPT_DECRYPT"
+  customer_master_key_spec = "RSA_2048"
+  aliases                  = ["aitestmate-codemie-key"]
+
+  enable_key_rotation = false
+
+  key_users = [
+    module.sysworker_role.arn,
+    module.worker_role.arn,
+    module.api_role.arn
+  ]
 }
