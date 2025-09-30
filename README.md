@@ -10,8 +10,8 @@ Ensure you configure a proper backend for state management if required for your 
 
 ## Customizing Default Variables
 
-Default variables can be customized by assigning values in a `terraform.tfvars` file or directly in the module configuration block.
-
+Default variables can be customized by assigning values in a `terraform.tfvars` file.
+Also variables could be set via `TF_VAR_<variable>=<value>` environment variable.
 
 ## Usage
 
