@@ -82,7 +82,7 @@ env:
     value: http://aitestmate-embeddings:7070
 
   # - name: CODEMIE_BASE_URL
-  #   value: https://codemie-preview.lab.epam.com/code-assistant-api
+  #   value: https://codemie.example.com/code-assistant-api
   # - name: CODEMIE_IGNORE_SSL_ERRORS
   #   value: "true"
   # - name: CODEMIE_CLIENT_ID
@@ -118,7 +118,7 @@ env:
   # - name: SMTP_PASSWORD
   #   value: withoutpassword
   # - name: SMTP_FROM_EMAIL
-  #   value: ai_testmate@epam.com
+  #   value: ai_testmate@example.com
 
 # Additional environment passed into container
 extraEnv: []
