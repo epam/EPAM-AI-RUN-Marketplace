@@ -28,6 +28,8 @@ module "sysworker_role" {
   }
 
   policies = {}
+
+  tags = var.tags
 }
 
 module "worker_role" {
@@ -48,6 +50,8 @@ module "worker_role" {
   policies = {
     AmazonBedrockFullAccess = "arn:aws:iam::aws:policy/AmazonBedrockFullAccess"
   }
+
+  tags = var.tags
 }
 
 module "api_role" {
@@ -66,6 +70,8 @@ module "api_role" {
   }
 
   policies = {}
+
+  tags = var.tags
 }
 
 module "main_key" {
@@ -83,6 +89,8 @@ module "main_key" {
     module.worker_role.arn,
     module.api_role.arn
   ]
+
+  tags = var.tags
 }
 
 module "codemie_key" {
@@ -101,4 +109,6 @@ module "codemie_key" {
     module.worker_role.arn,
     module.api_role.arn
   ]
+
+  tags = var.tags
 }
