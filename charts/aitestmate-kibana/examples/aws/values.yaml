@@ -1,0 +1,10 @@
+---
+
+# Set resources for aitestmate-kibana
+resources:
+  requests:
+    cpu: 200m
+    memory: 2Gi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
