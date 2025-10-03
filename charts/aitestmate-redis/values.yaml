@@ -14,19 +14,14 @@ imagePullSecrets: []
 nameOverride: "aitestmate-redis"
 fullnameOverride: "aitestmate-redis"
 
-auth:
-  # @param set redis password from secret
-  password:
-    secretName: aitestmate-redis-secret
-    secretKey: password
-
+# -- redis service port
 port: 6379
 
 env:
-  # @param Sets loglevel for redis
+  # -- Sets loglevel for redis
   - name: REDIS_LOGLEVEL
     value: notice
-  # @param set password from auto generated secret
+  # -- set password from auto generated secret
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:

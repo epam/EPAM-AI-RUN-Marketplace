@@ -1,0 +1,10 @@
+---
+
+# Set resources for aitestmate-redis
+resources:
+  requests:
+    cpu: 100m
+    memory: 1Gi
+  limits:
+    cpu: 200m
+    memory: 1Gi
