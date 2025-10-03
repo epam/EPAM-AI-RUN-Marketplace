@@ -18,55 +18,61 @@ nameOverride: "aitestmate-api"
 fullnameOverride: "aitestmate-api"
 
 env:
-  # @param host for database connection
+  # -- host for database connection
   - name: ELASTICSEARCH_HOST
     value: http://aitestmate-elasticsearch-headless:9200
-  # @param user for database connection
+  # -- user for database connection
   - name: ELASTICSEARCH_USER
     valueFrom:
       secretKeyRef:
         name: aitestmate-elasticsearch-secret
         key: username
-  # @param password for database connection
+  # -- password for database connection
   - name: ELASTICSEARCH_PASSWORD
     valueFrom:
       secretKeyRef:
         name: aitestmate-elasticsearch-secret
         key: password
+  # -- host for rabbitmq connection
   - name: RABBITMQ_HOST
     value: aitestmate-rabbitmq-headless
+  # -- port for rabbitmq connection
   - name: RABBITMQ_PORT
     value: "5672"
+  # -- user for rabbitmq connection
   - name: RABBITMQ_USER
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: username
+  # -- password for rabbitmq connection
   - name: RABBITMQ_PASSWORD
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: password
+  # -- vhost for rabbitmq connection
   - name: RABBITMQ_VHOST
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: vhost
+  # -- host for redis connection
   - name: REDIS_HOST
     value: aitestmate-redis-headless
+  # -- password for redis connection
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:
         name: aitestmate-redis-secret
         key: password
-
-  # @param loglevel, 20 - info
+  # -- log level
   - name: AITESTMATE_LOGLEVEL
-    value: "20"
+    value: INFO
 
   # Langfuse observability
   # - name: LANGFUSE_HOST
-  #   value: https://langfuse.epm-eag.projects.epam.com
+  #   value: https://langfuse.example.com
   # - name: LANGFUSE_SSL_VERIFY
   #   value: "false"
   # - name: LANGFUSE_PUBLIC_KEY
@@ -74,10 +80,10 @@ env:
   # - name: LANGFUSE_SECRET_KEY
   #   value: sk-lf-12312312-1231-1231-1231-123123123123
 
-  # @param use standalone embeddings. See aitestmate-embeddings chart.
+  # -- use standalone embeddings (see aitestmate-embeddings chart)
   - name: USE_EMBEDDINGS_HTTP_API
     value: "true"
-  # @param embeddings endpoint to use
+  # -- embeddings endpoint to use (see aitestmate-embeddings chart)
   - name: EMBEDDINGS_LLM_BASE_URL
     value: http://aitestmate-embeddings:7070
 
@@ -105,7 +111,7 @@ env:
   # - name: API_AUTH_OPENID_CLIENT_ID
   #   value: codemie-preview
 
-  # @param encryption configuration
+  # -- encryption configuration
   # - name: KMS_KEY_RING_ID
   #   value: google-ring-id
 
@@ -120,11 +126,10 @@ env:
   # - name: SMTP_FROM_EMAIL
   #   value: ai_testmate@example.com
 
-# Additional environment passed into container
+# -- Additional environment passed into container
 extraEnv: []
 
 serviceAccount:
-  # Annotations to add to the service account
   annotations: {}
 
 # This is for setting Kubernetes Annotations to a Pod.
@@ -152,7 +157,7 @@ service:
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 8280
 
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+# @ignore -- not implemented yet
 ingress:
   enabled: false
   className: ""
