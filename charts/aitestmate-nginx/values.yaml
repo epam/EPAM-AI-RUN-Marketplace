@@ -18,10 +18,11 @@ nameOverride: "aitestmate-nginx"
 fullnameOverride: "aitestmate-nginx"
 
 env:
+  # -- proxy backend requests to api
   - name: AITESTMATE_NGINX_UPSTREAM0
     value: aitestmate-api:8280
 
-# Additional environment passed into container
+# -- Additional environment passed into container
 extraEnv: []
 
 # This is for setting Kubernetes Annotations to a Pod.
