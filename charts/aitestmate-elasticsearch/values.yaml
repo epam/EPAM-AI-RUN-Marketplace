@@ -6,7 +6,7 @@ image:
   repository: artifactoryspb.epam.com/epm-eag-docker/aitestmate/elasticsearch
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
 imagePullSecrets: []
@@ -15,6 +15,7 @@ imagePullSecrets: []
 nameOverride: "aitestmate-elasticsearch"
 fullnameOverride: "aitestmate-elasticsearch"
 
+# -- Environment variables passed into container
 env:
   - name: xpack.security.enabled
     value: "true"
@@ -28,7 +29,7 @@ env:
         name: aitestmate-elasticsearch-secret
         key: password
 
-# Additional environment passed into container
+# -- Additional environment passed into container
 extraEnv: []
 
 # This is for setting Kubernetes Annotations to a Pod.
