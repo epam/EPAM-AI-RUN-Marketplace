@@ -16,29 +16,29 @@ nameOverride: "aitestmate-rabbitmq"
 fullnameOverride: "aitestmate-rabbitmq"
 
 env:
-  # @param listen on all interfaces
+  # -- listen on all interfaces
   - name: RABBITMQ_NODE_IP_ADDRESS
     value: 0.0.0.0
-  # @param default user
+  # -- default user
   - name: RABBITMQ_DEFAULT_USER
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: username
-  # @param default password
+  # -- default password
   - name: RABBITMQ_DEFAULT_PASS
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: password
-  # @param default vhost
+  # -- default vhost
   - name: RABBITMQ_DEFAULT_VHOST
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: vhost
 
-# Additional environment passed into container
+# -- Additional environment passed into container
 extraEnv: []
 
 # This is for setting Kubernetes Annotations to a Pod.
@@ -59,14 +59,8 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 15672
-
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+# @ignore not implemented yet
 ingress:
   enabled: false
   className: ""
