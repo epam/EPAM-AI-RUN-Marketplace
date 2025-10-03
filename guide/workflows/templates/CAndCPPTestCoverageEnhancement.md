@@ -98,7 +98,7 @@ set VCPKG_TOOLCHAIN=%VCPKG_ROOT%\\scripts\\buildsystems\\vcpkg.cmake
  codemie-plugins mcp run -s filesystem,filesystem_ext,noinput_cli -e noinput_cli=ALLOWED_DIR,PROGRAMFILES  -e filesystem_ext=ALLOWED_DIR,PROJECT_BOOTSTRAP
 ```
 15. Go to Workflows templates
-16. Find and create next workflow:
+16. Find and create next workflows:
 
  - C/CPP: project discovery
  - C/CPP: sources triage

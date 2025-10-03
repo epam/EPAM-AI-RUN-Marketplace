@@ -1,6 +1,6 @@
-## EPAM AI/Run™ for AWS - Data Sources Overview
+## EPAM AI/Run™ for AWS Migration and Modernization - Data Sources Overview
 
-EPAM AI/Run™ for AWS leverages various data sources to provide assistants with relevant knowledge and context, enhancing their ability to deliver accurate and helpful responses. Data sources serve as the knowledge foundation for your assistants, allowing them to reference specific project information when answering questions.
+EPAM AI/Run™ for AWS Migration and Modernization leverages various data sources to provide assistants with relevant knowledge and context, enhancing their ability to deliver accurate and helpful responses. Data sources serve as the knowledge foundation for your assistants, allowing them to reference specific project information when answering questions.
 
 ### Types of Data Sources
 
@@ -20,7 +20,7 @@ The platform supports several types of data sources:
 
 ### Setting Up Data Sources
 
-1. Navigate to the **Data Sources** tab in EPAM AI/Run™ for AWS
+1. Navigate to the **Data Sources** tab in EPAM AI/Run™ for AWS Migration and Modernization
 2. Click **Create Datasource**
 3. Fill in the required fields:
     - **Project**: Select your project from the dropdown
@@ -39,7 +39,7 @@ To connect an AWS Knowledge Base:
 
 1. Ensure you have an AWS integration configured in your project
 2. Create AWS Knowledge Bases by [AWS documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-create.html) 
-3. Install Knowledge Bases in  EPAM AI/Run™ for AWS
+3. Install Knowledge Bases in  EPAM AI/Run™ for AWS Migration and Modernization
 
 AWS Knowledge Bases allow you to leverage data you've already indexed within AWS Bedrock, providing a seamless way to utilize your existing AWS data infrastructure with EPAM AI/Run™ for AWS assistants.
 

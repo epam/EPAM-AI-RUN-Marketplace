@@ -26,7 +26,7 @@ Create a Git data source using the credentials from **Step 1**.
 ---
 
 ### 3. Create a File Data Source with Best Practices Instructions
-Create a data source of type **File** that provides detailed instructions for the workflow on how to implement OKTA integration following best practices. The file for the data source is located at the following path: **guide/attachment/dot-net8-instructions.txt**
+Create a data source of type **File** that provides detailed instructions for the workflow on how to implement migration following best practices. The file for the data source is located at the following path: **guide/workflows/resources/dot-net8-instructions.txt**
 
 ---
 
