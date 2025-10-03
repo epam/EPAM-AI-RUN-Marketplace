@@ -1,0 +1,95 @@
+---
+
+# Customize environment for worker
+extraEnv:
+  - name: CODEMIE_BASE_URL
+    value: https://codemie.example.com/code-assistant-api
+  - name: CODEMIE_IGNORE_SSL_ERRORS
+    value: "false"
+  # The client ID which is used to authenticate its requests to AI/Run CodeMie API
+  - name: CODEMIE_CLIENT_ID
+    value: testmate
+  # It is recommended to create a secret for that
+  # - name: CODEMIE_CLIENT_ID
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: aitestmate-codemie-secret
+  #       key: id
+  # The client secret which is used to authenticate its requests to AI/Run CodeMie API
+  - name: CODEMIE_CLIENT_SECRET
+    value: xxxx
+  # It is recommended to create a secret for that
+  # - name: CODEMIE_CLIENT_SECRET
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: aitestmate-codemie-secret
+  #       key: secret
+
+  # The ID of the asymmetric key to used to secure sensitive components of the AI/Run Codemie integration
+  - name: CODEMIE_KEY_ID
+    value:  00000000-0000-0000-0000-000000000000
+
+  # Custom authorization scheme used by the AI/Run Codemie platform
+  - name: CODEMIE_USER_ACCESS_TOKEN_HEADER
+    value: X-Auth-Request-Access-Token
+  - name: CODEMIE_USER_ACCESS_TOKEN_SCHEME
+    value: codemie_custom
+
+  # The region of the KMS symmetric key used to encrypt sensitive data in the AI/Run TestMate database
+  - name: KMS_LOCATION_ID
+    value: us-east-1
+  # The ID of the symmetric key used to encrypt sensitive data in the AI/Run TestMate database
+  - name: KMS_DEFAULT_KEY_ID
+    value: 00000000-0000-0000-0000-000000000000
+
+  # In AWS the bedrock provider is used
+  - name: LLM_PROVIDER_CONFIG_NAME
+    value: bedrock
+  - name: LLM_PROVIDER_CONFIG_LOCATION_ID
+    value: us-east-1
+  # The exact model id could be found in bedrock's model catalog
+  - name: LLM_MODEL_CONFIG_NAME
+    value: us.anthropic.claude-3-7-sonnet-20250219-v1:0
+  - name: LLM_MODEL_CONFIG_STRUCTURED_OUTPUT_SUPPORT
+    value: "false"
+  - name: LLM_MODEL_CONFIG_TOOL_CHOICE
+    value: auto
+
+  # Send LLM traces to a langfuse
+  - name: LANGFUSE_HOST
+    value: https://langfuse.example.com
+  - name: LANGFUSE_SSL_VERIFY
+    value: "true"
+  - name: LANGFUSE_PUBLIC_KEY
+    value: pk-lf-12312312-1231-1231-1231-123123123123
+  # It is recommended to create a secret for that
+  # - name: LANGFUSE_PUBLIC_KEY
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: aitestmate-langfuse-secret
+  #       key: public-key
+  - name: LANGFUSE_SECRET_KEY
+    value: sk-lf-12312312-1231-1231-1231-123123123123
+  # It is recommended to create a secret for that
+  # - name: LANGFUSE_SECRET_KEY
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: aitestmate-langfuse-secret
+  #       key: secret-key
+
+
+# Kubernetes service account requires permission to work
+# with KMS keys and Amazon Bedrock
+# Annotate it with an IAM account
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::000000000000:role/aitestmate-worker-role
+
+# Worker performs heavy job and requires significant amount resources
+resources:
+  requests:
+    cpu: 2000m
+    memory: 10Gi
+  limits:
+    cpu: 4000m
+    memory: 10Gi

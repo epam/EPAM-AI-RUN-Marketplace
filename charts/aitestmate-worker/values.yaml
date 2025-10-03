@@ -2,7 +2,7 @@
 
 # AI TestMate Worker Server
 
-replicaCount: 3
+replicaCount: 2
 
 image:
   repository: artifactoryspb.epam.com/epm-eag-docker/aitestmate/worker
@@ -17,62 +17,70 @@ imagePullSecrets: []
 nameOverride: "aitestmate-worker"
 fullnameOverride: "aitestmate-worker"
 
+
 env:
-  # @param host for database connection
+  # -- host for database connection
   - name: ELASTICSEARCH_HOST
     value: http://aitestmate-elasticsearch-headless:9200
-  # @param user for database connection
+  # -- user for database connection
   - name: ELASTICSEARCH_USER
     valueFrom:
       secretKeyRef:
         name: aitestmate-elasticsearch-secret
         key: username
-  # @param password for database connection
+  # -- password for database connection
   - name: ELASTICSEARCH_PASSWORD
     valueFrom:
       secretKeyRef:
         name: aitestmate-elasticsearch-secret
         key: password
+  # -- host for rabbitmq connection
   - name: RABBITMQ_HOST
     value: aitestmate-rabbitmq-headless
+  # -- port for rabbitmq connection
   - name: RABBITMQ_PORT
     value: "5672"
+  # -- user for rabbitmq connection
   - name: RABBITMQ_USER
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: username
+  # -- password for rabbitmq connection
   - name: RABBITMQ_PASSWORD
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: password
+  # -- vhost for rabbitmq connection
   - name: RABBITMQ_VHOST
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: vhost
+  # -- host for redis connection
   - name: REDIS_HOST
     value: aitestmate-redis-headless
+  # -- password for redis connection
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:
         name: aitestmate-redis-secret
         key: password
-
-  # @param loglevel, 20 - info
+  # -- log level
   - name: AITESTMATE_LOGLEVEL
-    value: "20"
-  # @param do not re-run tests under delivery
+    value: INFO
+
+  # -- do not re-run tests under delivery
   - name: DELIVERY_SKIP_TESTS
     value: "true"
-  # @param if enabled no MR will be created
+  # -- if enabled no MR will be created
   - name: DELIVERY_SAFE_MODE
     value: "false"
 
   # Langfuse observability
   # - name: LANGFUSE_HOST
-  #   value: https://langfuse.epm-eag.projects.epam.com
+  #   value: https://langfuse.example.com
   # - name: LANGFUSE_SSL_VERIFY
   #   value: "false"
   # - name: LANGFUSE_PUBLIC_KEY
@@ -80,14 +88,14 @@ env:
   # - name: LANGFUSE_SECRET_KEY
   #   value: sk-lf-12312312-1231-1231-1231-123123123123
 
-  # @param use standalone embeddings. See aitestmate-embeddings chart.
+  # -- use standalone embeddings (see aitestmate-embeddings chart)
   - name: USE_EMBEDDINGS_HTTP_API
     value: "true"
-  # @param embeddings endpoint to use
+  # -- embeddings endpoint (see aitestmate-embeddings chart)
   - name: EMBEDDINGS_LLM_BASE_URL
     value: http://aitestmate-embeddings:7070
 
-  # @param LLM Provider and configuration
+  # -- LLM Provider and configuration
   # - name: LLM_PROVIDER_CONFIG_NAME
   #   value: google
   # - name: LLM_PROVIDER_CONFIG_LOCATION_ID
@@ -120,7 +128,7 @@ env:
   # - name: CODEMIE_KEY_ID
   #   value: codemiekeyid
 
-  # @param encryption configuration
+  # -- encryption configuration
   # - name: KMS_KEY_RING_ID
   #   value: google-ring-id
 
@@ -135,7 +143,7 @@ env:
   # - name: SMTP_FROM_EMAIL
   #   value: ai_testmate@example.com
 
-# Additional environment passed into container
+# -- Additional environment passed into container
 extraEnv: []
 
 serviceAccount:
