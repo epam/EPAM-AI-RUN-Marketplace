@@ -19,6 +19,7 @@
 7. Click on ```Create workflow``` button
 8. Update/add next property:
  - assistant_id - change to value from step 3
+ - model - provide name of LLM 
  - integration_alias - add the property to tool Sonar section with value, for example  
    ```
    tools:
