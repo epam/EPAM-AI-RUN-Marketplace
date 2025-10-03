@@ -16,34 +16,44 @@ nameOverride: "aitestmate-flower"
 fullnameOverride: "aitestmate-flower"
 
 env:
+  # -- host for rabbitmq connection
   - name: RABBITMQ_HOST
     value: aitestmate-rabbitmq-headless
+  # -- port for rabbitmq connection
   - name: RABBITMQ_PORT
     value: "5672"
+  # -- user for rabbitmq connection
   - name: RABBITMQ_USER
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: username
+  # -- password for rabbitmq connection
   - name: RABBITMQ_PASSWORD
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: password
+  # -- vhost for rabbitmq connection
   - name: RABBITMQ_VHOST
     valueFrom:
       secretKeyRef:
         name: aitestmate-rabbitmq-secret
         key: vhost
+  # -- host for redis connection
   - name: REDIS_HOST
     value: aitestmate-redis-headless
+  # -- password for redis connection
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:
         name: aitestmate-redis-secret
         key: password
+  # -- log level
+  - name: AITESTMATE_LOGLEVEL
+    value: INFO
 
-# Additional environment passed into container
+# -- Additional environment passed into container
 extraEnv: []
 
 # This is for setting Kubernetes Annotations to a Pod.
