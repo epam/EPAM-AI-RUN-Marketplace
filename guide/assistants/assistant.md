@@ -2,16 +2,17 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-This guide provides comprehensive information about working with Assistants in the EPAM AI/Run™ for AWS platform.
+This guide provides comprehensive information about working with Assistants in the EPAM AI/Run™ for AWS Migration and Modernization platform.
 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Types of Assistants](#types-of-assistants)
 - [Creating an Assistant](#creating-an-native-assistant)
+- [Creating Bedrock Assistants](#creating-bedrock-assistants)
 - [Using Assistants](#using-assistants)
-- [Managing Assistants](#managing-assistants)
-- [AWS Integration](#aws-integration)
-- [Best Practices](#best-practices)
+- [List of Template Assistants](#list-of-template-assistants)
+
 
 ## Overview
 
@@ -56,10 +57,18 @@ EPAM AI/Run™ for AWS Migration and Modernization supports two main types of as
 ## Creating Bedrock Assistants
 1. Create an AWS integration by following the instructions in the project guide located at **integration/README.md**
 2. Create AWS agent in follow the official [AWS documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-create.html)
-3. Go Settings profile 
+3. Go Settings profile
+   <img src="assets/assistant-guide/go_to_settings.png">
+   <img src="assets/assistant-guide/go_to_settings_2.png">
 4. Find your AWS integration from step 1
+   <img src="assets/assistant-guide/find_aws_integration.png">
 5. Find your AWS agent from step 2
+   <img src="assets/assistant-guide/find_aws_agent.png">
 6. Install agent
+   <img src="assets/assistant-guide/install_agent.png">
+
+
+   
 
 ## Using Assistants
 
@@ -67,7 +76,6 @@ EPAM AI/Run™ for AWS Migration and Modernization supports two main types of as
 2. Click **Start Chat** next to the assistant's name
 3. Type your question or request in the text field
 4. To switch to a different assistant during conversation, tag it using the @ symbol
-
 
 
 ℹ️ Pay attention to the assistant templates - they are useful for all aspects of the SDLC and can significantly accelerate your development process.
