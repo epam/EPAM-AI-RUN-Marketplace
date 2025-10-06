@@ -1,10 +1,10 @@
-## AI/Run™ for AWS - Workflows Overview
+## AI/Run™ for AWS Migration and Modernization - Workflows Overview
 
-AI/Run™ for AWS offers powerful workflow capabilities that allow you to automate complex tasks by chaining together multiple AI assistants. Workflows enable you to create sequential or autonomous processes that can handle sophisticated business logic and multi-step operations.
+AI/Run™ for AWS Migration and Modernization offers powerful workflow capabilities that allow you to automate complex tasks by chaining together multiple AI assistants. Workflows enable you to create sequential or autonomous processes that can handle sophisticated business logic and multi-step operations.
 
 ### What Are Workflows?
 
-Workflows in AI/Run™ for AWS are structured sequences of AI assistant interactions designed to accomplish complex tasks by breaking them down into manageable steps. Each step can involve different assistants with specialized capabilities, working together toward a common goal.
+Workflows in AI/Run™ for AWS Migration and Modernization are structured sequences of AI assistant interactions designed to accomplish complex tasks by breaking them down into manageable steps. Each step can involve different assistants with specialized capabilities, working together toward a common goal.
 
 ### Types of Workflow Modes
 
@@ -27,7 +27,7 @@ If you want to use the same workflow simultaneously in different projects:
 
 ### Creating a Workflow
 
-1. Navigate to the **Workflows** tab in AI/Run™ for AWS
+1. Navigate to the **Workflows** tab in AI/Run™ for AWS Migration and Modernization
 2. Click **Create Workflow**
 3. Configure the workflow settings:
    - **Project**: Select your project (typically pre-populated)
@@ -79,9 +79,18 @@ For Sequential workflows, the YAML configuration includes:
 
 
 ### Creating a AWS Workflow
-1. Create an AWS integration by following the instructions in the project guide located at **integration/README.md**
+1. Create an AWS integration by following the instructions in the project guide located at **integration/integration.md**
 2. Follow the official AWS documentation to [Create and configure workflow - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/flows-create.html)
-3. Install workflow
+3. Go Settings profile
+   <img src="assets/workflow-guide/go_to_settings.png">
+   <img src="assets/workflow-guide/go_to_settings_2.png">
+4. Find your AWS integration from step 1
+   <img src="assets/workflow-guide/find_aws_integration.png">
+5. Find your AWS workflow from step 2
+   <img src="assets/workflow-guide/find_aws_workflow.png">
+6. Install workflow
+   <img src="assets/workflow-guide/install_workflow.png">
+
 
 ## Executing Workflows
 
