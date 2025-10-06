@@ -1,0 +1,64 @@
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: aitestmate-kibana
+  labels:
+    # {{ include "aitestmate-kibana.labels" . | nindent 4 }}
+spec:
+  minReadySeconds: 30
+  replicas: 1
+  selector:
+    matchLabels:
+      # {{ include "aitestmate-kibana.selectorLabels" . | nindent 6 }}
+  serviceName: aitestmate-kibana-headless
+  template:
+    metadata:
+      labels:
+        # {{ include "aitestmate-kibana.labels" . | nindent 8 }}
+        # {{ with .Values.podLabels }}
+        # {{ toYaml . | nindent 8 }}
+        # {{ end }}
+    spec:
+      # {{ with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      automountServiceAccountToken: false
+      # {{ with .Values.podSecurityContext }}
+      securityContext:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      containers:
+        - name: aitestmate-kibana
+          # {{ with .Values.securityContext }}
+          securityContext:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          image: >-
+            {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: >-
+            {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5601
+          # {{ with (concat (default list .Values.env) (default list .Values.extraEnv) | uniq) }}
+          env:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.resources }}
+          resources:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          volumeMounts:
+          - name: aitestmate-kibana-data
+            mountPath: /var/lib/kibana
+  volumeClaimTemplates:
+    - metadata:
+        name: aitestmate-kibana-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 128Mi

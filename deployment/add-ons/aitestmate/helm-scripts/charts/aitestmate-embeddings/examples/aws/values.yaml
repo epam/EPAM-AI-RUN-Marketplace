@@ -1,0 +1,10 @@
+---
+
+# Set resources for aitestmate-embeddings
+resources:
+  requests:
+    cpu: 2000m
+    memory: 4Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
