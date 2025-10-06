@@ -23,7 +23,7 @@ Pay attention that for some components, like `aitestmate-worker`,
 service accounts must be properly annotated with appropriate IAM Role.
 
 Service accounts require permissions to work with LLM API.
-For example, with `AmazonBadrock` in AWS.
+For example, with `AmazonBedrock` in AWS.
 
 See an example of [install.sh](./install.sh).
 
@@ -117,7 +117,7 @@ helm upgrade aitestmate-flower charts/aitestmate-flower \
 
 ### Deploy aitestmate-sysworker
 
-Optional, but recommended. Install `aitestmate-sysworker`, a dedicted worker
+Optional, but recommended. Install `aitestmate-sysworker`, a dedicated worker
 to process internal system tasks:
 
 ```bash
