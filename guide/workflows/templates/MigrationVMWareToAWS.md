@@ -30,7 +30,7 @@ Assign a name to the new workflow during customization.
 ### 4. Run the Workflow
 Start the workflow process by attaching the required **JSON file** (vm_snapshot file) for the migration.
 You can find an example of the file at the following path:
-`guide/attachment/vm-migration`
+`guide/workflows/resources/vm-migration`
 ---
 
 ### 5. Wait for Completion

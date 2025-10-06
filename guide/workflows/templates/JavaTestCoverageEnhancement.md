@@ -88,7 +88,7 @@ For Windows
 If you want to run the flow step by step, you can do so, but you'll need to follow the previous instructions up to step 11
 After it, you need create next workflow from template and run the workflow
 
-Order of workflow:
+Order of workflows:
 - JUNIT: project discovery
 - JUNIT: sources triage
 - JUNIT: coverage analyzer

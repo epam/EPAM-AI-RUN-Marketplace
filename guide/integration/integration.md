@@ -1,6 +1,6 @@
-## EPAM AI/Run™ for AWS - Integration Overview
+## EPAM AI/Run™ for AWS Migration and Modernization - Integration Overview
 
-EPAM AI/Run™ for AWS provides powerful integration capabilities that allow you to connect the platform with various external services and tools. These integrations enhance the functionality of your assistants by giving them access to additional resources and capabilities.
+EPAM AI/Run™ for AWS Migration and Modernization provides powerful integration capabilities that allow you to connect the platform with various external services and tools. These integrations enhance the functionality of your assistants by giving them access to additional resources and capabilities.
 
 ### Types of Integrations
 
@@ -20,7 +20,7 @@ The platform supports several integration types:
 
 ### Setting Up Integrations
 
-1. Navigate to the **Integrations** tab in EPAM AI/Run™ for AWS
+1. Navigate to the **Integrations** tab in EPAM AI/Run™ for AWS Migration and Modernization
 2. Choose between **User Integrations** or **Project Integrations**
 3. Click **Create Project Integration** (or **Create User Integration**)
 4. Select your integration type from the dropdown menu
