@@ -1,0 +1,57 @@
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: >-
+    aitestmate-migrator-{{ uuidv4  }}
+  labels:
+    # labels: {{ include "aitestmate-migrator.labels" . | nindent 4 }}
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      # {{ with .Values.podAnnotations }}
+      annotations:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      labels:
+        # {{ include "aitestmate-migrator.labels" . | nindent 8 }}
+        # {{ with .Values.podLabels }}
+        # {{ toYaml . | nindent 8 }}
+        # {{ end }}
+    spec:
+      # {{ with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      serviceAccountName: aitestmate-migrator-sa
+      # {{ with .Values.podSecurityContext }}
+      securityContext:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      restartPolicy: OnFailure
+      containers:
+        - name: aitestmate-migrator
+          image: >-
+            {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: >-
+            {{ .Values.image.pullPolicy }}
+          args: ["database", "migrate"]
+          # {{ with (concat (default list .Values.env) (default list .Values.extraEnv) | uniq) }}
+          env:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.livenessProbe }}
+          livenessProbe:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.readinessProbe }}
+          readinessProbe:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.resources }}
+          resources:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
