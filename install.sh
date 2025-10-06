@@ -1,12 +1,21 @@
-helm upgrade dev-aitestmate-redis         aitestmate-redis         --install --namespace dev-aitestmate --set resources.requests.cpu=100m  --set resources.requests.memory=1Gi
-helm upgrade dev-aitestmate-rabbitmq      aitestmate-rabbitmq      --install --namespace dev-aitestmate --set resources.requests.cpu=100m  --set resources.requests.memory=1Gi
-helm upgrade dev-aitestmate-elasticsearch aitestmate-elasticsearch --install --namespace dev-aitestmate --set resources.requests.cpu=1000m --set resources.requests.memory=6Gi
-helm upgrade dev-aitestmate-kibana        aitestmate-kibana        --install --namespace dev-aitestmate --set resources.requests.cpu=200m  --set resources.requests.memory=2Gi
-helm upgrade dev-aitestmate-embeddings    aitestmate-embeddings    --install --namespace dev-aitestmate --set resources.requests.cpu=2000m --set resources.requests.memory=4Gi
-helm upgrade dev-aitestmate-migrator      aitestmate-migrator      --install --namespace dev-aitestmate --set resources.requests.cpu=50m   --set resources.requests.memory=512Mi
-helm upgrade dev-aitestmate-beat          aitestmate-beat          --install --namespace dev-aitestmate --set resources.requests.cpu=100m  --set resources.requests.memory=512Mi
-helm upgrade dev-aitestmate-flower        aitestmate-flower        --install --namespace dev-aitestmate --set resources.requests.cpu=100m  --set resources.requests.memory=512Mi
-helm upgrade dev-aitestmate-sysworker     aitestmate-sysworker     --install --namespace dev-aitestmate --set resources.requests.cpu=200m --set resources.requests.memory=1Gi
-helm upgrade dev-aitestmate-worker        aitestmate-worker        --install --namespace dev-aitestmate --set resources.requests.cpu=2000m --set resources.requests.memory=10Gi --set replicaCount=1
-helm upgrade dev-aitestmate-api           aitestmate-api           --install --namespace dev-aitestmate --set resources.requests.cpu=200m  --set resources.requests.memory=1Gi
-helm upgrade dev-aitestmate-nginx         aitestmate-nginx         --install --namespace dev-aitestmate --set resources.requests.cpu=100m  --set resources.requests.memory=512Mi
+#!/bin/bash
+
+if [[ -z "$1" ]]; then
+  echo "Usage: $0 <namespace>"
+  exit 1
+fi
+
+NAMESPACE="$1"
+
+helm upgrade "$NAMESPACE-redis"         charts/aitestmate-redis         --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-redis/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-rabbitmq"      charts/aitestmate-rabbitmq      --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-rabbitmq/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-elasticsearch" charts/aitestmate-elasticsearch --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-elasticsearch/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-kibana"        charts/aitestmate-kibana        --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-kibana/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-embeddings"    charts/aitestmate-embeddings    --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-embeddings/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-migrator"      charts/aitestmate-migrator      --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-migrator/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-beat"          charts/aitestmate-beat          --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-beat/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-flower"        charts/aitestmate-flower        --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-flower/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-sysworker"     charts/aitestmate-sysworker     --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-sysworker/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-worker"        charts/aitestmate-worker        --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-worker/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-api"           charts/aitestmate-api           --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-api/examples/aws/values.yaml
+helm upgrade "$NAMESPACE-nginx"         charts/aitestmate-nginx         --install --namespace "$NAMESPACE" --create-namespace -f charts/aitestmate-nginx/examples/aws/values.yaml
