@@ -1,5 +1,9 @@
 # JS Test Coverage Enhancement
 
+## Overview
+The workflow to streamline the analysis and creation of unit tests for Java projects, reducing manual effort while ensuring consistent and reliable test coverage.
+
+
 Unit tests can be generated using two efficient methods flow by flow or one general flow for full proces
 
 1. Using flow by flow you can see what happen every iteration and can affect on any stage
@@ -17,7 +21,10 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 # Step for run
 1. Install Python 3.12 or higher
 2. Install Node.js 22 or higher
-3. Install uvx
+3. Install uvx with command
+```bash
+  pip install uv
+```
 4. Run command for install codemie-plugins
 ```bash
   pip install codemie-plugins
@@ -69,13 +76,14 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 ```
 7. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
 8. Create folder in root of your project ```airun```
-9. Add ```00bootstrap.json``` files with next values in ```airun```
+9. Add ```00bootstrap.json``` files with next values in ```airun``` folder
 ```
  {
   "project_base": "absolute_path_to_your_project",  
  }
 ```
 10. Run MCP servers and codemie-plugins
+
     For MacOS & Linux
 ```bash
   cd <absolute_path_to_your_project>

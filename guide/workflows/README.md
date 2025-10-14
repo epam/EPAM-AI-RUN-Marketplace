@@ -91,6 +91,13 @@ For Sequential workflows, the YAML configuration includes:
 6. Install workflow
    <img src="assets/workflow-guide/install_workflow.png">
 
+### ⚠️ Warning
+1. Please verify that the AWS credentials you've configured in your integration have sufficient permissions to access and interact with the AWS Bedrock service. Insufficient permissions will prevent successful Knowledge Base integration.
+2. Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
+3. Please monitor your token consumption regularly through the AWS portal. AWS Bedrock services are billed based on token usage, and unexpected high usage may lead to increased costs
+4. Flow MUST have at least 1 alisa and 1 version with status PREPARED
+
+Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
 
 ## Executing Workflows
 
@@ -115,11 +122,27 @@ When exporting workflow executions:
 2. Files follow the naming pattern: `step_name_status.md`
 3. The archive is named: `workflow_name_execution_datetime_execution_id.zip`
 
-## Best Practices
+## Available Templates
+AI/Run™ for AWS Migration and Modernization offers pre-built templates to streamline your workflow:
 
-- Start with clear objectives before creating workflows
-- Create and configure assistants before adding them to workflows
-- Test individual steps before combining them in a workflow
-- Use the Supervisor prompt to provide shared context
-- For complex logic, leverage conditional branching in Sequential mode
-- Monitor execution costs through the token usage metrics
+ - JUNIT: fully automated test generation
+ - DOTNET: fully automated test generation
+ - C/CPP: Project discovery, Sources triage, Coverage analyzer, Test-writer
+ - PyUnittest: Simple Pytest Unittest Generator
+ - JS: fully automated test generation
+ - Local Python Sonar Issues Fixer Workflow
+ - Perl2Python: fully automated conversion
+ - .NET: Migration .NET Framework v4.5.2 to .NET 8
+ - ISO: ISO to AMI Migration???
+ - Linq to SQL
+ - OKTA implementation
+ - VM: Migration VMWare to AWS???
+ - JavaMig: Java Repository Migration/Modernization
+ - BeanStalker: AWS Elastic Beanstalk Deployment Automation
+ - BeanDestroyer: AWS Elastic Beanstalk Teardown Automation
+ - CONTAPP: Containerize the application???
+ - Test Cases Generation from Unstructured Data???
+
+For detailed instructions on how to use these templates, please refer to our documentation at:
+guide/workflows/templates
+

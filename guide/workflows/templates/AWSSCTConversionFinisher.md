@@ -1,16 +1,22 @@
 # AWS SCT Conversion Finisher
 
+## Overview
+This workflow is designed to complete the conversion of scripts from Microsoft SQL Server (MS SQL) to PostgreSQL (PGSQL) using the output from the AWS Schema Conversion Tool (SCT). 
+Additionally, it integrates AI-driven assistants to handle complex or unsupported features, ensuring a smooth and efficient conversion process
+
+
 ## ⚠️ Warning
 
 - Keep track of your token and budget usage by regularly checking the details via the "Usage details" button on workflow-executions page after step 13.
 - Project integration and workflow should be created within the same "project". It is recommended to name the project after your specific use case (e.g., "example@email.com").
   A project property is a special attribute in EPAM AI/Run™ for AWS , created by the admin. Each user has their own project, which is automatically named based on their email address
-
-
-
+ 
 
 1. Install Python 3.12 or higher
-2. Install uvx
+2. Install uvx with command
+```bash
+  pip install uv
+```
 3. Install Node.js 22 or higher
 4. Run command for install codemie-plugins
 ```bash
@@ -26,13 +32,14 @@
 6. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
 7. Create folder with all your folders and files
 8. Create folder in folder from previous step with name  : ```airun```
-9. Add ```00bootstrap.json``` files with next values in ```airun```
+9. Add ```00bootstrap.json``` files with next values in ```airun``` folder
 ```
  {
   "project_base": "absolute_path_to_your_project_or_file",  
  }
 ```
 10. Run MCP servers and codemie-plugins
+
     For MacOS & Linux
 ```bash
   cd <absolute_path_to_your_project>
@@ -53,3 +60,7 @@ For Windows
 12. Find and create next workflow ```AWS SCT Conversion finisher```
 13. Go to Workflows and run 
 14. Result you can find in folder from step 7
+
+
+## Video Workflow Essentials
+👉 [Click here to watch](https://videoportal.epam.com/video/r7mD3MRJ)

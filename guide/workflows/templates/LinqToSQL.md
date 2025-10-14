@@ -1,6 +1,9 @@
 # Linq to SQL Implementation Workflow
 
-This guide provides a step-by-step process for implementing Linq to SQL in your project.
+
+## Overview
+This guide provides a step-by-step process to execute the LINQ to SQL Implementation Workflow. 
+The primary objective is to streamline the integration of LINQ to SQL within the scope of a .NET project, enabling efficient data access and query capabilities while adhering to best practices.
 
 ---
 

@@ -1,5 +1,8 @@
 # C/CPP: Test Coverage Enhancement
 
+## Overview
+The workflow to streamline the analysis and  creation of unit tests for C and C++ projects, reducing manual effort while ensuring consistent and reliable test coverage.
+
 
 ## ⚠️ Warning
 
@@ -12,7 +15,10 @@
 
 1. Create folder scratchpad on C disk for example "C:\scratchpad"
 2. Install Python 3.12 or higher
-4. Install uvx
+3. Install uvx with command
+```bash
+  pip install uv
+```
 4. Install Node.js 22 or higher
 5. Run command for install codemie-plugins
 ```bash
@@ -69,7 +75,7 @@
 9.  Left your C or C++ project into ```cpprest``` folder
 10. Create next sub folder in root of your project next folder: ```airun```
 11. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
-12. Add ```00bootstrap.json``` files with next values in airun folder
+12. Add ```00bootstrap.json``` files with next values in ```airun``` folder
 ```
 {
 "project_base": "absolute_path_to_your_project",  
