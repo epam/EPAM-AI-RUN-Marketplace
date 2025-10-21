@@ -19,6 +19,7 @@ module "sysworker_role" {
   name                 = "aitestmate-sysworker-role"
   use_name_prefix      = false
   permissions_boundary = var.iam_permissions_boundary_policy_arn
+  trust_condition_test = "StringLike"
 
   oidc_providers = {
     this = {
@@ -39,6 +40,7 @@ module "worker_role" {
   name                 = "aitestmate-worker-role"
   use_name_prefix      = false
   permissions_boundary = var.iam_permissions_boundary_policy_arn
+  trust_condition_test = "StringLike"
 
   oidc_providers = {
     this = {
@@ -61,6 +63,7 @@ module "api_role" {
   name                 = "aitestmate-api-role"
   use_name_prefix      = false
   permissions_boundary = var.iam_permissions_boundary_policy_arn
+  trust_condition_test = "StringLike"
 
   oidc_providers = {
     this = {
