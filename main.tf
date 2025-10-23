@@ -77,13 +77,13 @@ module "api_role" {
   tags = var.tags
 }
 
-module "main_key" {
+module "default_key" {
   source  = "terraform-aws-modules/kms/aws"
   version = "~> 4.0"
 
-  description = "AI Run TestMate Main Key"
+  description = "AI Run TestMate Default Key"
   key_usage   = "ENCRYPT_DECRYPT"
-  aliases     = ["aitestmate-main-key"]
+  aliases     = ["aitestmate-default-key"]
 
   enable_key_rotation = false
 

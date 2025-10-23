@@ -17,9 +17,9 @@ output "api_role_arn" {
   value       = module.api_role.arn
 }
 
-output "kms_main_key_id" {
-  description = "KMS Main key id for AI/Run TestMate"
-  value       = module.main_key.key_id
+output "kms_default_key_id" {
+  description = "KMS Default key id for AI/Run TestMate"
+  value       = module.default_key.key_id
 }
 
 output "kms_codemie_key_id" {
