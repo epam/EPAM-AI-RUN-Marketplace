@@ -99,6 +99,7 @@ env:
   #   value: very-secret
   # - name: CODEMIE_PRINCIPAL_ID
   #   value: service-account-testmate
+  # The ID of the asymmetric key which is used to secure sensitive data from the AI/Run Codemie
   # - name: CODEMIE_KEY_ID
   #   value: codemiekeyid
 
