@@ -50,22 +50,30 @@ service:
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 80
 
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+# Ingress could be enabled to serve aitestmate directly or behind codemie
 ingress:
   enabled: false
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: aitestmate.example.com
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+  hosts: []
+    # Expose it directly (not recommended)
+    # - host: aitestmate.example.com
+    #   paths:
+    #     - path: /
+    #       pathType: ImplementationSpecific
+    #
+    # Expose it via codemie
+    # - host: codemie.example.com
+    #   paths:
+    #     - path: /aitestmate
+    #       pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
