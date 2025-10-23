@@ -16,7 +16,7 @@ AI TestMate RabbitMQ Helm chart for Kubernetes
 | extraEnv | list | `[]` | Additional environment passed into container |
 | fullnameOverride | string | `"aitestmate-rabbitmq"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"artifactoryspb.epam.com/epm-eag-docker/aitestmate/rabbitmq"` |  |
+| image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/rabbitmq"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | livenessProbe | object | `{}` |  |

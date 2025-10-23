@@ -1,5 +1,11 @@
 ---
 
+# when deploying helm chart manually don't forget to set image repository
+# either use --set image.repository=<repository_url> or
+# uncomment lines below and set proper url to image
+# image:
+#   repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/sysworker
+
 # Customize environment for sysworker
 extraEnv:
   - name: CODEMIE_BASE_URL
@@ -10,7 +16,7 @@ extraEnv:
     value: "false"
   # The client ID which is used to authenticate its requests to AI/Run CodeMie API
   - name: CODEMIE_CLIENT_ID
-    value: testmate
+    value: aitestmate
   # It is recommended to create a secret for that
   # - name: CODEMIE_CLIENT_ID
   #   valueFrom:

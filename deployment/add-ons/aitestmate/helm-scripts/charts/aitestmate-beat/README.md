@@ -20,7 +20,7 @@ AI TestMate Beat Helm chart for Kubernetes
 | extraEnv | list | `[]` | Additional environment passed into container |
 | fullnameOverride | string | `"aitestmate-beat"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"artifactoryspb.epam.com/epm-eag-docker/aitestmate/beat"` |  |
+| image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/beat"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | livenessProbe | object | `{}` |  |

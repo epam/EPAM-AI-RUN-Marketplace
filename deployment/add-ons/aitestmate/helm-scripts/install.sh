@@ -1,11 +1,11 @@
 #!/usr/bin/env  bash
 
-if [[ -z "$1" ]]; then
-    echo "Usage: $0 <namespace> [container-registry] [version]"
-    echo "  namespace: kubernetes namespace, e.g. aitestmate"
-    echo "  container-registry: registry with aitestmate images, e.g. 000000000000.dkr.ecr.us-east-1.amazonaws.com"
-    echo "  version: override version, e.g. 2.2.1-aws"
-  exit 1
+if [[ -z "$1" || -z "$2" ]]; then
+    echo "Usage: $0 <namespace> <container-registry> [version]"
+    echo "  namespace: required, kubernetes namespace, e.g. aitestmate"
+    echo "  container-registry: required, registry with aitestmate images, e.g. 000000000000.dkr.ecr.us-east-1.amazonaws.com"
+    echo "  version: optional, override version, e.g. 2.2.1-aws"
+    exit 1
 fi
 
 NAMESPACE="$1"
@@ -17,7 +17,7 @@ function helm-upgrade() {
 
     helm upgrade "$NAMESPACE-$name" "charts/aitestmate-$name" \
          --install --namespace "$NAMESPACE" --create-namespace \
-         ${CONTAINER_REGISTRY:+--set image.repository=$CONTAINER_REGISTRY/aitestmate/$name} \
+         ${CONTAINER_REGISTRY:+--set image.repository=$CONTAINER_REGISTRY/epam-systems/add-ons/aitestmate/$name} \
          ${IMAGE_TAG:+--set image.tag=$IMAGE_TAG} \
          "$@"
 }

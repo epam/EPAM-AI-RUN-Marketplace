@@ -13,7 +13,7 @@ AI TestMate Elasticsearch Helm chart for Kubernetes
 | extraEnv | list | `[]` | Additional environment passed into container |
 | fullnameOverride | string | `"aitestmate-elasticsearch"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"artifactoryspb.epam.com/epm-eag-docker/aitestmate/elasticsearch"` |  |
+| image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/elasticsearch"` |  |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` |  |
 | livenessProbe | object | `{}` |  |
