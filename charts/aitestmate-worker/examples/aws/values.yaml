@@ -1,5 +1,12 @@
 ---
 
+# Each worker processes a task, such as a generation task. The more workers you
+# have, the more projects and generations you can run simultaneously.
+# Keep in mind that workers require a significant amount of resources.
+# For demo you can have 1 worker.
+# For a bigger installation consider run 2-4 workers
+replicaCount: 1
+
 # Customize environment for worker
 extraEnv:
   - name: CODEMIE_BASE_URL
