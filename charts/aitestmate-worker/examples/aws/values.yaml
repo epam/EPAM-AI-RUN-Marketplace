@@ -17,7 +17,7 @@ extraEnv:
     value: "false"
   # The client ID which is used to authenticate its requests to AI/Run CodeMie API
   - name: CODEMIE_CLIENT_ID
-    value: testmate
+    value: aitestmate
   # It is recommended to create a secret for that
   # - name: CODEMIE_CLIENT_ID
   #   valueFrom:

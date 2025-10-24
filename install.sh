@@ -15,7 +15,7 @@ IMAGE_TAG="$3"
 function helm-upgrade() {
     local name="$1"; shift
 
-    echo helm upgrade "$NAMESPACE-$name" "charts/aitestmate-$name" \
+    helm upgrade "$NAMESPACE-$name" "charts/aitestmate-$name" \
          --install --namespace "$NAMESPACE" --create-namespace \
          ${CONTAINER_REGISTRY:+--set image.repository=$CONTAINER_REGISTRY/aitestmate/$name} \
          ${IMAGE_TAG:+--set image.tag=$IMAGE_TAG} \
