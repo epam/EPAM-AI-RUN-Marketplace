@@ -57,11 +57,19 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-livenessProbe:
-  initialDelaySeconds: 60
+startupProbe:
   httpGet:
     path: /docs
     port: 7070
+  failureThreshold: 30
+  periodSeconds: 10
+
+livenessProbe:
+  httpGet:
+    path: /docs
+    port: 7070
+  periodSeconds: 10
+
 readinessProbe: {}
 #   httpGet:
 #     path: /
