@@ -113,5 +113,11 @@ module "codemie_key" {
     module.api_role.arn
   ]
 
+  key_asymmetric_public_encryption_users = [
+    module.sysworker_role.arn,
+    module.worker_role.arn,
+    module.api_role.arn
+  ]
+
   tags = var.tags
 }
