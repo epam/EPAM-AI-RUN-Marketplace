@@ -1,0 +1,18 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: aitestmate-kibana-headless
+  labels:
+    # {{ include "aitestmate-kibana.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5601
+      targetPort: 5601
+  selector:
+    # {{ include "aitestmate-kibana.selectorLabels" . | nindent 4 }}
