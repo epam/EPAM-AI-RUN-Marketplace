@@ -1,0 +1,20 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: aitestmate-redis-headless
+  labels:
+    # {{ include "aitestmate-redis.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: redis
+      protocol: TCP
+      port:
+        {{ .Values.port }}
+      targetPort:
+        {{ .Values.port }}
+  selector:
+    # {{ include "aitestmate-redis.selectorLabels" . | nindent 4 }}

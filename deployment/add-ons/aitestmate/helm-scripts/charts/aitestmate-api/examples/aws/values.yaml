@@ -1,0 +1,84 @@
+---
+
+# Customize environment for worker
+extraEnv:
+  - name: CODEMIE_BASE_URL
+    value: https://codemie.example.com/code-assistant-api
+  - name: CODEMIE_GET_TOKEN_URL
+    value: https://keycloak.codemie.example.com/auth/realms/codemie-prod/protocol/openid-connect/token
+  - name: CODEMIE_IGNORE_SSL_ERRORS
+    value: "false"
+  # The client ID which is used to authenticate its requests to AI/Run CodeMie API
+  - name: CODEMIE_CLIENT_ID
+    value: testmate
+  # It is recommended to create a secret for that
+  # - name: CODEMIE_CLIENT_ID
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: aitestmate-codemie-secret
+  #       key: id
+  # The client secret which is used to authenticate its requests to AI/Run CodeMie API
+  - name: CODEMIE_CLIENT_SECRET
+    value: xxxx
+  # It is recommended to create a secret for that
+  # - name: CODEMIE_CLIENT_SECRET
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: aitestmate-codemie-secret
+  #       key: secret
+
+  # The ID of the asymmetric key to used to secure sensitive components of the AI/Run Codemie integration
+  - name: CODEMIE_KEY_ID
+    value:  00000000-0000-0000-0000-000000000000
+
+  # Custom authorization scheme used by the AI/Run Codemie platform
+  - name: CODEMIE_USER_ACCESS_TOKEN_HEADER
+    value: X-Auth-Request-Access-Token
+  - name: CODEMIE_USER_ACCESS_TOKEN_SCHEME
+    value: codemie_custom
+
+  - name: API_CORS_ORIGINS
+    value: "https://aitestmate.example.com"
+  - name: API_AUTH_OPENID_REDIRECT_URI
+    value: "https://aitestmate.example.com/sso-callback"
+  - name: API_AUTH_OPENID_URL_BASE
+    value: https://keycloak.codemie.example.com/auth/realms/codemie-prod/protocol/openid-connect/
+  - name: API_AUTH_OPENID_METADATA_URL
+    value: https://keycloak.codemie.example.com/auth/realms/codemie-prod/.well-known/openid-configuration
+  - name: API_AUTH_OPENID_CLIENT_ID
+    value: aitestmate-client-id
+  # It is recommended to create a secret for that
+  # - name: API_AUTH_OPENID_CLIENT_ID
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: aitestmate-auth-secret
+  #       key: id
+  - name: API_AUTH_OPENID_SECRET
+    value: openid-secret
+  # It is recommended to create a secret for that
+  # - name: API_AUTH_OPENID_SECRET
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: aitestmate-auth-secret
+  #       key: secret
+
+  # The region of the KMS symmetric key used to encrypt sensitive data in the AI/Run TestMate database
+  - name: KMS_LOCATION_ID
+    value: us-east-1
+  # The ID of the symmetric key used to encrypt sensitive data in the AI/Run TestMate database
+  - name: KMS_DEFAULT_KEY_ID
+    value: 00000000-0000-0000-0000-000000000000
+
+# Kubernetes service account requires permission to work with KMS keys
+# Annotate it with an IAM account
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::000000000000:role/aitestmate-api-role
+
+resources:
+  requests:
+    cpu: "1"
+    memory: 1Gi
+  limits:
+    cpu: "2"
+    memory: 1Gi
