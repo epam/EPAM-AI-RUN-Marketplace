@@ -1335,7 +1335,7 @@ Sample: `https://keycloak.example.com/auth/admin`
 You can find creds in AWS Console or in the output of previously run script.
 
 >**Option 1:**
->After running `helm-charts.sh`, Keycloak credentials are printeed in terminal output.
+>After running `helm-charts.sh`, Keycloak credentials are printed in terminal output.
 >
 ><img src="assets/deployment-guide/helm_script_output.png">
 
@@ -1408,6 +1408,9 @@ To include the added `applications` unmanaged attribute as an additional claim t
 
 ## 8.2. Create client and client secret
 
+The steps in this section apply only to the Testmate extension and can be performed at any time in the future. 
+These steps do not affect the AI/Run™ for AWS application.
+
 1. Log into the Keycloak admin console with your administrator credentials
 2. Select the codemie-prod realm from the dropdown in the top-left corner
 3. In the left sidebar menu under "Manage", click on Clients.
@@ -1427,7 +1430,24 @@ To include the added `applications` unmanaged attribute as an additional claim t
    Home URL -
    Valid Redirect URIs - https://codemie.example.com/*
    Web Origins - https://codemie.example.com
-8. Go to credentials. On the page you can find "Client Secret" 
+8. Configure Service accounts roles:
+   - Navigate to the Service accounts roles tab in the client settings.
+   - Click on Assign role button
+   - chose: Developer(see only associated projects) or Admin(see all projects) role
+9. Configure Client scopes accounts roles:
+  - Navigate to the Client Scopes tab in the client settings
+  - Click on Add client scopes
+  - Select the codemie scope from the dropdown and set the assignment type to Default.
+10. Configure Service account user:
+  - Navigate to the Service accounts roles tab in the client settings
+  - Click on service-account-testmate link
+  - Input Email : testmate@domain.com
+  - Input First name: testmate
+  - Input Last name: project
+  - Click on the Attributes tab
+  - Type Key: applications and Values name of your project testmate
+  - Click Save button
+11. Go to credentials. On the page you can find "Client Secret" 
 
 
 # 9. Cost Management
