@@ -1,0 +1,34 @@
+neo4j:
+  image:
+    repository: neo4j
+    tag: 5.26.3
+    pullPolicy: IfNotPresent
+
+  auth:
+    secretName: aice-neo4j-secret
+    username: neo4j
+
+  ports:
+    http: 7474
+    bolt: 7687
+
+resources:
+  limits:
+    memory: 4Gi
+    cpu: 1
+  requests:
+    memory: 2Gi
+    cpu: 1
+
+service:
+  type: ClusterIP
+
+persistentVolume:
+  # -- Persistent volume access modes
+  accessModes:
+    - ReadWriteOnce
+  # -- Persistent volume size
+  size:
+    data: 5Gi
+    plugins: 5Gi
+    backups: 1Gi
