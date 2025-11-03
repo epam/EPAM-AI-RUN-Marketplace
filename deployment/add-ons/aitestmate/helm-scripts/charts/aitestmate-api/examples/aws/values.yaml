@@ -43,30 +43,12 @@ extraEnv:
   - name: CODEMIE_USER_ACCESS_TOKEN_SCHEME
     value: codemie_custom
 
-  - name: API_CORS_ORIGINS
-    value: "https://aitestmate.example.com"
-  - name: API_AUTH_OPENID_REDIRECT_URI
-    value: "https://aitestmate.example.com/sso-callback"
   - name: API_AUTH_OPENID_URL_BASE
     value: https://keycloak.codemie.example.com/auth/realms/codemie-prod/protocol/openid-connect/
   - name: API_AUTH_OPENID_METADATA_URL
     value: https://keycloak.codemie.example.com/auth/realms/codemie-prod/.well-known/openid-configuration
   - name: API_AUTH_OPENID_CLIENT_ID
-    value: aitestmate-client-id
-  # It is recommended to create a secret for that
-  # - name: API_AUTH_OPENID_CLIENT_ID
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: aitestmate-auth-secret
-  #       key: id
-  - name: API_AUTH_OPENID_SECRET
-    value: openid-secret
-  # It is recommended to create a secret for that
-  # - name: API_AUTH_OPENID_SECRET
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: aitestmate-auth-secret
-  #       key: secret
+    value: codemie
 
   # The region of the KMS symmetric key used to encrypt sensitive data in the AI/Run TestMate database
   - name: KMS_LOCATION_ID

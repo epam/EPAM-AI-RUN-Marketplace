@@ -65,28 +65,28 @@ extraEnv:
     value: us-east-1
   # The exact model id could be found in bedrock's model catalog
   - name: LLM_MODEL_CONFIG_NAME
-    value: us.anthropic.claude-3-7-sonnet-20250219-v1:0
+    value: anthropic.claude-sonnet-4-5-20250929-v1:0
   - name: LLM_MODEL_CONFIG_STRUCTURED_OUTPUT_SUPPORT
     value: "false"
   - name: LLM_MODEL_CONFIG_TOOL_CHOICE
     value: auto
 
   # Send LLM traces to a langfuse
-  - name: LANGFUSE_HOST
-    value: https://langfuse.example.com
-  - name: LANGFUSE_SSL_VERIFY
-    value: "true"
-  - name: LANGFUSE_PUBLIC_KEY
-    value: pk-lf-12312312-1231-1231-1231-123123123123
-  # It is recommended to create a secret for that
+  # - name: LANGFUSE_HOST
+  #   value: https://langfuse.example.com
+  # - name: LANGFUSE_SSL_VERIFY
+  #   value: "true"
+  # - name: LANGFUSE_PUBLIC_KEY
+  #   value: pk-lf-12312312-1231-1231-1231-123123123123
+  # # It is recommended to create a secret for that
   # - name: LANGFUSE_PUBLIC_KEY
   #   valueFrom:
   #     secretKeyRef:
   #       name: aitestmate-langfuse-secret
   #       key: public-key
-  - name: LANGFUSE_SECRET_KEY
-    value: sk-lf-12312312-1231-1231-1231-123123123123
-  # It is recommended to create a secret for that
+  # - name: LANGFUSE_SECRET_KEY
+  #   value: sk-lf-12312312-1231-1231-1231-123123123123
+  # # It is recommended to create a secret for that
   # - name: LANGFUSE_SECRET_KEY
   #   valueFrom:
   #     secretKeyRef:

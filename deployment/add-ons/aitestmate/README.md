@@ -39,8 +39,8 @@ However, the actual resource consumption may vary depending on your specific usa
   <tr>
     <td>API Service</td>
     <td>2</td>
-    <td>1Gi</td>
-    <td>0.2</td>
+    <td>2Gi</td>
+    <td>0.5</td>
   </tr>
   <tr>
     <td>Database</td>
@@ -69,8 +69,8 @@ However, the actual resource consumption may vary depending on your specific usa
   <tr>
     <td>System Worker</td>
     <td>1</td>
-    <td>1Gi</td>
-    <td>0.2</td>
+    <td>4Gi</td>
+    <td>1</td>
   </tr>
   <tr>
     <td>Celery Beat</td>
@@ -112,15 +112,16 @@ in the [deployment.conf](../../terraform-scripts/deployment.conf).
 
 For example, instance type `c5.2xlarge` has `8 vCPUs` and `16 GB RAM`. That
 means you need add at least `2` to `TF_VAR_demand_max_nodes_count` and
-`TF_VAR_demand_desired_nodes_count`.
+`TF_VAR_demand_desired_nodes_count`. You need to re-run
+[terraform.sh](../../terraform-scripts/terraform.sh) in order to apply new
+changes.
 
-**⚠️ Warning: Any manual changes made to your infrastructure after running
-`terraform.sh` will be reverted**. For example, terraform will revert manual
-changes made to the [security group mentioned
-here](../../../README.md#71-create-new-security-group).
-
-> You need to re-run [terraform.sh](../../terraform-scripts/terraform.sh) in
-> order to apply new changes.
+**⚠️ Warning:** Resources managed by Terraform are kept in sync with its state.
+**Manual edits made directly in the cloud will be undone.** For example, changes
+made to the [security group](../../../README.md#71-create-new-security-group))
+will be undone on the next `terraform.sh` run. Therefore, after executing the
+script, it is recommended to reapply these changes to ensure the configuration
+aligns with your desired state.
 
 ### Create a new OpenID Client in Keycloak
 
@@ -134,7 +135,7 @@ TestMate](../../../README.md#82-create-client-and-client-secret-for-ai-testmate)
 > found in the official [Keycloak
 > documentation](https://www.keycloak.org/docs/latest/server_admin/#proc-creating-oidc-client_server_administration_guide).
 
-Save the client secret for later use in AI TestMate configuration.
+Save the OpenID client's `client id` and `client secret` for later use in AI TestMate configuration.
 
 ### Create an additional setup for Codemie API deployment
 
@@ -230,35 +231,129 @@ AI TestMate on AWS.
 Use already created AWS resources to fill in the required variables in the
 Terraform scripts.
 
-- `region` - AWS region where the resources will be created.
-- `platform_name` - Name of the cluster where AI TestMate will be deployed.
+- `region` - AWS region where the resources will be created. Must match AI/Run Platform region.
+- `platform_name` - Name of the cluster where AI TestMate will be deployed. Must match AI/Run Platform name
 
 Please see the details at [AI TestMate Terraform Deployment
 Readme](https://github.com/epam/EPAM-AI-RUN-Marketplace/tree/main/deployment/add-ons/aitestmate/terraform-scripts).
 
+This module has the following outputs you need in configuration steps later:
+
+| Output                | Comment                                    |
+|-----------------------|--------------------------------------------|
+| worker\_role\_arn     | IAM Role for AI TestMate worker pod        |
+| sysworker\_role\_arn  | IAM Role for AI TestMate system worker pod |
+| api\_role\_arn        | IAM Role for AI TestMate api pod           |
+| kms\_default\_key\_id | KMS default symmetric key for encryption   |
+| kms\_codemie\_key\_id | KMS codemie assymetric key for integration |
+
 ## Deploy AI TestMate Helm Charts
 
-After the infrastructure is deployed, proceed to install the AI TestMate Helm
-charts.
+After the infrastructure is deployed, proceed with the AI TestMate Helm charts.
+Before you install helm charts you **must** configure them according to your
+environment and requirements needs.
+
+Each helm chart has default values in `values.yaml`. An example of configuration
+could be found in `examples/aws/values.yaml`.
+
+Below are the basic configuration steps required to set up and run the AI
+TestMate application. Go to the [charts directory](helm-scripts/charts/) and
+proceed with configuration as described below.
+
+### Configure aitestmate-api
+
+Update [examples/aws/values.yaml](helm-scripts/charts/aitestmate-api/examples/aws/values.yaml):
+
+In the section `ExtraEnv` update the following values:
+
+| Name                           | Comment                                          |
+|--------------------------------|--------------------------------------------------|
+| `CODEMIE_BASE_URL`             | Change domain name for codemie                   |
+| `CODEMIE_GET_TOKEN_URL`        | Change domain name for keycloak                  |
+| `CODEMIE_CLIENT_ID`            | OpenID client's id saved from previous steps     |
+| `CODEMIE_CLIENT_SECRET`        | OpenID client's secret saved from previous steps |
+| `CODEMIE_KEY_ID`               | Use `kms_codemie_key_id` from terraform output   |
+| `API_AUTH_OPENID_URL_BASE`     | Change domain name for keycloak                  |
+| `API_AUTH_OPENID_METADATA_URL` | Change domain name for keycloak                  |
+| `API_AUTH_OPENID_CLIENT_ID`    | Use `codemie` - client for authenticating users  |
+| `KMS_LOCATION_ID`              | Use same region as in terraform variables        |
+| `KMS_DEFAULT_KEY_ID`           | Use `kms_default_key_id` from terraform output   |
+
+In the section `serviceAccount.annotations` set `eks.amazonaws.com/role-arn` to
+the terraform's `api_role_arn` output.
+
+### Configure aitestmate-nginx
+
+Update [examples/aws/values.yaml](helm-scripts/charts/aitestmate-nginx/examples/aws/values.yaml):
+
+In the section `ingress.hosts` update the following values:
+
+| Name                           | Comment                                          |
+|--------------------------------|--------------------------------------------------|
+| `host`                         | Change domain name for codemie                   |
+
+### Configure aitestmate-sysworker
+
+Update [examples/aws/values.yaml](helm-scripts/charts/aitestmate-sysworker/examples/aws/values.yaml):
+
+In the section `ExtraEnv` update the following values:
+
+| Name                    | Comment                                          |
+|-------------------------|--------------------------------------------------|
+| `CODEMIE_BASE_URL`      | Change domain name for codemie                   |
+| `CODEMIE_GET_TOKEN_URL` | Change domain name for keycloak                  |
+| `CODEMIE_CLIENT_ID`     | OpenID client's id saved from previous steps     |
+| `CODEMIE_CLIENT_SECRET` | OpenID client's secret saved from previous steps |
+| `CODEMIE_KEY_ID`        | Use `kms_codemie_key_id` from terraform output   |
+| `KMS_LOCATION_ID`       | Use same region as in terraform variables        |
+| `KMS_DEFAULT_KEY_ID`    | Use `kms_default_key_id` from terraform output   |
+| `LLM_MODEL_CONFIG_NAME` | Optionally update model id to the latest version |
+
+In the section `serviceAccount.annotations` set `eks.amazonaws.com/role-arn` to
+the terraform's `sysworker_role_arn` output.
+
+### Configure aitestmate-worker
+
+Update [examples/aws/values.yaml](helm-scripts/charts/aitestmate-worker/examples/aws/values.yaml):
+
+In the section `replicaCount` you may adjust number of worker to run, but keep
+in mind that any value greater than 1 requires even more resources in the
+cluster from the [Add additional resources](#add-additional-resources) step.
+
+In the section `ExtraEnv` update the following values:
+
+| Name                    | Comment                                          |
+|-------------------------|--------------------------------------------------|
+| `CODEMIE_BASE_URL`      | Change domain name for codemie                   |
+| `CODEMIE_GET_TOKEN_URL` | Change domain name for keycloak                  |
+| `CODEMIE_CLIENT_ID`     | OpenID client's id saved from previous steps     |
+| `CODEMIE_CLIENT_SECRET` | OpenID client's secret saved from previous steps |
+| `CODEMIE_KEY_ID`        | Use `kms_codemie_key_id` from terraform output   |
+| `KMS_LOCATION_ID`       | Use same region as in terraform variables        |
+| `KMS_DEFAULT_KEY_ID`    | Use `kms_default_key_id` from terraform output   |
+| `LLM_MODEL_CONFIG_NAME` | Optionally update model id to the latest version |
+
+In the section `serviceAccount.annotations` set `eks.amazonaws.com/role-arn` to
+the terraform's `worker_role_arn` output.
+
+### Deploy using install.sh
 
 The script which will install all necessary Helm charts for AI TestMate
-deployment is provided in the `helm-charts/install.sh` file.
+deployment is provided in the [helm-charts/install.sh](helm-scripts/install.sh) file.
 
-The script by default uses `examples/aws/values.yaml` files for each Helm
-chart. Make sure to customize the `values.yaml` files for each Helm chart
-according to your environment and requirements before running the installation
-script.
-
-For example, you need to set the correct auth settings, KMS settings, and other
-configuration options.
-
-You can deploy all charts using the following command from helm-charts directory:
+By default it uses `examples/aws/values.yaml` files for each Helm chart.
+You must specify *kubernetes namespace* where AI/Run TestMate will be deployed.
+Also, you must provide *container registry* from which images will be used.
 
 ```bash
-# Usage: $0 <namespace> [container-registry] [version]
+# Usage: ./install.sh <namespace> <container-registry> [version]
+#   namespace: required, kubernetes namespace, e.g. aitestmate
+#   container-registry: required, registry with aitestmate images, e.g. 000000000000.dkr.ecr.us-east-1.amazonaws.com
+#   version: optional, override version, e.g. 2.2.1-aws
 
-./install.sh aitestmate 000000000000.dkr.ecr.us-east-1.amazonaws.com 2.2.1-aws
+./install.sh aitestmate <valid-registry-host> 2.2.1-aws
 ```
+
 
 ## Using Claude Models in AWS
 
@@ -268,8 +363,8 @@ We are leveraging Claude models available through AWS Bedrock for our use cases.
 
 To get started, we recommend using one of:
 
-- `anthropic.claude-3-7-sonnet-20250219-v1:0`
 - `anthropic.claude-sonnet-4-5-20250929-v1:0`
+- `anthropic.claude-3-7-sonnet-20250219-v1:0`
 
 ### First-Time User Requirement
 

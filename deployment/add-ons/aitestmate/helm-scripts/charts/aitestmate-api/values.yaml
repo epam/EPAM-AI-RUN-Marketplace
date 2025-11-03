@@ -94,7 +94,7 @@ env:
   # - name: CODEMIE_IGNORE_SSL_ERRORS
   #   value: "true"
   # - name: CODEMIE_CLIENT_ID
-  #   value: aitm-client-id
+  #   value: aitestmate
   # - name: CODEMIE_CLIENT_SECRET
   #   value: very-secret
   # - name: CODEMIE_PRINCIPAL_ID

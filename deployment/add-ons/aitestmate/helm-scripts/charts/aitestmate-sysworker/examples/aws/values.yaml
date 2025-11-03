@@ -57,7 +57,7 @@ extraEnv:
     value: us-east-1
   # The exact model id could be found in bedrock's model catalog
   - name: LLM_MODEL_CONFIG_NAME
-    value: us.anthropic.claude-3-7-sonnet-20250219-v1:0
+    value: anthropic.claude-sonnet-4-5-20250929-v1:0
   - name: LLM_MODEL_CONFIG_STRUCTURED_OUTPUT_SUPPORT
     value: "false"
   - name: LLM_MODEL_CONFIG_TOOL_CHOICE
