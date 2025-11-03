@@ -47,6 +47,13 @@ application to Amazon EKS and related AWS services. By following these instructi
 * Configure and deploy all EPAM AI/Run™ for AWS Migration and Modernization application components by installing Helm Charts.
 * Integrate and configure Bedrock LLMs.
 
+Additionally, the EPAM AI/Run™ for AWS application supports the installation of supplementary applications that integrate with our system, such as AI TestMate.
+AI TestMate is an autonomous GenAI solution for automatic unit test generation, acting as a "virtual teammate" within the software development lifecycle (SDLC). 
+It analyzes repositories, creates, and commits tests without manual intervention, helping to quickly increase test coverage and reduce team effort. 
+The solution leverages an ensemble of large language models (LLMs), an agentic approach, and a secure proxy access layer to the models. 
+The installation guide you can for the application you can find by path: ```deployment/add-ons/aitestmate/helm-scripts/README.md```
+
+
 [![Walkthrough Deployment Guide](assets/Deployment_Guide.jpg)](https://youtu.be/MelxbnkoWHo)
 
 ## 1.1. How to Use This Guide
@@ -287,6 +294,8 @@ TF_VAR_demand_min_nodes_count=1
 # RDS
 TF_VAR_pg_instance_class="db.c6gd.medium"
 ```
+> ⚠️ **Important**: If you plan to include TestMate add-ons, make sure to choose instance_type c5.2xlarge and configure no fewer than 5-7 nodes.
+
 </details>
 2. Run the following command if using a Unix-like operating system:
 
@@ -735,6 +744,40 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 ```bash
   ./helm-charts.sh version=2.2.1-aws --image-repository valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
+
+> ⚠️ **Important**: If you are going to deploy TestMate also, please add the following values to the deployment/helm-scripts/codemie-api/values-aws.yaml file.
+> <details>
+> <summary>Properties which need </summary>
+>
+>```yaml
+> extraVolumes: |
+>  - name: codemie-authorized-applications
+>    configMap:
+>      name: codemie-authorized-applications
+> extraVolumeMounts: |
+>  - name: codemie-authorized-applications
+>    mountPath: /app/config/authorized_applications/authorized-applications-config.yaml
+>    subPath: authorized-applications-config.yaml
+>
+> extraObjects:
+> - apiVersion: v1
+>   kind: ConfigMap
+>   metadata:
+>     name: codemie-authorized-applications
+>   data:
+>     authorized-applications-config.yaml: |
+>        authorized_applications:
+>           - name: service-account-api-epm-eag
+>             public_key_url: https://exampl.com/api/public-key
+>             allowed_resources:
+>               - datasource
+>           - name: api-epm-eag
+>             public_key_url: https://exampl/api/public-key
+>             allowed_resources:
+>              - datasource
+>```
+> </details>
+
 
 ## 6.3. Manual Components Installation
 If the previous step has already been completed, please proceed to skip this step.
@@ -1292,7 +1335,7 @@ Sample: `https://keycloak.example.com/auth/admin`
 You can find creds in AWS Console or in the output of previously run script.
 
 >**Option 1:**
->After running `helm-charts.sh`, Keycloak credentials are printeed in terminal output.
+>After running `helm-charts.sh`, Keycloak credentials are printed in terminal output.
 >
 ><img src="assets/deployment-guide/helm_script_output.png">
 
@@ -1362,6 +1405,50 @@ To include the added `applications` unmanaged attribute as an additional claim t
 7. Verify login and access to EPAM AI/Run™ for AWS Migration and Modernization application.
    Link to fronted
    URL = https://codemie.<TF_VAR_platform_domain_name>
+
+## 8.2. Create client and client secret
+
+The steps in this section apply only to the Testmate extension and can be performed at any time in the future. 
+These steps do not affect the AI/Run™ for AWS application.
+
+1. Log into the Keycloak admin console with your administrator credentials
+2. Select the codemie-prod realm from the dropdown in the top-left corner
+3. In the left sidebar menu under "Manage", click on Clients.
+4. Click the Create client button to start the client creation process.
+5. Type in Client ID and Name fields with value "testmate". Client Type should be "OpenID Connect", Switcher "Always Display in UI" should be Off
+6. Configure Capability config:
+   Client Authentication - ON
+   Authorization - OFF
+   Standard flow - ON
+   Direct access grants - ON
+   Service accounts roles - ON
+   Implicit flow - OFF
+   OAuth 2.0 Device Authorization Grant - OFF
+   OIDC CIBA Grant - OFF
+7. Configure Login Settings:
+   Root URL - https://codemie.example.com
+   Home URL -
+   Valid Redirect URIs - https://codemie.example.com/*
+   Web Origins - https://codemie.example.com
+8. Configure Service accounts roles:
+   - Navigate to the Service accounts roles tab in the client settings.
+   - Click on Assign role button
+   - chose: Developer(see only associated projects) or Admin(see all projects) role
+9. Configure Client scopes accounts roles:
+  - Navigate to the Client Scopes tab in the client settings
+  - Click on Add client scopes
+  - Select the codemie scope from the dropdown and set the assignment type to Default.
+10. Configure Service account user:
+  - Navigate to the Service accounts roles tab in the client settings
+  - Click on service-account-testmate link
+  - Input Email : testmate@domain.com
+  - Input First name: testmate
+  - Input Last name: project
+  - Click on the Attributes tab
+  - Type Key: applications and Values name of your project testmate
+  - Click Save button
+11. Go to credentials. On the page you can find "Client Secret" 
+
 
 # 9. Cost Management
 

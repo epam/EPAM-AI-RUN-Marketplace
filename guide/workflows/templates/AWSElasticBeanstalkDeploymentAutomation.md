@@ -1,5 +1,17 @@
 # BeanStalker: AWS Elastic Beanstalk Deployment Automation
 
+## Overview
+BeanStalker is a comprehensive automation framework for deploying applications to AWS Elastic Beanstalk with enterprise-grade security. 
+It provides both manual deployment scripts and automated workflows that handle the complete lifecycle of AWS Elastic Beanstalk applications, from deployment to teardown.
+
+## Key Capabilities
+- Automated Deployment: Intelligent application analysis and platform detection
+- Security-First Architecture: VPN-only access, encrypted databases, private subnets
+- Multi-Platform Support: Verified support for Go, Java, Node.js, and Python applications
+- Flexible Database Options: Deploy with or without PostgreSQL RDS
+- Complete Lifecycle Management: Automated deployment and teardown workflows
+- CI/CD Ready: Background execution support for pipeline integration
+
 ## ⚠️ Warning
 
 - The workflow works only on Unix-like operating systems. If you are using Windows, please run all commands from WSL (Windows Subsystem for Linux).
@@ -12,6 +24,7 @@
 - dos2unix - if you are using WSL, it should be installed within your WSL
 - jq - should be installed on your machine (or WSL)
 - uvx - should be installed on your machine (or WSL)
+- Prefix list should be created in AWS Account 
 
 # Step for run
 1. Go to WSL(if you use Windows)
@@ -144,3 +157,8 @@ If you need destroy environment
 3. Create workflow with project for your project and replace the ```PRECONFIGURED:amna-aws-eb-bean``` value with assistant id from step 21
 4. Run the workflow with a prompt
 5. Wait util workflow done
+
+
+
+## Video Workflow Essentials
+👉 [Click here to watch](https://videoportal.epam.com/video/oYVxL2k7)

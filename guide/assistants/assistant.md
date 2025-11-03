@@ -68,7 +68,16 @@ EPAM AI/Run™ for AWS Migration and Modernization supports two main types of as
    <img src="assets/assistant-guide/install_agent.png">
 
 
-   
+[Video Instruction](https://videoportal.epam.com/video/r7mD3MRJ)
+
+### ⚠️ Warning
+1. Please verify that the AWS credentials you've configured in your integration have sufficient permissions to access and interact with the AWS Bedrock service. Insufficient permissions will prevent successful Knowledge Base integration.
+2. Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
+3. Please monitor your token consumption regularly through the AWS portal. AWS Bedrock services are billed based on token usage, and unexpected high usage may lead to increased costs
+4. Agents MUST have at least 1 alisa and 1 version with status PREPARED
+
+
+Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
 
 ## Using Assistants
 
@@ -92,10 +101,5 @@ EPAM AI/Run™ for AWS Migration and Modernization supports two main types of as
 9. [Template] Epic/User story Composer
 
 
-Before creating an assistant using the template, please review all tools, data sources, integrations and variable. Update any components that are required for your specific needs:
- - Integrations 
- - Data source 
- - Replace if need <JIRA_PROJECT_CODE> placeholder  
- - Replace if need <CONFLUENCE_SPACE> placeholder 
- - Replace if need <CI_REPOSITORY_NAME> placeholder  
- - ....
+Before creating an assistant using the template, please review all tools, data sources, integrations and variable which using the assistant. If assistant will be use data source or integration, please, create the entity and add to the assistant.
+Also, assistant templates can contain placeholder in system instructions fields, please, change placeholder to your value. Possible placeholder: <JIRA_PROJECT_CODE>, <CONFLUENCE_SPACE>, <CI_REPOSITORY_NAME>, ...

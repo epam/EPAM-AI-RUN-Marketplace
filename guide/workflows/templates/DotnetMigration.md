@@ -1,6 +1,9 @@
 # .NET: Migration .NET Framework v4.5.2 to .NET 8
 
-This guide provides a step-by-step workflow for migrating a project from .NET Framework v4.5.2 to .NET 8.
+
+
+## Overview
+This guide outlines a structured process for executing the migration workflow. Its primary focus is on converting the majority of the codebase from .NET Framework v4.5.2 to .NET 8 efficiently and effectively.
 
 ---
 

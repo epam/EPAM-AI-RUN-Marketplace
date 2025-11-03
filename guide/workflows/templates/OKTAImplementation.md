@@ -1,6 +1,8 @@
 # OKTA Implementation Workflow
 
-This guide provides a step-by-step process for integrating OKTA authentication into your project.
+## Overview
+This guide provides a step-by-step process to execute the OKTA Implementation Workflow. 
+The primary objective is to streamline the integration of OKTA within the scope of a .NET project, enabling secure authentication and identity management while adhering to best practices
 
 ---
 

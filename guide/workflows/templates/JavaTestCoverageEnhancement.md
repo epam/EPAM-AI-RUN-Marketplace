@@ -1,5 +1,10 @@
 # Java Test Coverage Enhancement
 
+
+## Overview
+The workflow to streamline the analysis and creation of unit tests for Java projects, reducing manual effort while ensuring consistent and reliable test coverage.
+
+
 Unit tests can be generated using two efficient methods flow by flow or one general flow for full proces 
 
 1. Using flow by flow you can see what happen every iteration and can affect on any stage 
@@ -9,13 +14,16 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 
 - Keep track of your token and budget usage by regularly checking the details via the "Usage details" button on workflow-executions page after step 13.
 - Project integration and workflow should be created within the same "project". It is recommended to name the project after your specific use case (e.g., "example@email.com").
-  A project property is a special attribute in EPAM AI/Run™ for AWS , created by the admin. Each user has their own project, which is automatically named based on their email address
+  A project property is a special attribute in EPAM AI/Run™ for AWS, created by the admin. Each user has their own project, which is automatically named based on their email address
 - Java - should be installed on your machine
 - MVN or Gradle - should be installed on your machine
 
 # Step for run
 1. Install Python 3.12 or higher
-2. Install uvx
+2. Install uvx with command
+```bash
+  pip install uv
+```
 3. Install Node.js 22 or higher
 4. Run command for install codemie-plugins
 ```bash
@@ -53,13 +61,14 @@ Unit tests can be generated using two efficient methods flow by flow or one gene
 ```
 7. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
 8. Create folder in root of your project ```airun```
-9. Add ```00bootstrap.json``` files with next values in ```airun```
+9. Add ```00bootstrap.json``` files with next values in ```airun``` folder
 ```
  {
   "project_base": "absolute_path_to_your_project",  
  }
 ```
 10. Run MCP servers and codemie-plugins
+
     For MacOS & Linux
 ```bash
   cd <absolute_path_to_your_project>

@@ -1,5 +1,7 @@
 # Perl2Py
 
+## Overview
+Utilize AI tools to automate and optimize the workflow of migrating code from Perl to Python, reducing manual effort while ensuring seamless translation and preserving functionality.
 
 ## ⚠️ Warning
 
@@ -10,7 +12,10 @@
 
 1. Create a scratchpad folder in the root directory, e.g., C:\scratchpad on Windows or /scratchpad on Unix-like systems
 2. Install Python 3.12 or higher
-4. Install uvx
+3. Install uvx with command
+```bash
+  pip install uv
+```
 4. Install Node.js 22 or higher
 5. Run command for install codemie-plugins
 ```bash
@@ -47,10 +52,10 @@
 ```bash
   codemie-plugins mcp list
 ```
-8. Create in scratchpad file ```Perl2Py```
+8. Create in scratchpad folder ```Perl2Py```
 9. Create next three sub folder in Perl2Py: ```airun```, ```Perl```, ```Python```
-10. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
-11. Add ```00bootstrap.json``` files with next values
+10. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be "demo-plugin-integration"
+11. Add ```00bootstrap.json``` files with next values at ```airun``` folder
 ```
  {
    "project_base": "<path_to>\Perl2Py",
@@ -84,3 +89,4 @@ For Windows
 16. Go to Workflows and run ```Perl2Python: fully automated conversion``` workflow
 17. Wait util workflow done
 18. Result you can find ```~\scratchpad\Perl2Py\Python```
+

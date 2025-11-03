@@ -1,5 +1,10 @@
 # Windup Rules Generation Workflow
 
+
+## Overview
+This guide provides a step-by-step process to execute the Windup Rules Generation Workflow. 
+The primary objective is to automate the creation of migration rules, simplifying application modernization and ensuring consistency while adhering to best practices.
+
 ## ⚠️ Warning
 
 - Keep track of your token and budget usage by regularly checking the details via the "Usage details" button on workflow-executions page after step 13.
@@ -9,7 +14,10 @@
 # Step for run
 1. Install Python 3.12 or higher
 2. Install Node.js 22 or higher
-3. Install uvx
+3. Install uvx with command
+```bash
+  pip install uv
+```
 4. Run command for install codemie-plugins
 ```bash
   pip install codemie-plugins
@@ -52,9 +60,10 @@
 ```bash
   codemie-plugins mcp list
 ```
-11. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be  "demo-plugin-integration"
+11. Create plugin project integration on AI/Run™ with value from config.json files using PLUGIN_KEY, and "Alias" property should be "demo-plugin-integration"
 
 12. Run MCP servers and codemie-plugins
+
     For MacOS & Linux
 ```bash
   cd <absolute_path_to_your_project>

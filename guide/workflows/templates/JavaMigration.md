@@ -1,6 +1,6 @@
 # JavaMig: Migration Java 8 to Java 17
 
-This guide provides step-by-step instructions on running the "JavaMig: Java Repository Migration/Modernization" workflow
+This guide outlines a structured process for executing the migration workflow. Its primary focus is on converting the majority of the codebase from Java 8 to  Java 17 efficiently and effectively.
 
 ---
 

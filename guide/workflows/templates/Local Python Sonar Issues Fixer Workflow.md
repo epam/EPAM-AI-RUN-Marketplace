@@ -1,5 +1,9 @@
 # Local Python Sonar Issues Fixer Workflow
 
+## Overview
+This guide provides a step-by-step process to execute the Local Python Sonar Issues Fixer Workflow. 
+The primary objective is to automatically identify and resolve SonarQube-reported issues in Python code, improving code quality and ensuring adherence to best practices.
+
 ## ⚠️ Warning
 
 - Keep track of your token and budget usage by regularly checking the details via the "Usage details" button on workflow-executions page after step 13.
