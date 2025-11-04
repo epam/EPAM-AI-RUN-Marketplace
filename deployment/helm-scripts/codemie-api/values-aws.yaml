@@ -276,19 +276,17 @@ codemie:
         data:
           llm-amnaairn-config.yaml: |
             llm_models:
-              - base_name: "mistral"
-                deployment_name: "mistral.mistral-7b-instruct-v0:2"
-                label: "Mistral 7b - Instruct"
-                multimodal: false
-                enabled: true
+              - base_name: "amazon-nova-pro"
+                deployment_name: "amazon.nova-pro-v1:0"
+                label: "Bedrock Nova Pro"
+                multimodal: true
                 default: true
+                enabled: true
                 provider: "aws_bedrock"
-                features:
-                  system_prompt: false
-                  max_tokens: false
+                max_output_tokens: 10000
                 cost:
-                  input: 0.0000025
-                  output: 0.000011
+                  input: 0.00000105
+                  output: 0.0000002625
 
             # Amazon Nova Models Configs
             #  - base_name: "amazon-nova-pro"

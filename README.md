@@ -548,46 +548,6 @@ backend_lock_dynamodb_table = "<dynamodb_table_name>"  # The value becomes avail
 
 # 5. AI Models Integration and Configuration
 
-## 5.1. AWS Bedrock Models
-
-### 5.1.1. Overview
-This section describes the process of enabling AWS Bedrock models in AWS account.
-
-> ⚠️ **Important**: EPAM AI/Run™ for AWS Migration and Modernization requires at least one configured chat model and one embedding model to function properly. Ensure these are set up before proceeding with creating assistants or data sources.
-
-> ⚠️ **Important**: After October 8,  2025, models will be automatically enabled for you.
-
-<details>
-
-<summary>If you nede to enable Bedrock LLMs manually, expand this section:</summary>
-
-### 5.1.2. Steps to Enable Bedrock Models
-1. Access AWS Bedrock Console
-   1. Sign in to the AWS Management Console
-   2. Navigate to the AWS Bedrock service
-   3. Select "Model access" from the left navigation panel
-2. Request Model Access
-   1. In the Model access page, you'll see available foundation models grouped by providers
-   2. Common providers include:
-      * Anthropic (Claude models)
-      * Amazon
-   3. Click "Request model access"
-      * Locate the model in the list
-      * Check the checkbox next to the model name
-      * Click "Request model access"
-3. Verify Model Access
-   1. After requesting access, the status will initially show as "Pending"
-   2. Wait for the status to change to "Access granted"
-   3. This typically takes only a few minutes
-   4. Refresh the page to see updated status
-4. Region-Specific Configuration
-   * Note that model access needs to be enabled separately for each AWS region
-   * Repeat the process for additional regions if needed
-
-</details>
-
-## 5.2. Managing LLM and embedding models
-
 > 📋 **Model Information**:
 > 1. [Find the supported model IDs (deployment_name) in the AWS Bedrock documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html)
 > 2. [Find cost information for AWS Bedrock models](https://aws.amazon.com/bedrock/pricing/)
@@ -609,31 +569,17 @@ Example of providing LLM and embedding models for the custom environment:
        data:
           llm-amnaairn-config.yaml: |
              llm_models:
-               - base_name: "mistral"
-                 deployment_name: "mistral.mistral-7b-instruct-v0:2"
-                 label: "Mistral 7b - Instruct"
-                 multimodal: false
+               - base_name: "amazon-nova-pro"
+                 deployment_name: "eu.amazon.nova-pro-v1:0"
+                 label: "Bedrock Nova Pro"
+                 multimodal: true
                  enabled: true
                  default: true
                  provider: "aws_bedrock"
-                 features:
-                   system_prompt: false
-                   max_tokens: false
+                 max_output_tokens: 10000
                  cost:
-                   input: 0.0000025
-                   output: 0.000011
-
-             # Amazon Nova Models Configs
-             #  - base_name: "amazon-nova-pro"
-             #    deployment_name: "eu.amazon.nova-pro-v1:0"
-             #    label: "Bedrock Nova Pro"
-             #    multimodal: true
-             #    enabled: true
-             #    provider: "aws_bedrock"
-             #    max_output_tokens: 10000
-             #    cost:
-             #      input: 0.00000105
-             #      output: 0.0000002625
+                   input: 0.00000105
+                   output: 0.0000002625
 
              #  - base_name: "amazon-nova-lite"
              #    deployment_name: "eu.amazon.nova-lite-v1:0"
@@ -747,7 +693,7 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 
 > ⚠️ **Important**: If you are going to deploy TestMate also, please add the following values to the deployment/helm-scripts/codemie-api/values-aws.yaml file.
 > <details>
-> <summary>Properties which need </summary>
+> <summary>Required Properties for TestMate Integration </summary>
 >
 >```yaml
 > extraVolumes: |
@@ -778,6 +724,7 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 >```
 > </details>
 
+⚠️ **Important**: If you update ConfigMaps either manually or through a Helm upgrade, you must restart the affected pods to apply the changes. Neither manual updates nor Helm upgrades automatically restart pods, so any changes to ConfigMaps will not take effect until the pods are restarted.
 
 ## 6.3. Manual Components Installation
 If the previous step has already been completed, please proceed to skip this step.
@@ -786,11 +733,12 @@ If the previous step has already been completed, please proceed to skip this ste
 
 <summary>If you prefer to manually deploy step by step, expand this section for more instructions:</summary>
 
-### 6.3.1. Set up kubectl config
+### 6.3.1. Set up kubectl config and login in ecr
 Run next command
 
 ```bash
   aws eks update-kubeconfig --region <REGION> --name <PLATFORM_NAME>
+  aws ecr get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems 
 ```
 
 ### 6.3.2. Nginx Ingress controller
@@ -1415,38 +1363,38 @@ These steps do not affect the AI/Run™ for AWS application.
 2. Select the codemie-prod realm from the dropdown in the top-left corner
 3. In the left sidebar menu under "Manage", click on Clients.
 4. Click the Create client button to start the client creation process.
-5. Type in Client ID and Name fields with value "testmate". Client Type should be "OpenID Connect", Switcher "Always Display in UI" should be Off
+5. Type in Client ID and Name fields with value "aitestmate". Client Type should be "OpenID Connect", Switcher "Always Display in UI" should be Off
 6. Configure Capability config:
-   Client Authentication - ON
-   Authorization - OFF
-   Standard flow - ON
-   Direct access grants - ON
-   Service accounts roles - ON
-   Implicit flow - OFF
-   OAuth 2.0 Device Authorization Grant - OFF
-   OIDC CIBA Grant - OFF
+   - Client Authentication - ON
+   -  Authorization - OFF
+   -  Standard flow - ON
+   -  Direct access grants - ON
+   -  Service accounts roles - ON
+   -  Implicit flow - OFF
+   -  OAuth 2.0 Device Authorization Grant - OFF
+   -  OIDC CIBA Grant - OFF
 7. Configure Login Settings:
-   Root URL - https://codemie.example.com
-   Home URL -
-   Valid Redirect URIs - https://codemie.example.com/*
-   Web Origins - https://codemie.example.com
+   -  Root URL - https://codemie.example.com
+   -  Home URL -
+   -  Valid Redirect URIs - https://codemie.example.com/*
+   -  Web Origins - https://codemie.example.com
 8. Configure Service accounts roles:
    - Navigate to the Service accounts roles tab in the client settings.
    - Click on Assign role button
    - chose: Developer(see only associated projects) or Admin(see all projects) role
 9. Configure Client scopes accounts roles:
-  - Navigate to the Client Scopes tab in the client settings
-  - Click on Add client scopes
-  - Select the codemie scope from the dropdown and set the assignment type to Default.
+   - Navigate to the Client Scopes tab in the client settings
+   - Click on Add client scopes
+   - Select the codemie scope from the dropdown and set the assignment type to Default.
 10. Configure Service account user:
-  - Navigate to the Service accounts roles tab in the client settings
-  - Click on service-account-testmate link
-  - Input Email : testmate@domain.com
-  - Input First name: testmate
-  - Input Last name: project
-  - Click on the Attributes tab
-  - Type Key: applications and Values name of your project testmate
-  - Click Save button
+    - Navigate to the Service accounts roles tab in the client settings
+    - Click on service-account-aitestmate link
+    - Input Email : aitestmate@domain.com
+    - Input First name: aitestmate
+    - Input Last name: project
+    - Click on the Attributes tab
+    - Type Key: applications and Values name of your project aitestmate
+    - Click Save button
 11. Go to credentials. On the page you can find "Client Secret" 
 
 
