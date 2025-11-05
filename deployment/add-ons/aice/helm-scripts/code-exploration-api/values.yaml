@@ -48,10 +48,7 @@ extraEnvVars:
         key: host
         name: aice-postgresql-secret
   - name: "POSTGRES_PORT"
-    valueFrom:
-      secretKeyRef:
-        key: port
-        name: aice-postgresql-secret
+    value: 5432
   - name: "POSTGRES_USER"
     valueFrom:
       secretKeyRef:

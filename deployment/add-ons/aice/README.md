@@ -156,7 +156,7 @@ EKS cluster.
 ## Configuration Preparation
 
 As an initial step, gather all relevant details and populate the configuration
-file [deployment.conf](helm-scripts/deployment.conf)
+file [deployment.conf](deployment.conf)
 
 <table>
     <thead>
@@ -193,15 +193,54 @@ file [deployment.conf](helm-scripts/deployment.conf)
         <td>The value should be taken from the Route 53 hosted zone created in the AI/Run™ Platform installation steps</td>
       </tr>
 <tr>
-        <td>LLM-API-KEY</td>
-        <td>LLM API key for LiteLLM</td>
-        <td>Create LiteLLM API key</td>
+        <td>LLM_AWS_REGION_NAME</td>
+        <td>AWS region name</td>
+        <td>Example: us-east-1</td>
+      </tr>
+<tr>
+        <td>LLM_QUALITY_MODEL_NAME</td>
+        <td>Explicit model name for highest quality/performance tier</td>
+        <td>Example: anthropic.claude-3-5-sonnet-20241022-v2:0</td>
+      </tr>
+<tr>
+        <td>LLM_BALANCED_MODEL_NAME</td>
+        <td>Explicit model name for balanced performance/cost tier</td>
+        <td>Example: anthropic.claude-3-sonnet-20240229-v1:0</td>
+      </tr>
+<tr>
+        <td>LLM_EFFICIENCY_MODEL_NAME</td>
+        <td>Explicit model name for fastest/lowest cost tier</td>
+        <td>Example: anthropic.claude-3-haiku-20240307-v1:0</td>
+      </tr>
+<tr>
+        <td>LLM_EMBEDDING_MODEL_NAME</td>
+        <td>Explicit embedding model name</td>
+        <td>Example: amazon.titan-embed-text-v1</td>
       </tr>
 <tr>
         <td>JWT_PUBLIC_KEY</td>
         <td>JWT public key for authorization and authentication</td>
         <td>Obtain the public key from the Keycloak Admin Console of your AI/Run™ Platform installation</td>
       </tr>
+<tr>
+        <td colspan="3">Terraform settings</td>        
+      </tr>
+<tr>
+        <td>AWS_REGIONS</td>
+        <td>AWS region</td>
+        <td>Example: us-east-1</td>
+      </tr>
+<tr>
+        <td>BACKEND_BUCKET_NAME</td>
+        <td>S3 bucket name that uses for Terraform state synchronization</td>
+        <td>AI/Run™ Platform installation provides this value under the 'Terraform state will be stored in'</td>
+      </tr>
+<tr>
+        <td>BACKEND_LOCK_DYNAMODB_TABLE</td>
+        <td>Lock DynamoDB Table</td>
+        <td>AI/Run™ Platform installation provides this value under the 'Terraform state will be stored in'</td>
+      </tr>
+
 </tbody>
 </table>
 
@@ -226,17 +265,15 @@ Save this public key as a `.pem` file in the `../helm-scripts` folder and set it
 
 Use the provided script to deploy all components of the system in one step.
 
-1. Navigate helm-scripts folder:
-   ```bash
-   cd ../helm-scripts
+1. Make sure that you are in the `deployment/add-ons/aice` folder.
 
 2. Run the following command if using a Unix-like operating system:
    ```bash
-   chmod +x install.sh
+   chmod +x deploy.sh
 
 3. Run the script:
     ```bash
-   ./install.sh
+   ./deploy.sh
 
 You can find installation logs in the `../logs` folder.
 
@@ -249,23 +286,37 @@ Deploy each component separately by following the step-by-step instructions.
 <details>
 <summary>If you prefer to manually deploy step by step, expand this section for more instructions:</summary>
 
-### 1. Navigate helm-scripts folder
+### 1. Amazon RDS Postgresql installation
+[Learn more in the documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.PostgreSQL.html)
+
+#### 1.1 Deploy Amazon RDS Postgresql using AWS Console
+
+#### 1.2 Create k8s Secret with Postgresql data:
+```bash
+kubectl -n aice create secret generic aice-postgresql-secret \
+            --from-literal=password="<AWS_RDS_DATABASE_PASSWORD>" \
+            --from-literal=user="<AWS_RDS_DATABASE_USER>" \
+            --from-literal=host="$<AWS_RDS_HOST>" \
+            --from-literal=db="<AWS_RDS_DATABASE_NAME>"
+```
+
+### 2. Navigate helm-scripts folder
 
 ```bash
   cd ../helm-scripts
 ```
-### 2. Create namespace:
+### 3. Create namespace:
 ```bash
   kubectl create namespace aice 
 ```
 
-### 3. Install Redis:
+### 4. Install Redis:
 
 ```bash
   helm upgrade --install aice-redis redis/. --namespace aice --values "redis/values.yaml" --wait --timeout 600s --dependency-update
 ```
 
-### 4. Install Elasticsearch:
+### 5. Install Elasticsearch:
 ```bash
   helm upgrade \
       --install aice-elasticsearch elasticsearch/. \
@@ -275,7 +326,7 @@ Deploy each component separately by following the step-by-step instructions.
       --timeout 600s \
       --dependency-update 
 ```
-### 5. Install Neo4j:
+### 6. Install Neo4j:
 ```bash
   helm upgrade \
       --install aice-neo4j neo4j/. \
@@ -306,17 +357,6 @@ Copy Neo4j plugins into Pod`s PVS:
 Restart statefulset for applying plugins:
 ```bash
   kubectl rollout restart statefulset aice-neo4j -n aice
-```
-
-### 6. Install Postgresql:
-```bash
-  helm upgrade \
-      --install aice-postgresql postgresql/. \
-      --namespace aice \
-      --values "postgresql/values.yaml" \
-      --wait \
-      --timeout 600s \
-      --dependency-update
 ```
 
 ### 7. Install Code Exploration API:

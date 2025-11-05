@@ -63,6 +63,26 @@ verify_configs() {
         log_message "fail" "JWT_PUBLIC_KEY is not set."
         exit 1
     fi
+
+    if [[ -z "${AWS_RDS_ADDRESS}" ]]; then
+        log_message "fail" "AWS_RDS_ADDRESS is not set."
+        exit 1
+    fi
+
+    if [[ -z "${AWS_RDS_DATABASE_NAME}" ]]; then
+        log_message "fail" "AWS_RDS_DATABASE_NAME is not set."
+        exit 1
+    fi
+
+    if [[ -z "${AWS_RDS_DATABASE_USER}" ]]; then
+        log_message "fail" "AWS_RDS_DATABASE_USER is not set."
+        exit 1
+    fi
+
+    if [[ -z "${AWS_RDS_DATABASE_PASSWORD}" ]]; then
+        log_message "fail" "AWS_RDS_DATABASE_PASSWORD is not set."
+        exit 1
+    fi
 }
 
 replace_domain_placeholders() {
@@ -163,7 +183,7 @@ replace_image_version_placeholders() {
 
 load_configuration() {
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-  CONFIG_FILE="$SCRIPT_DIR/deployment.conf"
+  CONFIG_FILE="$(dirname "$SCRIPT_DIR")/deployment.conf"
 
   if [ -f "$CONFIG_FILE" ]; then
       log_message "info" "Loading configuration from $CONFIG_FILE"
@@ -172,7 +192,20 @@ load_configuration() {
       set +a
   else
       log_message "fail" "Configuration file $CONFIG_FILE not found"
-      echo "Please create a configuration file or specify an alternate file with --config-file"
+      echo "Please create a configuration file"
+      exit 1
+  fi
+
+  DEPLOYMENT_ENV_FILE="$(dirname "$SCRIPT_DIR")/deployment_outputs.env"
+
+  if [ -f "$DEPLOYMENT_ENV_FILE" ]; then
+      log_message "info" "Loading configuration from $DEPLOYMENT_ENV_FILE"
+      set -a
+      source "$DEPLOYMENT_ENV_FILE"
+      set +a
+  else
+      log_message "fail" "Configuration file $DEPLOYMENT_ENV_FILE not found"
+      echo "Please run terraform.sh first"
       exit 1
   fi
 }
@@ -181,7 +214,6 @@ print_summary() {
     log_message "info" "Deployment Summary"
     log_message "info" "=================="
     log_message "info" "All deployments completed successfully."
-    log_message "info" "Deployment outputs have been saved to deployment_outputs.env"
     log_message "info" "Log file: $LOG_FILE"
 }
 
@@ -418,39 +450,33 @@ deploy_code-exploration-ui() {
     log_message "success" "Code Exploration UI configuration completed"
 }
 
+deploy_aws_rds() {
+    local namespace="aice"
+    local postgres_secret_name="aice-postgresql-secret"
 
-deploy_postgresql() {
-  local namespace="aice"
+    log_message "info" "Starting AICE PostgreSQL deployment."
+    check_and_create_namespace "$namespace"
 
-  log_message "info" "Starting Postgresql deployment"
+    if ! check_k8s_secret_exists "$namespace" "$postgres_secret_name"; then
+        kubectl -n $namespace create secret generic $postgres_secret_name \
+            --from-literal=password="${AWS_RDS_DATABASE_PASSWORD}" \
+            --from-literal=user="${AWS_RDS_DATABASE_USER}" \
+            --from-literal=host="${AWS_RDS_ADDRESS}" \
+            --from-literal=db="${AWS_RDS_DATABASE_NAME}" > /dev/null
 
-  check_and_create_namespace "$namespace"
-
-
-  log_message "info" "Deploying Postgresql Helm Chart ..."
-
-  helm upgrade \
-      --install aice-postgresql postgresql/. \
-      --namespace "$namespace" \
-      --values "postgresql/values.yaml" \
-      --wait \
-      --timeout 600s \
-      --dependency-update > /dev/null
-
-    # shellcheck disable=SC2181
-    if [ $? -eq 0 ]; then
-        log_message "success" "Postgresql deployment completed"
-    else
-        log_message "fail" "Failed to deploy Postgresql."
-        exit 1
+        # shellcheck disable=SC2181
+        if [ $? -eq 0 ]; then
+            log_message "success" "Secret '$postgres_secret_name' created successfully."
+        else
+            log_message "fail" "Failed to create secret '$postgres_secret_name'."
+            exit 1
+        fi
     fi
-
-    log_message "success" "Postgresql configuration completed"
 }
 
 
 main() {
-  echo "AI/Run AICE Helm Charts Deployment Script"
+  echo "AI/Run AICE Helm Charts Deployment Script is starting..."
   echo "================================"
 
   exec > >(tee -a "$LOG_FILE") 2>&1
@@ -461,7 +487,7 @@ main() {
   deploy_redis
   deploy_elasticsearch
   deploy_neo4j
-  deploy_postgresql
+  deploy_aws_rds
 
   deploy_code-exploration-api "${IMAGE_REPOSITORY}" "${CODE_EXPLORATION_API_VERSION}" "${DOMAIN_NAME}" "${JWT_PUBLIC_KEY}"
   deploy_code-analysis-datasource "${IMAGE_REPOSITORY}" "${CODE_ANALYSIS_DATASOURCE_VERSION}" "${DOMAIN_NAME}"
