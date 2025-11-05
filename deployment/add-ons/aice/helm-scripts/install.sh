@@ -34,8 +34,8 @@ log_message() {
 
 verify_configs() {
 
-    if [[ -z "${LLM_API_KEY}" ]]; then
-        log_message "fail" "LLM_API_KEY is not set."
+    if [[ -z "${LLM_AWS_REGION_NAME}" ]]; then
+        log_message "fail" "LLM_AWS_REGION_NAME is not set."
         exit 1
     fi
 
@@ -84,6 +84,36 @@ replace_domain_placeholders() {
     else
            # GNU sed (Linux syntax; doesn't require extension)
         sed -i.backup "s|%%DOMAIN%%|${domain_value}|g" "${values_file}"
+    fi
+}
+
+replace_llm_placeholders() {
+    local values_file="$1"
+    local backup_file="${values_file}.backup"
+
+    if [[ -f "$backup_file" ]]; then
+        log_message "info" "Restoring ${values_file} from backup"
+        mv "$backup_file" "$values_file"
+        log_message "info" "Deleting leftover backup file"
+        rm -f "$backup_file"
+    fi
+
+    log_message "info" "Replacing placeholders with values"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+           # macOS/BSD sed syntax (requires backup extension)
+           log_message "info" "s|%%LLM_QUALITY_MODEL_NAME%%|${LLM_QUALITY_MODEL_NAME}|g"
+        sed -i '.img.backup' "s|%%LLM_QUALITY_MODEL_NAME%%|${LLM_QUALITY_MODEL_NAME}|g" "${values_file}"
+        sed -i '.img.backup' "s|%%LLM_BALANCED_MODEL_NAME%%|${LLM_BALANCED_MODEL_NAME}|g" "${values_file}"
+        sed -i '.img.backup' "s|%%LLM_EFFICIENCY_MODEL_NAME%%|${LLM_EFFICIENCY_MODEL_NAME}|g" "${values_file}"
+        sed -i '.img.backup' "s|%%LLM_EMBEDDING_MODEL_NAME%%|${LLM_EMBEDDING_MODEL_NAME}|g" "${values_file}"
+        sed -i '.img.backup' "s|%%LLM_AWS_REGION_NAME%%|${LLM_AWS_REGION_NAME}|g" "${values_file}"
+    else
+           # GNU sed (Linux syntax; doesn't require extension)
+        sed -i.img.backup "s|%%LLM_QUALITY_MODEL_NAME%%|${LLM_QUALITY_MODEL_NAME}|g" "${values_file}"
+        sed -i.img.backup "s|%%LLM_BALANCED_MODEL_NAME%%|${LLM_BALANCED_MODEL_NAME}|g" "${values_file}"
+        sed -i.img.backup "s|%%LLM_EFFICIENCY_MODEL_NAME%%|${LLM_EFFICIENCY_MODEL_NAME}|g" "${values_file}"
+        sed -i.img.backup "s|%%LLM_EMBEDDING_MODEL_NAME%%|${LLM_EMBEDDING_MODEL_NAME}|g" "${values_file}"
+        sed -i.img.backup "s|%%LLM_AWS_REGION_NAME%%|${LLM_AWS_REGION_NAME}|g" "${values_file}"
     fi
 }
 
@@ -279,12 +309,11 @@ deploy_neo4j() {
 
 deploy_code-exploration-api() {
   local namespace="aice"
-  local llm_api_key="$1"
-  local image_repository="$2"
-  local image_version="$3"
-  local domain_value="$4"
+  local image_repository="$1"
+  local image_version="$2"
+  local domain_value="$3"
   local values_file="code-exploration-api/values.yaml"
-  local jwt_public_key="$5"
+  local jwt_public_key="$4"
 
   log_message "info" "Starting Code Exploration API deployment"
 
@@ -293,6 +322,7 @@ deploy_code-exploration-api() {
   replace_image_repository_placeholders "${values_file}" "${image_repository}"
   replace_image_version_placeholders "${values_file}" "${image_version}"
   replace_domain_placeholders "${values_file}" "${domain_value}"
+  replace_llm_placeholders "${values_file}"
 
   log_message "info" "Deploying Code Exploration API Helm Chart ..."
 
@@ -300,7 +330,6 @@ deploy_code-exploration-api() {
       --install aice-code-exploration-api code-exploration-api/. \
       --namespace "$namespace" \
       --values "${values_file}" \
-      --set environment.llmApiKey="${llm_api_key}" \
       --set-file jwtPublicKey.keyData="${jwt_public_key}" \
       --wait \
       --timeout 600s \
@@ -434,10 +463,9 @@ main() {
   deploy_neo4j
   deploy_postgresql
 
-  deploy_code-exploration-api "${LLM_API_KEY}" "${IMAGE_REPOSITORY}" "${CODE_EXPLORATION_API_VERSION}" "${DOMAIN_NAME}" "${JWT_PUBLIC_KEY}"
+  deploy_code-exploration-api "${IMAGE_REPOSITORY}" "${CODE_EXPLORATION_API_VERSION}" "${DOMAIN_NAME}" "${JWT_PUBLIC_KEY}"
   deploy_code-analysis-datasource "${IMAGE_REPOSITORY}" "${CODE_ANALYSIS_DATASOURCE_VERSION}" "${DOMAIN_NAME}"
-  deploy_code-exploration-ui ${IMAGE_REPOSITORY}" "${CODE_EXPLORATION_UI_VERSION}" "${DOMAIN_NAME}"
-
+  deploy_code-exploration-ui "${IMAGE_REPOSITORY}" "${CODE_EXPLORATION_UI_VERSION}" "${DOMAIN_NAME}"
 }
 
 main "$@"

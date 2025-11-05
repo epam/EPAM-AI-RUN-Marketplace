@@ -13,16 +13,15 @@ envVars:
   CALLBACK_BASE_URL: "http://aice-code-exploration-api:8080"
   JWT_PUBLIC_KEY_PATH: "/app/data/keys/jwt_public_key.pem"
   JWT_COOKIE_NAME: "_oauth2_proxy"
-  LLM_PROVIDER: "openai-azure"
-  LLM_AZURE_API_BASE_URL: "http://litellm.litellm:4000"
-  LLM_AZURE_API_VERSION: "2024-12-01-preview"
-  LLM_AZURE_DEPLOYMENT_NAME_EMBEDDING: "codemie-text-embedding-ada-002"
+
+  LLM_PROVIDER: "bedrock"
+  LLM_QUALITY_MODEL_NAME: %%LLM_QUALITY_MODEL_NAME%%
+  LLM_BALANCED_MODEL_NAME: %%LLM_BALANCED_MODEL_NAME%%
+  LLM_EFFICIENCY_MODEL_NAME: %%LLM_EFFICIENCY_MODEL_NAME%%
+  LLM_EMBEDDING_MODEL_NAME: %%LLM_EMBEDDING_MODEL_NAME%%
+  LLM_AWS_REGION_NAME: %%LLM_AWS_REGION_NAME%%
+
   ELASTIC_EMBEDDING_DIMS: "1536"
-  LLM_EMBEDDING_MODEL_NAME: "codemie-text-embedding-ada-002"
-  LLM_AZURE_DEPLOYMENT_NAME: "gpt-4o-2024-11-20"
-  LLM_QUALITY_MODEL_NAME: "gpt-4.1"
-  LLM_BALANCED_MODEL_NAME: "gpt-4.1-mini"
-  LLM_EFFICIENCY_MODEL_NAME: "gpt-4.1-mini"
   LLM_RATE_LIMIT_REQUESTS_PER_SECOND: "20.0"
   LLM_RATE_LIMIT_CHECK_EVERY_N_SECONDS: "0.1"
   LLM_RATE_LIMIT_MAX_BUCKET_SIZE: "40"
@@ -32,12 +31,6 @@ envVars:
   CALLBACK_VERIFY_SSL: "false"
 
 extraEnvVars:
-  - name: "LLM_API_KEY"
-    valueFrom:
-      secretKeyRef:
-        key: llm-api-key
-        name: code-exploration-secret
-
   - name: "NEO4J_USERNAME"
     valueFrom:
       secretKeyRef:
