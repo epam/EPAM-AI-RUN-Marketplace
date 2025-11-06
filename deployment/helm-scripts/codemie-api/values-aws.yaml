@@ -250,6 +250,12 @@ codemie:
     - name: codemie-llm-customer-config
       mountPath: /app/config/llms/llm-amnaairn-config.yaml
       subPath: llm-amnaairn-config.yaml
+# #########################################################
+#      Test Mate: uncomment according the official guide
+# #########################################################
+#    - name: codemie-authorized-applications
+#      mountPath: /app/config/authorized_applications/authorized-applications-config.yaml
+#      subPath: authorized-applications-config.yaml
 
   extraVolumes: |
     - name: codemie-ui
@@ -260,6 +266,12 @@ codemie:
     - name: codemie-llm-customer-config
       configMap:
         name: codemie-llm-customer-config
+# #########################################################
+#      Test Mate: uncomment according the official guide
+# #########################################################
+#    - name: codemie-authorized-applications
+#      configMap:
+#        name: codemie-authorized-applications
 
   codemieuiProvider:
     enabled: false
@@ -269,6 +281,24 @@ codemie:
 
   # -- Array of extra K8s manifests to deploy
   extraObjects:
+# #########################################################
+#      Test Mate: uncomment according the official guide
+# #########################################################
+#      - apiVersion: v1
+#        kind: ConfigMap
+#        metadata:
+#          name: codemie-authorized-applications
+#        data:
+#          authorized-applications-config.yaml: |
+#            authorized_applications:
+#              - name: service-account-api-epm-eag
+#                public_key_url: http://aitestmate-nginx.<k8s namespace>.svc.cluster.local/api/public-key
+#                allowed_resources:
+#                  - datasource
+#              - name: api-epm-eag
+#                public_key_url: http://aitestmate-nginx.<k8s namespace>.svc.cluster.local/api/public-key
+#                allowed_resources:
+#                  - datasource
       - apiVersion: v1
         kind: ConfigMap
         metadata:
@@ -362,6 +392,18 @@ codemie:
                 - id: "vendorIntegrationAWS"
                   settings:
                     enabled: true
+                # #########################################################
+                #      Test Mate: uncomment according the official guide
+                # #########################################################
+                #- id: "applications:test-mate"
+                #  settings:
+                #    enabled: true
+                #    name: "AI TestMate"
+                #    url: "/aitestmate"
+                #    type: "link"
+                #    description: "Autonomous GenAI solution that automatically generates and commits unit tests, increasing coverage and reducing team effort in software development."
+                #    created_by: "EPAM"
+                #    icon_url: "https://static.cdn.epam.com/uploads/4e9e888a2fff48ea970beb06bbfd9c72/EPM-EAG/ai_testmate_logo_small.png"
               
               preconfigured_assistants:
                 - id: "codemie-onboarding"
