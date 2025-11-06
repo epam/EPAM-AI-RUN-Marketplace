@@ -5,22 +5,22 @@ output "region" {
 
 output "address" {
   description = ""
-  value       = module.db.db_instance_address
+  value       = module.aice_db.db_instance_address
 }
 
 output "database_name" {
   description = ""
-  value       = module.db.db_instance_name
+  value       = module.aice_db.db_instance_name
 }
 
 output "database_user" {
   description = ""
-  value       = module.db.db_instance_username
+  value       = module.aice_db.db_instance_username
   sensitive   = true
 }
 
 output "database_password" {
   description = ""
-  value       = random_password.rds_master_password.result
+  value       = random_password.rds_master_password_aice.result
   sensitive   = true
 }

@@ -12,17 +12,10 @@ data "aws_caller_identity" "current" {}
 ################################################################################
 # RDS Postgres
 ################################################################################
-resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "${var.platform_name}-db-subnet-group"
-  description = "Subnet group for RDS instance"
-  subnet_ids  = data.terraform_remote_state.vpc.outputs.codemie_vpc_private_subnets
 
-  tags = local.tags
-}
-
-module "db" {
+module "aice_db" {
   source = "terraform-aws-modules/rds/aws"
-  identifier = "${var.platform_name}-rds"
+  identifier = "aice-rds"
 
   engine                   = "postgres"
   engine_version           = "17.6"
@@ -36,13 +29,13 @@ module "db" {
 
   db_name                  = "aice_db"
   username                 = "aice_user"
-  password                 = random_password.rds_master_password.result
+  password                 = random_password.rds_master_password_aice.result
   port                     = 5432
 
   manage_master_user_password = false
 
   multi_az                 = false
-  db_subnet_group_name     = aws_db_subnet_group.db_subnet_group.name
+  db_subnet_group_name     = "${var.platform_name}-db-subnet-group"
   vpc_security_group_ids   = [data.terraform_remote_state.vpc.outputs.codemie_vpc_default_sg_id]
 
   publicly_accessible      = false
@@ -51,7 +44,7 @@ module "db" {
 
 }
 
-resource "random_password" "rds_master_password" {
+resource "random_password" "rds_master_password_aice" {
   length  = 12
   special = false
 }

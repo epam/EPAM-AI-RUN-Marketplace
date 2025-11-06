@@ -122,9 +122,8 @@ deploy_rds() {
     log_message "info" "Deploying RDS Postgres..."
 
     cd "$TERRAFORM_DIR/aice-aws-rds" || exit
-    export S3_RDS_BUCKET_KEY_PATH="${AWS_REGIONS}/codemie/rds_terraform.tfstate"
+    export S3_RDS_BUCKET_KEY_PATH="${AWS_REGIONS}/codemie/aice_rds_terraform.tfstate"
     export S3_CORE_BUCKET_KEY_PATH="${AWS_REGIONS}/codemie/platform_terraform.tfstate"
-    export TF_VAR_platform_name=aice
 
     terraform init \
         -backend-config="bucket=${BACKEND_BUCKET_NAME}" \
@@ -157,12 +156,13 @@ main() {
     load_configuration "$CONFIG_FILE"
     validate_configuration
 
+    clean_terraform
+
 #    RDS
     deploy_rds
 
     save_deployment_outputs
     print_summary
-#    clean_terraform
     }
 
 main "$@"
