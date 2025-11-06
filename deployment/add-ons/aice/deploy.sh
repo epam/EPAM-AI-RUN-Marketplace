@@ -36,34 +36,15 @@ log_message() {
 load_configuration() {
     local config_file="$1"
 
-#    if [ -f "$config_file" ]; then
-#        log_message "info" "Loading configuration from $config_file"
-#        set -a
-#        source "$config_file"
-#        set +a
-#    else
-#        log_message "fail" "Configuration file $config_file not found"
-#        echo "Please create a configuration file"
-#        exit 1
-#    fi
-
-  if [ -f "$config_file" ]; then
+    if [ -f "$config_file" ]; then
         log_message "info" "Loading configuration from $config_file"
-        while IFS='=' read -r key value; do
-            # Пропускаем пустые строки и комментарии
-            [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
-            # Удаляем пробелы вокруг ключа и значения
-            key="$(echo "$key" | xargs)"
-            value="$(echo "$value" | xargs)"
-            # Пропускаем переменные с "запрещённым" значением
-            if [[ "$value" == "<value>" ]]; then
-                log_message "warn" "Skipping $key with placeholder value"
-                continue
-            fi
-            export "$key=$value"
-        done < "$config_file"
+        set -a
+        source "$config_file"
+        set +a
     else
         log_message "fail" "Configuration file $config_file not found"
+        echo "Please create a configuration file"
+        exit 1
     fi
 }
 
@@ -102,10 +83,6 @@ validate_configuration() {
 main() {
     echo "AI/Run AICE Deployment Script"
     echo "================================"
-
-    # take some values from Platform setup result
-    PLATFORM_ENV_FILE="$SCRIPT_DIR/../../terraform-scripts/deployment_outputs.env"
-    load_configuration "$PLATFORM_ENV_FILE"
 
     load_configuration "$CONFIG_FILE"
     validate_configuration
