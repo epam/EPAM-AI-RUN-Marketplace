@@ -465,3 +465,11 @@ codemie:
                   project: demo
                   settings:
                     enabled: true
+                - id: "amna-windup2jira-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-aws-waf-agent"
+                  project: demo
+                  settings:
+                    enabled: true
