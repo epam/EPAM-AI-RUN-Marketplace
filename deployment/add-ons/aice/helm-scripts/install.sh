@@ -181,6 +181,11 @@ replace_image_version_placeholders() {
     fi
 }
 
+configure_kubectl() {
+    log_message "info" "Configuring kubectl with current cluster ..."
+    aws eks update-kubeconfig --region ${AWS_REGIONS} --name ${TF_VAR_platform_name}
+}
+
 load_configuration() {
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
   CONFIG_FILE="$(dirname "$SCRIPT_DIR")/deployment.conf"
@@ -483,6 +488,8 @@ main() {
 
   load_configuration
   verify_configs
+
+  configure_kubectl
 
   # Repos
   helm repo add bitnami https://charts.bitnami.com/bitnami
