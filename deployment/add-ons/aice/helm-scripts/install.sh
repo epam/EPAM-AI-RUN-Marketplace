@@ -109,7 +109,7 @@ replace_domain_placeholders() {
 
 replace_llm_placeholders() {
     local values_file="$1"
-    local backup_file="${values_file}.backup"
+    local backup_file="${values_file}.llm.backup"
 
     if [[ -f "$backup_file" ]]; then
         log_message "info" "Restoring ${values_file} from backup"
@@ -121,19 +121,18 @@ replace_llm_placeholders() {
     log_message "info" "Replacing placeholders with values"
     if [[ "$OSTYPE" == "darwin"* ]]; then
            # macOS/BSD sed syntax (requires backup extension)
-           log_message "info" "s|%%LLM_QUALITY_MODEL_NAME%%|${LLM_QUALITY_MODEL_NAME}|g"
-        sed -i '.img.backup' "s|%%LLM_QUALITY_MODEL_NAME%%|${LLM_QUALITY_MODEL_NAME}|g" "${values_file}"
-        sed -i '.img.backup' "s|%%LLM_BALANCED_MODEL_NAME%%|${LLM_BALANCED_MODEL_NAME}|g" "${values_file}"
-        sed -i '.img.backup' "s|%%LLM_EFFICIENCY_MODEL_NAME%%|${LLM_EFFICIENCY_MODEL_NAME}|g" "${values_file}"
-        sed -i '.img.backup' "s|%%LLM_EMBEDDING_MODEL_NAME%%|${LLM_EMBEDDING_MODEL_NAME}|g" "${values_file}"
-        sed -i '.img.backup' "s|%%LLM_AWS_REGION_NAME%%|${LLM_AWS_REGION_NAME}|g" "${values_file}"
+        sed -i '.llm.backup' "s|%%LLM_QUALITY_MODEL_NAME%%|${LLM_QUALITY_MODEL_NAME}|g" "${values_file}"
+        sed -i '.llm.backup' "s|%%LLM_BALANCED_MODEL_NAME%%|${LLM_BALANCED_MODEL_NAME}|g" "${values_file}"
+        sed -i '.llm.backup' "s|%%LLM_EFFICIENCY_MODEL_NAME%%|${LLM_EFFICIENCY_MODEL_NAME}|g" "${values_file}"
+        sed -i '.llm.backup' "s|%%LLM_EMBEDDING_MODEL_NAME%%|${LLM_EMBEDDING_MODEL_NAME}|g" "${values_file}"
+        sed -i '.llm.backup' "s|%%LLM_AWS_REGION_NAME%%|${LLM_AWS_REGION_NAME}|g" "${values_file}"
     else
            # GNU sed (Linux syntax; doesn't require extension)
-        sed -i.img.backup "s|%%LLM_QUALITY_MODEL_NAME%%|${LLM_QUALITY_MODEL_NAME}|g" "${values_file}"
-        sed -i.img.backup "s|%%LLM_BALANCED_MODEL_NAME%%|${LLM_BALANCED_MODEL_NAME}|g" "${values_file}"
-        sed -i.img.backup "s|%%LLM_EFFICIENCY_MODEL_NAME%%|${LLM_EFFICIENCY_MODEL_NAME}|g" "${values_file}"
-        sed -i.img.backup "s|%%LLM_EMBEDDING_MODEL_NAME%%|${LLM_EMBEDDING_MODEL_NAME}|g" "${values_file}"
-        sed -i.img.backup "s|%%LLM_AWS_REGION_NAME%%|${LLM_AWS_REGION_NAME}|g" "${values_file}"
+        sed -i.llm.backup "s|%%LLM_QUALITY_MODEL_NAME%%|${LLM_QUALITY_MODEL_NAME}|g" "${values_file}"
+        sed -i.llm.backup "s|%%LLM_BALANCED_MODEL_NAME%%|${LLM_BALANCED_MODEL_NAME}|g" "${values_file}"
+        sed -i.llm.backup "s|%%LLM_EFFICIENCY_MODEL_NAME%%|${LLM_EFFICIENCY_MODEL_NAME}|g" "${values_file}"
+        sed -i.llm.backup "s|%%LLM_EMBEDDING_MODEL_NAME%%|${LLM_EMBEDDING_MODEL_NAME}|g" "${values_file}"
+        sed -i.llm.backup "s|%%LLM_AWS_REGION_NAME%%|${LLM_AWS_REGION_NAME}|g" "${values_file}"
     fi
 }
 
@@ -222,6 +221,19 @@ print_summary() {
     log_message "info" "Log file: $LOG_FILE"
 }
 
+check_k8s_secret_exists() {
+    local namespace="$1"
+    local secret_name="$2"
+
+    if kubectl get secret "$secret_name" -n "$namespace" > /dev/null 2>&1; then
+        log_message "info" "Secret '$secret_name' exists in namespace '$namespace'."
+        return 0
+    else
+        log_message "info" "Secret '$secret_name' does not exist in namespace '$namespace'."
+        return 1
+    fi
+}
+
 #################
 # k8s Functions
 #################
@@ -259,6 +271,7 @@ deploy_redis() {
       --install aice-redis redis/. \
       --namespace "$namespace" \
       --values "redis/values.yaml" \
+      --set auth.enabled=false \
       --wait \
       --timeout 600s \
       --dependency-update > /dev/null
@@ -309,13 +322,29 @@ deploy_neo4j() {
 
   check_and_create_namespace "$namespace"
 
+  if ! check_k8s_secret_exists "$namespace" aice-neo4j-secret; then
+    local rdm_pwd="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 12)"
+
+    kubectl -n $namespace create secret generic aice-neo4j-secret \
+        --from-literal=username="neo4j" \
+        --from-literal=password="${rdm_pwd}" \
+        --from-literal=auth="neo4j/${rdm_pwd}" > /dev/null
+
+    # shellcheck disable=SC2181
+    if [ $? -eq 0 ]; then
+        log_message "success" "Secret 'aice-neo4j-secret' created successfully."
+    else
+        log_message "fail" "Failed to create secret 'aice-neo4j-secret'."
+        exit 1
+    fi
+  fi
+
   log_message "info" "Deploying Neo4j Helm Chart ..."
 
   helm upgrade \
       --install aice-neo4j neo4j/. \
       --namespace "$namespace" \
       --values "neo4j/values.yaml" \
-      --set neo4j.auth.password=$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 12) \
       --wait \
       --timeout 600s \
       --dependency-update > /dev/null

@@ -33,6 +33,9 @@ spec:
         ports:
         - containerPort: {{ .Values.containerPort }}
           name: redis
+        env:
+          - name: ALLOW_EMPTY_PASSWORD
+            value: "yes"
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
         volumeMounts:
