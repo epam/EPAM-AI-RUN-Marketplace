@@ -240,6 +240,11 @@ file [deployment.conf](deployment.conf)
         <td>Lock DynamoDB Table</td>
         <td>AI/Run™ Platform installation provides this value under the 'Terraform state will be stored in'</td>
       </tr>
+<tr>
+        <td>AWS_DEPLOYER_ROLE_ARN</td>
+        <td>IAM Deployer role ARN</td>
+        <td>AI/Run™ Platform installation provides this value under the 'Following role will be used for env creation:'</td>
+      </tr>
 
 </tbody>
 </table>

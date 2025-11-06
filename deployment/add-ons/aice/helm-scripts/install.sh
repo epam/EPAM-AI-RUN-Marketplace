@@ -484,6 +484,10 @@ main() {
   load_configuration
   verify_configs
 
+  # Repos
+  helm repo add bitnami https://charts.bitnami.com/bitnami
+  helm repo update
+
   deploy_redis
   deploy_elasticsearch
   deploy_neo4j

@@ -44,6 +44,7 @@ validate_configuration() {
         "AWS_REGIONS"
         "BACKEND_BUCKET_NAME"
         "BACKEND_LOCK_DYNAMODB_TABLE"
+        "AWS_DEPLOYER_ROLE_ARN"
     )
 
     local config_error=0
@@ -122,6 +123,8 @@ deploy_rds() {
 
     cd "$TERRAFORM_DIR/aice-aws-rds" || exit
     export S3_RDS_BUCKET_KEY_PATH="${AWS_REGIONS}/codemie/rds_terraform.tfstate"
+    export S3_CORE_BUCKET_KEY_PATH="${AWS_REGIONS}/codemie/platform_terraform.tfstate"
+    export TF_VAR_platform_name=aice
 
     terraform init \
         -backend-config="bucket=${BACKEND_BUCKET_NAME}" \
