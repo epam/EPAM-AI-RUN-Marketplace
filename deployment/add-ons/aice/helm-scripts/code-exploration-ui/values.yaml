@@ -1,5 +1,5 @@
 image:
-  repository: %%IMAGE_REPOSITORY%%/code-exploration-ui
+  repository: %%IMAGE_REPOSITORY%%/add-ons/aice/code-exploration-ui
   tag: %%IMAGE_VERSION%%
 
 imagePullSecrets:

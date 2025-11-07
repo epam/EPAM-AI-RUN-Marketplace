@@ -1,5 +1,5 @@
 image:
-  repository: %%IMAGE_REPOSITORY%%/code-analysis-datasource
+  repository: %%IMAGE_REPOSITORY%%/add-ons/aice/code-analysis-datasource
   tag: %%IMAGE_VERSION%%
 
 imagePullSecrets:
