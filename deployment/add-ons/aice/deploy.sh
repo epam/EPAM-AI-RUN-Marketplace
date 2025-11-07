@@ -92,8 +92,9 @@ main() {
     "$SCRIPT_DIR/terraform-scripts/terraform.sh"
 
     # Helm Charts
-    chmod +x "$SCRIPT_DIR/helm-scripts/install.sh"
-    "$SCRIPT_DIR/helm-scripts/install.sh"
+    cd "$SCRIPT_DIR/helm-scripts"
+    chmod +x install.sh
+    ./install.sh
 
     }
 
