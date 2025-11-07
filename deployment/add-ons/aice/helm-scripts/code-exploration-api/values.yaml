@@ -97,18 +97,18 @@ service:
 resources:
   api:
     limits:
-      cpu: 1
-      memory: 1Gi
+      cpu: 2
+      memory: 4Gi
     requests:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 1
+      memory: 2Gi
   worker:
     limits:
-      cpu: 1
-      memory: 1Gi
+      cpu: 2
+      memory: 4Gi
     requests:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 1
+      memory: 2Gi
 
 ## Probes for the the Code Exploration
 # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
