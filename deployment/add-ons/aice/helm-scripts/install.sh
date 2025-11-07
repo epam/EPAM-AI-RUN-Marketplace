@@ -358,13 +358,16 @@ deploy_neo4j() {
     fi
 
     log_message "success" "Copying Neo4j plugins ..."
-    kubectl cp $SCRIPT_DIR/artifacts/neo4j/plugins/dozerdb-plugin-5.26.3.0.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
+    cp $SCRIPT_DIR/artifacts/neo4j/plugins/dozerdb-plugin-5.26.3.0.jar .
+    kubectl cp ./dozerdb-plugin-5.26.3.0.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
     kubectl exec aice-neo4j-0 -c neo4j -n "$namespace" -- chown neo4j:neo4j /plugins/dozerdb-plugin-5.26.3.0.jar
 
-    kubectl cp $SCRIPT_DIR/artifacts/neo4j/plugins/apoc-5.26.3-core.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
+    cp $SCRIPT_DIR/artifacts/neo4j/plugins/apoc-5.26.3-core.jar
+    kubectl cp ./apoc-5.26.3-core.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
     kubectl exec aice-neo4j-0 -c neo4j -n "$namespace" -- chown neo4j:neo4j /plugins/apoc-5.26.3-core.jar
 
-    kubectl cp $SCRIPT_DIR/artifacts/neo4j/plugins/neo4j-graph-data-science-2.13.4.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
+    cp $SCRIPT_DIR/artifacts/neo4j/plugins/neo4j-graph-data-science-2.13.4.jar
+    kubectl cp ./neo4j-graph-data-science-2.13.4.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
     kubectl exec aice-neo4j-0 -c neo4j -n "$namespace" -- chown neo4j:neo4j /plugins/neo4j-graph-data-science-2.13.4.jar
 
     kubectl rollout restart statefulset aice-neo4j -n "$namespace"
