@@ -226,6 +226,12 @@ file [deployment.conf](deployment.conf)
         <td colspan="3">Terraform settings</td>        
       </tr>
 <tr>
+        <td>TF_VAR_platform_name</td>
+        <td>Planform name, usual 'codemie'</td>
+        <td>Same value as 'TF_VAR_platform_name' in AI/Run Platform deployment configuration</td>
+      </tr>
+<tr>
+<tr>
         <td>AWS_REGIONS</td>
         <td>AWS region</td>
         <td>Example: us-east-1</td>
@@ -332,17 +338,25 @@ kubectl -n aice create secret generic aice-postgresql-secret \
       --dependency-update 
 ```
 ### 6. Install Neo4j:
+Create s Secret with Neo4j password:
+```bash
+kubectl -n $namespace create secret generic aice-neo4j-secret \
+        --from-literal=username="neo4j" \
+        --from-literal=password="<pwd>" \
+        --from-literal=auth="neo4j/<pwd>"
+```
+
 ```bash
   helm upgrade \
       --install aice-neo4j neo4j/. \
       --namespace aice \
       --values "neo4j/values.yaml" \
-      --set neo4j.auth.password=$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 12) \
+      --set neo4j.auth.password=<pwd> \
       --wait \
       --timeout 600s \
       --dependency-update 
 ```
-⚠️ The password will be generated automatically and saved in Secret.
+⚠️ Replace '<pwd>' to saved in the Secret.
 
 Copy Neo4j plugins into Pod`s PVS:
 ```bash
@@ -352,11 +366,11 @@ Copy Neo4j plugins into Pod`s PVS:
     
     # apoc
     kubectl cp $SCRIPT_DIR/artifacts/neo4j/plugins/apoc-5.26.3-core.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
-    kubectl exec aice-neo4j-0 -c neo4j -n "$namespace" -- chown neo4j:neo4j /plugins/apoc-5.26.3-core.jar
+    kubectl exec aice-neo4j-0 -c neo4j -n aice -- chown neo4j:neo4j /plugins/apoc-5.26.3-core.jar
 
     # data-science
     kubectl cp $SCRIPT_DIR/artifacts/neo4j/plugins/neo4j-graph-data-science-2.13.4.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
-    kubectl exec aice-neo4j-0 -c neo4j -n "$namespace" -- chown neo4j:neo4j /plugins/neo4j-graph-data-science-2.13.4.jar
+    kubectl exec aice-neo4j-0 -c neo4j -n aice -- chown neo4j:neo4j /plugins/neo4j-graph-data-science-2.13.4.jar
 ```
 
 Restart statefulset for applying plugins:
