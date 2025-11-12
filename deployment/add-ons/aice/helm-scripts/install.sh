@@ -83,6 +83,11 @@ verify_configs() {
         log_message "fail" "AWS_RDS_DATABASE_PASSWORD is not set."
         exit 1
     fi
+
+    if [[ -z "${NEO4J_PLUGINS_BUCKET_NAME}" ]]; then
+        log_message "fail" "NEO4J_PLUGINS_BUCKET_NAME is not set."
+        exit 1
+    fi
 }
 
 replace_domain_placeholders() {
@@ -345,6 +350,7 @@ deploy_neo4j() {
       --install aice-neo4j neo4j/. \
       --namespace "$namespace" \
       --values "neo4j/values.yaml" \
+      --set neo4j.s3.plugins="$NEO4J_PLUGINS_BUCKET_NAME" \
       --wait \
       --timeout 600s \
       --dependency-update > /dev/null
@@ -356,22 +362,6 @@ deploy_neo4j() {
         log_message "fail" "Failed to deploy Neo4j."
         exit 1
     fi
-
-    log_message "success" "Copying Neo4j plugins ..."
-    cp $SCRIPT_DIR/artifacts/neo4j/plugins/dozerdb-plugin-5.26.3.0.jar .
-    kubectl cp ./dozerdb-plugin-5.26.3.0.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
-    kubectl exec aice-neo4j-0 -c neo4j -n "$namespace" -- sh -c 'chown neo4j:neo4j /plugins/dozerdb-plugin-5.26.3.0.jar'
-
-    cp $SCRIPT_DIR/artifacts/neo4j/plugins/apoc-5.26.3-core.jar .
-    kubectl cp ./apoc-5.26.3-core.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
-    kubectl exec aice-neo4j-0 -c neo4j -n "$namespace" -- sh -c 'chown neo4j:neo4j /plugins/apoc-5.26.3-core.jar'
-
-    cp $SCRIPT_DIR/artifacts/neo4j/plugins/neo4j-graph-data-science-2.13.4.jar .
-    kubectl cp ./neo4j-graph-data-science-2.13.4.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
-    kubectl exec aice-neo4j-0 -c neo4j -n "$namespace" -- sh -c 'chown neo4j:neo4j /plugins/neo4j-graph-data-science-2.13.4.jar'
-
-    kubectl rollout restart statefulset aice-neo4j -n "$namespace"
-
 
     log_message "success" "Neo4j configuration completed"
 }

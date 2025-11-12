@@ -100,6 +100,9 @@ AWS_RDS_ADDRESS=${AWS_RDS_ADDRESS:-}
 AWS_RDS_DATABASE_NAME=${AWS_RDS_DATABASE_NAME:-}
 AWS_RDS_DATABASE_USER=${AWS_RDS_DATABASE_USER:-}
 AWS_RDS_DATABASE_PASSWORD=${AWS_RDS_DATABASE_PASSWORD:-}
+
+# Neo4j Plugin S3
+NEO4J_PLUGINS_BUCKET_NAME=${NEO4J_PLUGINS_BUCKET_NAME:-}
 EOL
 
     chmod 600 "$output_file"
@@ -149,6 +152,25 @@ deploy_rds() {
 
 }
 
+deploy_neo4j_plugins() {
+    log_message "info" "Deploying S3 bucket fro Neo4j Plugins ..."
+
+    cd "$TERRAFORM_DIR/aice-aws-s3-neo4j-plugins" || exit
+
+    terraform init
+    terraform plan \
+      -var="role_arn=${AWS_DEPLOYER_ROLE_ARN}" \
+      -var="region=${AWS_REGIONS}" \
+      -out=tfplan
+    terraform apply -auto-approve tfplan
+
+    NEO4J_PLUGINS_BUCKET_NAME=$(terraform output -raw aice_neo4j_plugins_s3_bucket_name)
+
+    log_message "info" "Neo4j Plugins S3 Bucket Name: $NEO4J_PLUGINS_BUCKET_NAME"
+
+    export NEO4J_PLUGINS_BUCKET_NAME
+}
+
 main() {
     echo "AI/Run AICE AWS Deployment Script is starting..."
     echo "================================"
@@ -160,6 +182,7 @@ main() {
 
 #    RDS
     deploy_rds
+    deploy_neo4j_plugins
 
     save_deployment_outputs
     print_summary

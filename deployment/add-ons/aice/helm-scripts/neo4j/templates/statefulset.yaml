@@ -17,6 +17,17 @@ spec:
         app: {{ .Release.Name }}
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
     spec:
+      initContainers:
+        - name: download-plugins
+          image: amazon/aws-cli:2.15.0
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - |
+              echo "S3 bucket path: s3://{{ .Values.neo4j.s3.plugins }}/plugins/"
+              aws s3 cp s3://{{ .Values.neo4j.s3.plugins }}/plugins/ /plugins/ --recursive
+          volumeMounts:
+            - name: plugins
+              mountPath: /plugins
       containers:
         - name: neo4j
           image: "{{ .Values.neo4j.image.repository }}:{{ .Values.neo4j.image.tag }}"

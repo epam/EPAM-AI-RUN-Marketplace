@@ -160,6 +160,7 @@ This conversational approach makes complex codebase exploration accessible to bo
 # Architecture and Technology Stack
 
 ![Figure 6. High-level AICE Architecture](../../../assets/add-ons/aice_aws_arch.jpg)
+
 *Figure 6. High-level AICE AWS Architecture*
 
 ## Components Description
