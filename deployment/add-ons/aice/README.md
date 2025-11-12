@@ -268,6 +268,15 @@ file [deployment.conf](deployment.conf)
 
 Save this public key as a `.pem` file in the `../helm-scripts` folder and set its path in the `JWT_PUBLIC_KEY` setting.
 
+⚠️ Don't forget pem headers, example:
+```bash
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtakdhf8QWTFVjsJb/GteAb91Llz6....
+-----END PUBLIC KEY-----
+```
+
+![publick_key_in_keycloak.png](../../../assets/add-ons/publick_key_in_keycloak.png)
+
 </details>
 
 ## There are two options for deploying the system:
