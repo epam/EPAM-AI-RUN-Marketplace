@@ -5,7 +5,7 @@
 replicaCount: 2
 
 image:
-  repository: artifactoryspb.epam.com/epm-eag-docker/aitestmate/api
+  repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/api
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
@@ -94,7 +94,7 @@ env:
   # - name: CODEMIE_IGNORE_SSL_ERRORS
   #   value: "true"
   # - name: CODEMIE_CLIENT_ID
-  #   value: aitm-client-id
+  #   value: aitestmate
   # - name: CODEMIE_CLIENT_SECRET
   #   value: very-secret
   # - name: CODEMIE_PRINCIPAL_ID
@@ -182,12 +182,12 @@ resources: {}
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
   # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  #   cpu: 1000m
+  #   memory: 2Gi
+  # limits:
+  #   cpu: 2000m
+  #   memory: 2Gi
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 livenessProbe: {}

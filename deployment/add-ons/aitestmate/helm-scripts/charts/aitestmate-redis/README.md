@@ -14,7 +14,7 @@ AI TestMate Redis Helm chart for Kubernetes
 | extraEnv | list | `[]` |  |
 | fullnameOverride | string | `"aitestmate-redis"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"artifactoryspb.epam.com/epm-eag-docker/aitestmate/redis"` |  |
+| image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/redis"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | livenessProbe | object | `{}` |  |

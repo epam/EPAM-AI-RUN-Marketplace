@@ -102,7 +102,7 @@ module "codemie_key" {
 
   description              = "AI Run TestMate Codemie Integration Key"
   key_usage                = "ENCRYPT_DECRYPT"
-  customer_master_key_spec = "RSA_2048"
+  customer_master_key_spec = "RSA_4096"
   aliases                  = ["aitestmate-codemie-key"]
 
   enable_key_rotation = false

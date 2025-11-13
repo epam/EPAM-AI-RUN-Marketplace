@@ -23,7 +23,7 @@ AI TestMate Migrator Helm chart for Kubernetes
 | extraEnv | list | `[]` | Additional environment passed into container |
 | fullnameOverride | string | `"aitestmate-migrator"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"artifactoryspb.epam.com/epm-eag-docker/aitestmate/aitestmate"` |  |
+| image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/aitestmate"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `"aitestmate-migrator"` |  |

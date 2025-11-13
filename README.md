@@ -30,8 +30,8 @@ provision resources (such as ACM), the estimated time for a complete end-to-end 
 3. [EPAM AI/Run™ for AWS Migration and Modernization Architecture](#3-epam-airun-for-aws-migration-and-modernization-deployment-architecture)
 4. [AWS Infrastructure Deployment](#4-aws-infrastructure-deployment)
 5. [AI Models Integration and Configuration](#5-ai-models-integration-and-configuration)
-6. [EPAM AI/Run™ for AWS Migration and Modernization Components Deployment](#6-epam-airun-for-aws-migration-and-modernization-components-deployment) 
-7. [Application Access](#7-provide-access-to-the-application) 
+6. [EPAM AI/Run™ for AWS Migration and Modernization Components Deployment](#6-epam-airun-for-aws-migration-and-modernization-components-deployment)
+7. [Application Access](#7-provide-access-to-the-application)
 8. [Post Instalaltion Configuration](#8-epam-airun-for-aws-migration-and-modernization-post-installation-configuration)
 9. [Cost Management](9#-cost-management)
 10. [Monitoring and Recovery](#10-monitoring-and-recovery)
@@ -39,7 +39,7 @@ provision resources (such as ACM), the estimated time for a complete end-to-end 
 
 # 1. Overview
 
-This guide provides step-by-step instructions for deploying the EPAM AI/Run™ for AWS Migration and Modernization 
+This guide provides step-by-step instructions for deploying the EPAM AI/Run™ for AWS Migration and Modernization
 application to Amazon EKS and related AWS services. By following these instructions, you will:
 
 * Get along with EPAM AI/Run™ for AWS Migration and Modernization architecture.
@@ -48,9 +48,9 @@ application to Amazon EKS and related AWS services. By following these instructi
 * Integrate and configure Bedrock LLMs.
 
 Additionally, the EPAM AI/Run™ for AWS application supports the installation of supplementary applications that integrate with our system, such as AI TestMate.
-AI TestMate is an autonomous GenAI solution for automatic unit test generation, acting as a "virtual teammate" within the software development lifecycle (SDLC). 
-It analyzes repositories, creates, and commits tests without manual intervention, helping to quickly increase test coverage and reduce team effort. 
-The solution leverages an ensemble of large language models (LLMs), an agentic approach, and a secure proxy access layer to the models. 
+AI TestMate is an autonomous GenAI solution for automatic unit test generation, acting as a "virtual teammate" within the software development lifecycle (SDLC).
+It analyzes repositories, creates, and commits tests without manual intervention, helping to quickly increase test coverage and reduce team effort.
+The solution leverages an ensemble of large language models (LLMs), an agentic approach, and a secure proxy access layer to the models.
 The installation guide you can for the application you can find by path: ```deployment/add-ons/aitestmate/helm-scripts/README.md```
 
 
@@ -63,7 +63,7 @@ For successful deployment, please follow these steps in sequence:
 2. Finally, deploy and configure the  EPAM AI/Run™ for AWS Migration and Modernization components on EKS cluster by installing Helm Charts.
 3. Complete post-installation configuration.
 
-Each installation step is designed to ensure a smooth deployment process. The guide is structured to walk you through 
+Each installation step is designed to ensure a smooth deployment process. The guide is structured to walk you through
 from initial setup to a fully functional EPAM AI/Run™ for AWS Migration and Modernization environment on AWS.
 
 # 2. Prerequisites
@@ -71,7 +71,7 @@ from initial setup to a fully functional EPAM AI/Run™ for AWS Migration and Mo
 Before installing EPAM AI/Run™ for AWS Migration and Modernization, carefully review the prerequisites and requirements.
 
 ## 2.1. AWS Account Access Requirements
-✓ Active AWS Account with a preferred region for deployment.  
+✓ Active AWS Account with a preferred region for deployment.
 ✓ User or Role with programmatic access to AWS account with permissions to create and manage IAM Roles and Policy Documents.
 
 > ⚠️
@@ -127,7 +127,7 @@ EPAM AI/Run™ for AWS Migration and Modernization terraform modules will automa
 </details>
 
 ## 2.6. Deployer instance requirements
-✓ The following software must be pre-installed and configured on the deployer laptop or VDI instance before beginning 
+✓ The following software must be pre-installed and configured on the deployer laptop or VDI instance before beginning
 the deployment process(if you're using Windows, avoid mixing WSL with a native Windows installation):
 
 <details>
@@ -146,7 +146,7 @@ the deployment process(if you're using Windows, avoid mixing WSL with a native W
 
 ℹ️ If you use Windows, please use linux shells such as Git Bash, WSL, etc
 
-## 2.7. Active Subscription in AWS Marketplace. 
+## 2.7. Active Subscription in AWS Marketplace.
 
 Before you start deployment, please ensure that you have an active subscription to the EPAM AI/Run™ for AWS Migration and Modernization in the [AWS Marketplace](https://aws.amazon.com/marketplace/pp?sku=86jeke9oer4t5bdyryfgyya7h).
 After subscription activation the links to AWS ECR with required images and helm charts will be visible for you. You need them for deployment. Also, you can choose the version of the product you install.
@@ -199,8 +199,8 @@ There are two deployment options available. Use the script if you want an easier
 
 <img src="assets/deployment-guide/Hosted_Zone4_2_2.png">
 
-### 4.2.3. Create new hosted zone. 
-Create new hosted zone. Domain name should have the following pattern <any_name>.<your_DNS>. 
+### 4.2.3. Create new hosted zone.
+Create new hosted zone. Domain name should have the following pattern <any_name>.<your_DNS>.
 <any_name> can be specific environment, for instance
 ``` dev.example.com ```
 
@@ -213,7 +213,7 @@ Example of the NS record value:
 ns-111.awsdns-00.net.
 ns-121.awsdns-11.org.
 ns-123.awsdns-22.com.
-ns-1234.awsdns-33.co.uk. 
+ns-1234.awsdns-33.co.uk.
 ```
 <img src="assets/deployment-guide/Hosted_Zone4_2_4.png">
 
@@ -228,7 +228,7 @@ Value - Paste the value from step 4.2.4
 
 ## 4.3. Set up credential for AWS
 
-1. Find or create "credentials" file. 
+1. Find or create "credentials" file.
 > By default, the file is located in the following directory:
     * "/Users/<user_name>/.aws" - Linux/Mac
     * "C:\Users\<profile>\.aws" - Windows
@@ -294,7 +294,7 @@ TF_VAR_demand_min_nodes_count=1
 # RDS
 TF_VAR_pg_instance_class="db.c6gd.medium"
 ```
-> ⚠️ **Important**: If you plan to include TestMate add-ons, make sure to choose instance_type c5.2xlarge and configure no fewer than 5-7 nodes.
+> ⚠️ **Important**: If you plan to include AI TestMate add-ons, make sure to choose instance_type c5.2xlarge and configure no fewer than 5-7 nodes.
 
 </details>
 2. Run the following command if using a Unix-like operating system:
@@ -310,13 +310,13 @@ TF_VAR_pg_instance_class="db.c6gd.medium"
    * `--rds-disable`:           EPAM AI/Run™ for AWS Migration and Modernization by default rely on AWS RDS (Postgres) database. Use this key if you want switch to Postgres Database deployed as a Pod in EKS cluster.
    * `--config-file FILE`:      Load configuration from file (default: deployment.conf)
    * `--help`
-   
+
    The flags `--access-key`, `--secret-key`, and `--region REGION` can be omitted if step 4.3 has already been completed.
 
 
 ### ⚠️ Warning
 
-EPAM AI/Run™ for AWS Migration and Modernization relies on manged AWS RDS (PostgreSQL) database.  
+EPAM AI/Run™ for AWS Migration and Modernization relies on manged AWS RDS (PostgreSQL) database.
 Please consider whether you want to deploy the database as a pod in the EKS cluster or use AWS RDS instead (default behaviour).
 
 This bash script uses the default AWS profile for deploying the infrastructure. Ensure your default profile is properly configured with the necessary credentials and permissions before running the script
@@ -370,20 +370,20 @@ After execution, the script will:
 
 ⚠️ Keep the `deployment_outputs.env` file secure as it contains sensitive information. Do not commit it to version control.
 
-After successful deployment, you can proceed with the EPAM AI/Run™ for AWS Migration and Modernization components 
+After successful deployment, you can proceed with the EPAM AI/Run™ for AWS Migration and Modernization components
 installation and start using EPAM AI/Run™ for AWS Migration and Modernization services.
 
-⚠️ Important: after successful deployment the dedicated VPC in your AWS account is created in specified region with specified subnets' A-Zs. 
+⚠️ Important: after successful deployment the dedicated VPC in your AWS account is created in specified region with specified subnets' A-Zs.
 VPC contains:
-- route tables 
+- route tables
 - 1 public subnet with attached Internet gateway
 - 1 private subnet with attached NAT gateway
 - NACLs and SGs created by Terraform modules.
 Please consider reviewing its configuration and adjust it according to your security policies.
 
 
-⚠️ Important: during the deployment several secrets are created in different namespaces for EKS cluster, only users with 
-proper permissions to EKS cluster can manage them: review, rotate, etc. There is no automated rotation implemented by default, 
+⚠️ Important: during the deployment several secrets are created in different namespaces for EKS cluster, only users with
+proper permissions to EKS cluster can manage them: review, rotate, etc. There is no automated rotation implemented by default,
 please consider implementing it after deployment https://aws.amazon.com/blogs/containers/aws-secrets-manager-controller-poc-an-eks-operator-for-automatic-rotation-of-secrets/.
 
 ⚠️ Important: The customer manged KMS key **airun-*** is created with key rotation disabled by default. If you want to
@@ -395,7 +395,7 @@ Also, there are AWS KMS manged keys are created for your: ACM, S3.
 The recourse policy attached to the keys by default contains only minimal required permissions. If you want to extend,
 please do it manually after deployment.
 
-### 4.5.2 Manual Deployment 
+### 4.5.2 Manual Deployment
 If the previous step has already been completed, please proceed to skip this step.
 
 <details>
@@ -481,10 +481,10 @@ This step will cover the following topics:
 To accomplish the tasks outlined above, follow these steps:
 
 1. Navigate to codemie-aws-platform folder:
-   ```bash 
+   ```bash
    cd ../codemie-aws-platform
    ```
-2. Review the input variables for Terraform in the `deployment/terraform-scripts/codemie-aws-platform/variables.tf` file and create a `<filename>.tfvars` in the repo to manage custom variables there in a format of key-value. For example:   
+2. Review the input variables for Terraform in the `deployment/terraform-scripts/codemie-aws-platform/variables.tf` file and create a `<filename>.tfvars` in the repo to manage custom variables there in a format of key-value. For example:
 ```
 region                        = "<REGION>" # Example: us-east-1
 role_arn                      = "arn:aws:iam::xxxxxxxx:role/AIRunDeployerRole" # The ARN of the IAM role that will be used for deployment. Note: This value becomes available after running the terraform apply command in Step 4.6.2.
@@ -527,7 +527,7 @@ demand_min_nodes_count        = 1
 1. Navigate to codemie-aws-platform folder:
    ```bash
    cd ../codemie-aws-rds
-   
+
 2. Review the input variables for Terraform in the deployment/terraform-scripts/codemie-aws-rds/variables.tf file and create a <filename>.tfvars in the repo to change default variables values there in a format of key-value. For example:
 ```
 region                      = "<aws_region>"
@@ -648,7 +648,7 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 |---------------|--------|-------------|
 | Ingress Nginx Controller | registry.k8s.io/ingress-nginx/controller:x.y.z | Handles external traffic routing to services within the Kubernetes cluster. The EPAM AI/Run™ for AWS Migration and Modernization application uses oauth2-proxy, which relies on the Ingress Nginx Controller for proper routing and access control |
 | Storage Class | - | Provides persistent storage capabilities |
-| Elasticsearch | 	docker.elastic.co/elasticsearch/elasticsearch:x.y.z | Database component that stores all EPAM AI/Run™ for AWS Migration and Modernization data, including datasources, projects, and other application information |
+| Elasticsearch |   docker.elastic.co/elasticsearch/elasticsearch:x.y.z | Database component that stores all EPAM AI/Run™ for AWS Migration and Modernization data, including datasources, projects, and other application information |
 | Kibana | docker.elastic.co/kibana/kibana:x.y.z | Web-based analytics and visualization platform that provides visualization of the data stored in Elasticsearch. Allows monitoring and analyzing EPAM AI/Run™ for AWS Migration and Modernization data |
 | Postgres-operator | registry.developers.crunchydata.com/crunchydata/postgres-operator:x.y.z | Manages PostgreSQL database instances required by other components in the stack. Handles database lifecycle operations |
 | Keycloak-operator | epamedp/keycloak-operator:x.y.z | Manages Keycloak identity and access management instance and its configuration |
@@ -691,7 +691,7 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
   ./helm-charts.sh version=2.2.1-aws --image-repository valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
 
-> ⚠️ **Important**: If you are going to deploy TestMate also, please add the following values to the deployment/helm-scripts/codemie-api/values-aws.yaml file.
+> ⚠️ **Important**: If you are going to deploy AI TestMate also, please add the following values to the deployment/helm-scripts/codemie-api/values-aws.yaml file.
 > <details>
 > <summary>Required Properties for TestMate Integration </summary>
 >
@@ -738,7 +738,7 @@ Run next command
 
 ```bash
   aws eks update-kubeconfig --region <REGION> --name <PLATFORM_NAME>
-  aws ecr get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems 
+  aws ecr get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
 
 ### 6.3.2. Nginx Ingress controller
@@ -769,7 +769,7 @@ Install only in case if your EKS cluster does not have AWS gp3 storage class:
 
 1. Create Kubernetes namespace, e.g. `elastic` with the command:
 
-   ```bash 
+   ```bash
    kubectl create namespace elastic
    ```
 2. Create Kubernetes secret:
@@ -781,7 +781,7 @@ Install only in case if your EKS cluster does not have AWS gp3 storage class:
    --dry-run=client -o yaml | kubectl apply -f -
 ```
 Secret example:
-``` 
+```
    apiVersion: v1
    kind: Secret
    metadata:
@@ -803,21 +803,21 @@ Secret example:
 
 2. Install `kibana` helm chart with the command:
 
-   ```bash 
+   ```bash
    helm upgrade --install kibana kibana/. -n elastic --values kibana/values-aws.yaml --wait --timeout 600s --dependency-update
    ```
 3. Kibana can be accessed by the following URL: https://kibana.%%DOMAIN%%, e.g https://kibana.example.com
 ### 6.3.6. Install Postgres-operator component:
 Apply postgres-operator chart:
-   ```bash  
+   ```bash
    helm upgrade --install postgres-operator postgres-operator-helm/. -n postgres-operator --create-namespace --wait --timeout 900s --dependency-update
    ```
 ### 6.3.7. Install Keycloak-operator component:
 
 1. Create `security` namespace and `keycloak-admin` secret:
-   ```bash 
+   ```bash
    kubectl create namespace security
-   
+
    kubectl -n security create secret generic keycloak-admin \
      --from-literal=username=admin \
      --from-literal=password="$(openssl rand -base64 12)" \
@@ -834,7 +834,7 @@ Apply postgres-operator chart:
 
 2. Apply `keycloak` helm chart with the command:
 
-   ```bash  
+   ```bash
    helm upgrade --install keycloak keycloak-helm/. -n security --values keycloak-helm/values-aws.yaml --wait --timeout 900s --dependency-update
    ```
 Keycloak Admin UI can be accessed by the following URL: https://keycloak.%%DOMAIN%%/auth/admin , e.g. https://keycloak.example.com/auth/admin
@@ -845,7 +845,7 @@ To deploy a NATS, follow the steps below:
 
 1. Create `codemie` namespace with the command:
 
-  ```bash 
+  ```bash
    kubectl create namespace codemie
    ```
 
@@ -1055,10 +1055,10 @@ To deploy a NATS Auth Callout service, follow the steps below:
    terraform output -raw database_name
    terraform output -raw database_user
    terraform output -raw database_password
-```   
+```
 
 2. Create `codemie-postgresql` secret with postgresql passwords replace AWS_RDS values placeholders from 4.6.5 step
-   
+
 ```bash
   kubectl -n "codemie" create secret generic "codemie-postgresql" \
          --from-literal=password="${AWS_RDS_DATABASE_PASSWORD}" \
@@ -1091,9 +1091,9 @@ type: Opaque
 2. Install PostgreSQL helm chart with the command:
 ```bash
   helm repo add bitnami https://charts.bitnami.com/bitnami
-   
+
   helm repo update
-   
+
   helm upgrade --install codemie-postgresql bitnami/postgresql \
   --version 16.7.4 \
   --values ./codemie-postgresql/values-aws.yaml \
@@ -1206,7 +1206,7 @@ kubectl get secret elasticsearch-master-credentials -n elastic -o yaml | sed '/n
   --wait --timeout 600s \
   --dependency-update
 ```
-4. AI/Run CodeMie UI can be accessed by the following URL: https://codemie.%%DOMAIN%% , e.g. https://codemie.example.com 
+4. AI/Run CodeMie UI can be accessed by the following URL: https://codemie.%%DOMAIN%% , e.g. https://codemie.example.com
 
 ### 6.3.17. Install Fluentbit component
 
@@ -1314,7 +1314,7 @@ To include the added `applications` unmanaged attribute as an additional claim t
 1. Navigate to "Client Scopes" and update the client scope "profile" to include the newly added attribute.
 
    <img src="assets/deployment-guide/create_user_keycloak_1.png">
-   
+
 2. Configure a mapper, selecting the mapping type as "User Attribute", then set applications as the field name, user attribute, and token claim name. Finally, save the changes.
 
    <img src="assets/deployment-guide/create_user_keycloak_2.png">
@@ -1330,11 +1330,11 @@ To include the added `applications` unmanaged attribute as an additional claim t
 2. Click on "Add user" button
 
    <img src="assets/deployment-guide/create_user_keycloak_4.png">
-   
+
 3. Fill all necessary fields and click on "Email Verified " and "Create" buttons
 
    <img src="assets/deployment-guide/create_user_keycloak_5.png">
-   
+
 4. Assign admin role and unassign default role
 
    <img src="assets/deployment-guide/create_user_keycloak_6_1.png">
@@ -1345,18 +1345,18 @@ To include the added `applications` unmanaged attribute as an additional claim t
 
    <img src="assets/deployment-guide/create_user_keycloak_7_1.png">
    <img src="assets/deployment-guide/create_user_keycloak_7_2.png">
-   
+
 6. Set up attributes
 
    <img src="assets/deployment-guide/create_user_keycloak_8.png">
-   
+
 7. Verify login and access to EPAM AI/Run™ for AWS Migration and Modernization application.
    Link to fronted
    URL = https://codemie.<TF_VAR_platform_domain_name>
 
-## 8.2. Create client and client secret
+## 8.2. Create client and client secret for AI TestMate
 
-The steps in this section apply only to the Testmate extension and can be performed at any time in the future. 
+The steps in this section apply only to the AI Testmate add-on and can be performed at any time in the future.
 These steps do not affect the AI/Run™ for AWS application.
 
 1. Log into the Keycloak admin console with your administrator credentials
@@ -1387,15 +1387,15 @@ These steps do not affect the AI/Run™ for AWS application.
    - Click on Add client scopes
    - Select the codemie scope from the dropdown and set the assignment type to Default.
 10. Configure Service account user:
-    - Navigate to the Service accounts roles tab in the client settings
-    - Click on service-account-aitestmate link
-    - Input Email : aitestmate@domain.com
-    - Input First name: aitestmate
-    - Input Last name: project
-    - Click on the Attributes tab
-    - Type Key: applications and Values name of your project aitestmate
-    - Click Save button
-11. Go to credentials. On the page you can find "Client Secret" 
+  - Navigate to the Service accounts roles tab in the client settings
+  - Click on service-account-aitestmate link
+  - Input Email : aitestmate@domain.com
+  - Input First name: aitestmate
+  - Input Last name: project
+  - Click on the Attributes tab
+  - Type Key: applications and Values name of your project aitestmate
+  - Click Save button
+11. Go to credentials. On the page you can find "Client Secret"
 
 
 # 9. Cost Management
@@ -1405,7 +1405,7 @@ The product listed on AWS Marketplace is free, but usage incurs costs associated
 
 # 10. Monitoring and Recovery
 
-EPAM AI/Run™ for AWS Migration and Modernization application uses built-in AWS services monitoring and alerting 
+EPAM AI/Run™ for AWS Migration and Modernization application uses built-in AWS services monitoring and alerting
 capabilities. Please refer to the following documentation for more details:
 All logs are aggregated and published into AWS CloudWatch, categorized based on their importance:
 ``
@@ -1419,8 +1419,8 @@ The user data is stored in AWS RDS and AWS EBS, AWs S3 services. You can use lau
 More information about potential [issues](https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html).
 
 # 11. Maintenance
-This guide relies on valid AWS credentials with sufficient permissions to create and manage resources. 
-Users are responsible for keeping their credentials secure and up to date. We strongly recommend enabling credential rotation 
+This guide relies on valid AWS credentials with sufficient permissions to create and manage resources.
+Users are responsible for keeping their credentials secure and up to date. We strongly recommend enabling credential rotation
 for enhanced security. Refer to the AWS documentation on credential rotation: [Rotate Your Secrets with AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_turn-on-cli.html)
 
 The container images used in this deployment are regularly scanned for vulnerabilities. In the event of a critical vulnerability, users are responsible for updating the images in their AWS ECR repository to the latest product version and redeploying the application with the updated images. For detailed guidance, see:
@@ -1434,6 +1434,6 @@ The EC2 instances for the node groups use the AWS AMI version amazon-eks-node-al
 
 
 # 12. Support
-This is a version for educational exploration, provided free of charge, relying on community-based assistance. 
-For deploying enterprise-grade versions and professional help with building custom-tailored AI solutions, 
-contact EPAM Systems - SupportAIRunforAWS@epam.com or [EPAM Systems Contacts](https://www.epam.com/services/artificial-intelligence/epam-ai-run-tm#contact). 
+This is a version for educational exploration, provided free of charge, relying on community-based assistance.
+For deploying enterprise-grade versions and professional help with building custom-tailored AI solutions,
+contact EPAM Systems - SupportAIRunforAWS@epam.com or [EPAM Systems Contacts](https://www.epam.com/services/artificial-intelligence/epam-ai-run-tm#contact).

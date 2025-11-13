@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: artifactoryspb.epam.com/epm-eag-docker/aitestmate/nginx
+  repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/nginx
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.

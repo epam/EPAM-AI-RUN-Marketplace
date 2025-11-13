@@ -1,5 +1,11 @@
 ---
 
+# when deploying helm chart manually don't forget to set image repository
+# either use --set image.repository=<repository_url> or
+# uncomment lines below and set proper url to image
+# image:
+#   repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/elasticsearch
+
 # Set resources for aitestmate-elasticsearch
 resources:
   requests:
