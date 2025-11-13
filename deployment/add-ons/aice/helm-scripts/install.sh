@@ -88,6 +88,11 @@ verify_configs() {
         log_message "fail" "NEO4J_PLUGINS_BUCKET_NAME is not set."
         exit 1
     fi
+
+    if [[ -z "${EKS_AWS_ROLE_ARN}" ]]; then
+        log_message "fail" "EKS_AWS_ROLE_ARN is not set."
+        exit 1
+    fi
 }
 
 replace_domain_placeholders() {
@@ -390,6 +395,7 @@ deploy_code-exploration-api() {
       --namespace "$namespace" \
       --values "${values_file}" \
       --set-file jwtPublicKey.keyData="${jwt_public_key}" \
+      --set serviceAccount.iamRoleArn="$EKS_AWS_ROLE_ARN" \
       --wait \
       --timeout 600s \
       --dependency-update > /dev/null
