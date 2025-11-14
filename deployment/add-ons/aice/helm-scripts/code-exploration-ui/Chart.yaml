@@ -1,0 +1,6 @@
+apiVersion: v2
+name: code-exploration-ui
+description: A Helm chart for Code Exploration UI
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
