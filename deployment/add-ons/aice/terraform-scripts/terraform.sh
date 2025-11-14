@@ -178,7 +178,7 @@ main() {
     load_configuration "$CONFIG_FILE"
     validate_configuration
 
-    clean_terraform
+#    clean_terraform
 
 #    RDS
     deploy_rds

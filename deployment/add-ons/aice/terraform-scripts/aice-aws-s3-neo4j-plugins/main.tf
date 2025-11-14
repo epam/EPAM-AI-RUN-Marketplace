@@ -37,8 +37,7 @@ resource "aws_s3_bucket_policy" "aice_neo4j_plugins" {
       "Principal": {
         "AWS": [
           "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.platform_name}-on-demand-node-group",
-          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.platform_name}-spot-node-group",
-          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.platform_name}-admin-role"
+          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.platform_name}-spot-node-group"
         ]
       },
       "Action": [
