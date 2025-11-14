@@ -26,3 +26,9 @@ variable "tags" {
     "Project"     = "CodeMie"
   }
 }
+
+variable "platform_name" {
+  description = "The name of the cluster that is used for tagging resources"
+  type        = string
+  default     = "codemie"
+}
