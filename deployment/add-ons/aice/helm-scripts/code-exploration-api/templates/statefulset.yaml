@@ -29,6 +29,7 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "code-exploration.fullname" . }}
       initContainers:
         - name: init-workspace
           image: busybox:1.37.0
