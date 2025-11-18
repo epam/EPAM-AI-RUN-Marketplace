@@ -17,7 +17,7 @@ resources:
     cpu: 50m
 
 persistence:
-  size: 1Gi
+  size: 8Gi
   accessMode: ReadWriteOnce
 
 replicas: 1

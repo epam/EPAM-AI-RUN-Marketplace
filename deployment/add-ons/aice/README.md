@@ -48,8 +48,9 @@ prerequisites in place:
       <tr>
         <th>Component Name</th>
         <th>Replicas</th>
-        <th>Memory</th>
+        <th>Memory (RAM)</th>
         <th>CPU (cores)</th>
+        <th>Storage (EBS)</th>
       </tr>
     </thead>
     <tbody>
@@ -58,55 +59,50 @@ prerequisites in place:
         <td>1</td>
         <td>256Mi</td>
         <td>0.1</td>
+        <td>2Gi</td>
       </tr>
       <tr>
         <td>code-analysis-datasource</td>
         <td>1</td>
         <td>4Gi</td>
         <td>2.0</td>
+        <td>10Gi</td>            
       </tr>
       <tr>
         <td>code-exploration-api</td>
         <td>1</td>
         <td>4Gi</td>
         <td>2.0</td>
+        <td>10Gi</td>
       </tr>
       <tr>
         <td>code-exploration-api-worker</td>
         <td>1</td>
         <td>4Gi</td>
         <td>2.0</td>
+        <td>10Gi</td>
       </tr>
       <tr>
         <td>neo4j</td>
         <td>1</td>
-        <td>16Gi</td>
+        <td>10Gi</td>
         <td>2.0</td>
+        <td>50Gi</td>
       </tr>
       <tr>
         <td>elasticsearch</td>
         <td>1</td>
         <td>8Gi</td>
         <td>2.0</td>
-      </tr>
-      <tr>
-        <td>elasticvue</td>
-        <td>1</td>
-        <td>512Mi</td>
-        <td>0.2</td>
-      </tr>
+        <td>50Gi + 2Gi</td>        
+      </tr>    
       <tr>
         <td>redis</td>
         <td>1</td>
         <td>2Gi</td>
         <td>0.5</td>
-      </tr>
-      <tr>
-        <td>postgres</td>
-        <td>1</td>
-        <td>1Gi</td>
-        <td>0.5</td>
-      </tr>
+        <td>8Gi</td>
+      </tr>     
     </tbody>
   </table>
 </details>

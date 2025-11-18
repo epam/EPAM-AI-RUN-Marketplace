@@ -26,7 +26,7 @@ resources:
     cpu: 1
 
 persistence:
-  dataSize: 2Gi
+  dataSize: 50Gi
   backupSize: 2Gi
 
 elasticsearch:

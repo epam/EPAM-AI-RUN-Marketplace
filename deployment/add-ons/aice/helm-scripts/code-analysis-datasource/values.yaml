@@ -27,7 +27,7 @@ persistentVolume:
   accessModes:
     - ReadWriteOnce
   enabled: true
-  size: 2Gi
+  size: 10Gi
 
 # -- Additional volumeMounts to the Code Analysis DataSource pods.
 volumeMounts:
