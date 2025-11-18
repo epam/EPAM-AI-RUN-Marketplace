@@ -53,7 +53,7 @@ spec:
           # {{ end }}
           volumeMounts:
           - name: aitestmate-elasticsearch-data
-            mountPath: /var/lib/elasticsearch
+            mountPath: /usr/share/elasticsearch/data
   volumeClaimTemplates:
     - metadata:
         name: aitestmate-elasticsearch-data
