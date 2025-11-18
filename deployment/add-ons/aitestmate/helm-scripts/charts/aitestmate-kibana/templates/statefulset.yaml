@@ -53,7 +53,7 @@ spec:
           # {{ end }}
           volumeMounts:
           - name: aitestmate-kibana-data
-            mountPath: /var/lib/kibana
+            mountPath: /usr/share/kibana/data
   volumeClaimTemplates:
     - metadata:
         name: aitestmate-kibana-data
