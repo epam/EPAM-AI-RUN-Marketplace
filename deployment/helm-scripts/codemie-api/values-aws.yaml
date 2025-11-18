@@ -389,6 +389,17 @@ codemie:
                 - id: "mcpConnect"
                   settings:
                     enabled: true
+                    availableForExternal: true
+                - id: "remoteAssistant"
+                  settings:
+                    enabled: true
+                    availableForExternal: true
+                - id: "youtubeChannel"
+                  settings:
+                    enabled: true
+                    availableForExternal: true
+                    name: "Youtube Channel"
+                    url: "https://www.youtube.com/@EPAMAIRunCodeMie"
                 - id: "vendorIntegrationAWS"
                   settings:
                     enabled: true
@@ -404,6 +415,18 @@ codemie:
                 #    description: "Autonomous GenAI solution that automatically generates and commits unit tests, increasing coverage and reducing team effort in software development."
                 #    created_by: "EPAM"
                 #    icon_url: "https://static.cdn.epam.com/uploads/4e9e888a2fff48ea970beb06bbfd9c72/EPM-EAG/ai_testmate_logo_small.png"
+                # #########################################################
+                #      AICE: uncomment according the official guide
+                # #########################################################
+                #- id: "applications:aice"
+                #  settings:
+                #    enabled: true
+                #    name: "AICE"
+                #    url: "https://codemie.%%DOMAIN%%/aice"
+                #    type: "iframe"
+                #    description: "Advanced code analysis and exploration solution within the EPAM AI/Run platform."
+                #    created_by: "AICE Team"
+                #    icon_url: "https://raw.githubusercontent.com/alk-epam/test-repo/7f9196e4f37ff576f26cda782d785a3941bfce8c/aice.svg"
               
               preconfigured_assistants:
                 - id: "codemie-onboarding"
