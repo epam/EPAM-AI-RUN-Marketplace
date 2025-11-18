@@ -1,6 +1,6 @@
 # Default values for redis helm chart
 image:
-  repository: bitnami/redis
+  repository: redis
   tag: latest
   pullPolicy: IfNotPresent
 
