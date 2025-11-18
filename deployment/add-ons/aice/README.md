@@ -199,23 +199,23 @@ file [deployment.conf](deployment.conf)
       </tr>
 <tr>
         <td>LLM_QUALITY_MODEL_NAME</td>
-        <td>Explicit model name for highest quality/performance tier</td>
-        <td>Example: anthropic.claude-3-5-sonnet-20241022-v2:0</td>
+        <td>Explicit model name for highest quality/performance tier </td>
+        <td>Use 'Inference profile ID' (Amazon Bedrock -> Cross-region inference), Example: global.anthropic.claude-sonnet-4-5-20250929-v1:0</td>
       </tr>
 <tr>
         <td>LLM_BALANCED_MODEL_NAME</td>
         <td>Explicit model name for balanced performance/cost tier</td>
-        <td>Example: anthropic.claude-3-sonnet-20240229-v1:0</td>
+        <td>Use 'Inference profile ID' (Amazon Bedrock -> Cross-region inference), Example: global.anthropic.claude-sonnet-4-20250514-v1:0</td>
       </tr>
 <tr>
         <td>LLM_EFFICIENCY_MODEL_NAME</td>
         <td>Explicit model name for fastest/lowest cost tier</td>
-        <td>Example: anthropic.claude-3-haiku-20240307-v1:0</td>
+        <td>Use 'Inference profile ID' (Amazon Bedrock -> Cross-region inference), Example: global.anthropic.claude-sonnet-4-20250514-v1:0</td>
       </tr>
 <tr>
         <td>LLM_EMBEDDING_MODEL_NAME</td>
         <td>Explicit embedding model name</td>
-        <td>Example: amazon.titan-embed-text-v1</td>
+        <td>Example: amazon.titan-embed-text-v2:0</td>
       </tr>
 <tr>
         <td>JWT_PUBLIC_KEY</td>
