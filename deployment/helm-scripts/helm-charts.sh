@@ -83,7 +83,7 @@ verify_inputs() {
     while [[ $# -gt 0 ]]
     do
         case $1 in
-            version=*)
+            --version=*)
                 ai_run_version="${1#*=}"
                 shift
                 ;;
@@ -1064,6 +1064,9 @@ main() {
 
     check_nsc
     check_htpasswd
+
+    aws ecr get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin "$image_repository"
+
     configure_kubectl
     deploy_nginx_ingress_controller "aws"
     deploy_storage_class "aws"
