@@ -291,11 +291,11 @@ codemie:
 #        data:
 #          authorized-applications-config.yaml: |
 #            authorized_applications:
-#              - name: service-account-api-epm-eag
+#              - name: service-account-aitestmate
 #                public_key_url: http://aitestmate-nginx.<k8s namespace>.svc.cluster.local/api/public-key
 #                allowed_resources:
 #                  - datasource
-#              - name: api-epm-eag
+#              - name: aitestmate
 #                public_key_url: http://aitestmate-nginx.<k8s namespace>.svc.cluster.local/api/public-key
 #                allowed_resources:
 #                  - datasource
