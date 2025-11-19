@@ -282,11 +282,11 @@ TF_VAR_role_permissions_boundary_arn="" # Example: arn:aws:iam::012345678901:pol
 # Uncomment in case EBS encryption needed
 #TF_VAR_ebs_encrypt="<BOOLEAN VALUE>" # Example: true or false
 
-TF_VAR_spot_instance_types='[{"instance_type":"c5.2xlarge"}]'
+TF_VAR_spot_instance_types='[{"instance_type":"m6a.2xlarge"}]'
 TF_VAR_spot_max_nodes_count=0
 TF_VAR_spot_desired_nodes_count=0
 TF_VAR_spot_min_nodes_count=0
-TF_VAR_demand_instance_types='[{"instance_type":"c5.2xlarge"}]'
+TF_VAR_demand_instance_types='[{"instance_type":"m6a.2xlarge"}]'
 TF_VAR_demand_max_nodes_count=2
 TF_VAR_demand_desired_nodes_count=2
 TF_VAR_demand_min_nodes_count=1
@@ -294,7 +294,7 @@ TF_VAR_demand_min_nodes_count=1
 # RDS
 TF_VAR_pg_instance_class="db.c6gd.medium"
 ```
-> ⚠️ **Important**: If you plan to include AI TestMate add-ons, make sure to choose instance_type c5.2xlarge and configure no fewer than 5-7 nodes.
+> ⚠️ **Important**: If you plan to include AI TestMate add-ons, make sure to choose instance_type m6a.2xlarge and configure no fewer than 5-7 nodes.
 
 </details>
 2. Run the following command if using a Unix-like operating system:
@@ -497,11 +497,11 @@ public_cidrs = ["10.0.12.0/24", "10.0.13.0/24", "10.0.14.0/24"]
 ssl_policy                    = "ELBSecurityPolicy-TLS-1-2-2017-01"
 eks_admin_role_arn            =  "<eks_admin_role_arn>" # Specify the ARN of the IAM role with permissions to manage the EKS cluster.
 add_userdata                  = ""
-spot_instance_types = [{ instance_type = "c5.2xlarge" }]
+spot_instance_types = [{ instance_type = "m6a.2xlarge" }]
 spot_max_nodes_count          = 0
 spot_desired_nodes_count      = 0
 spot_min_nodes_count          = 0
-demand_instance_types = [{ instance_type = "c5.2xlarge" }]
+demand_instance_types = [{ instance_type = "m6a.2xlarge" }]
 demand_max_nodes_count        = 2
 demand_desired_nodes_count    = 2
 demand_min_nodes_count        = 1

@@ -110,8 +110,8 @@ platform is installed.
 Add more nodes for your Kubernetes cluster by changing configuration
 in the [deployment.conf](../../terraform-scripts/deployment.conf).
 
-For example, instance type `c5.2xlarge` has `8 vCPUs` and `16 GB RAM`. That
-means you need add at least `2` to `TF_VAR_demand_max_nodes_count` and
+For example, instance type `m6a.2xlarge` has `8 vCPUs` and `32 GB RAM`. That
+means you need add at least `1` to `TF_VAR_demand_max_nodes_count` and
 `TF_VAR_demand_desired_nodes_count`. You need to re-run
 [terraform.sh](../../terraform-scripts/terraform.sh) in order to apply new
 changes.
