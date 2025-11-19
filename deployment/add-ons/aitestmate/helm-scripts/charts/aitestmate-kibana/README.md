@@ -23,7 +23,7 @@ AI TestMate Kibana Helm chart for Kubernetes
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
-| podSecurityContext | object | `{}` |  |
+| podSecurityContext.fsGroup | int | `1000` |  |
 | readinessProbe | object | `{}` |  |
 | resources | object | `{}` |  |
 | securityContext | object | `{}` |  |

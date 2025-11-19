@@ -13,12 +13,12 @@ AI TestMate Embeddings Helm chart for Kubernetes
 | extraEnv | list | `[]` | Additional environment passed into container |
 | fullnameOverride | string | `"aitestmate-embeddings"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/embeddings/api"` |  |
+| image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/embeddings"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | livenessProbe.httpGet.path | string | `"/docs"` |  |
 | livenessProbe.httpGet.port | int | `7070` |  |
-| livenessProbe.initialDelaySeconds | int | `60` |  |
+| livenessProbe.periodSeconds | int | `10` |  |
 | nameOverride | string | `"aitestmate-embeddings"` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
@@ -30,6 +30,10 @@ AI TestMate Embeddings Helm chart for Kubernetes
 | securityContext | object | `{}` |  |
 | service.port | int | `7070` |  |
 | service.type | string | `"ClusterIP"` |  |
+| startupProbe.failureThreshold | int | `30` |  |
+| startupProbe.httpGet.path | string | `"/docs"` |  |
+| startupProbe.httpGet.port | int | `7070` |  |
+| startupProbe.periodSeconds | int | `10` |  |
 | tolerations | list | `[]` |  |
 | volumeMounts | list | `[]` |  |
 | volumes | list | `[]` |  |
