@@ -680,15 +680,15 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 
    `--image-repository valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems`    #required flag
 
-   ` version = 2.2.1-aws;`                                              #required flag
+   `--version=2.2.1-aws;`                                              #required flag
 
    `--rds-disable`                                                     # If the flag was used previously, ensure it is utilized here as well.
 
 ```bash
-  bash ./helm-charts.sh version=2.2.1-aws --image-repository valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems
+  bash ./helm-charts.sh --version=2.2.1-aws --image-repository valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
 ```bash
-  ./helm-charts.sh version=2.2.1-aws --image-repository valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems
+  ./helm-charts.sh --version=2.2.1-aws --image-repository valid-link-to-aws-ecr.dkr.ecr.us-east-1.amazonaws.com/epam-systems
 ```
 
 > ⚠️ **Important**: If you are going to deploy AI TestMate also, please add the following values to the deployment/helm-scripts/codemie-api/values-aws.yaml file.
@@ -713,11 +713,11 @@ This section describes the process of the main EPAM AI/Run™ for AWS Migration 
 >   data:
 >     authorized-applications-config.yaml: |
 >        authorized_applications:
->           - name: service-account-api-epm-eag
+>           - name: service-account-aitestmate
 >             public_key_url: https://exampl.com/api/public-key
 >             allowed_resources:
 >               - datasource
->           - name: api-epm-eag
+>           - name: aitestmate
 >             public_key_url: https://exampl/api/public-key
 >             allowed_resources:
 >              - datasource
