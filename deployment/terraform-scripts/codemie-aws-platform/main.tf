@@ -355,7 +355,7 @@ module "eks" {
       xvda = {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size           = 30
+          volume_size           = 100
           volume_type           = "gp3"
           iops                  = 3000
           throughput            = 150
@@ -392,7 +392,7 @@ module "eks" {
       }
 
       # Schedulers
-      create_schedule = true
+      create_schedule = var.enable_spot_nodes_scheduler
       schedules = {
         "Start" = {
           min_size     = var.spot_min_nodes_count
@@ -427,7 +427,7 @@ module "eks" {
       }
 
       # Schedulers
-      create_schedule = true
+      create_schedule = var.enable_demand_nodes_scheduler
       schedules = {
         "Start" = {
           min_size     = var.demand_min_nodes_count

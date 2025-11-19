@@ -87,7 +87,7 @@ variable "ebs_encrypt" {
 variable "spot_instance_types" {
   description = "AWS instance type to build nodes for spot pool"
   type        = list(any)
-  default     = [{ instance_type = "m7i.xlarge" }]
+  default     = [{ instance_type = "m6a.2xlarge" }]
 }
 
 variable "spot_max_nodes_count" {
@@ -108,29 +108,41 @@ variable "spot_min_nodes_count" {
   default     = 0
 }
 
+variable "enable_spot_nodes_scheduler" {
+  description = "Use this variable in case you would like to create schedule for scaling out your cluster in defined time."
+  type        = bool
+  default     = false
+}
+
 # Variables for on-demand pool
 variable "demand_instance_types" {
   description = "AWS instance type to build nodes for on-demand pool"
   type        = list(any)
-  default     = [{ instance_type = "m7i.xlarge" }]
+  default     = [{ instance_type = "m6a.2xlarge" }]
 }
 
 variable "demand_max_nodes_count" {
   description = "The maximum size of the on-demand autoscaling group"
   type        = number
-  default     = 3
+  default     = 4
 }
 
 variable "demand_desired_nodes_count" {
   description = "The number of on-demand Amazon EC2 instances that should be running in the autoscaling group"
   type        = number
-  default     = 3
+  default     = 2
 }
 
 variable "demand_min_nodes_count" {
   description = "The minimum size of the on-demand autoscaling group"
   type        = number
-  default     = 3
+  default     = 2
+}
+
+variable "enable_demand_nodes_scheduler" {
+  description = "Use this variable in case you would like to create schedule for scaling out your cluster in defined time."
+  type        = bool
+  default     = false
 }
 
 # OIDC Identity provider
