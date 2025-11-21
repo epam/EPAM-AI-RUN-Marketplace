@@ -11,6 +11,13 @@ prerequisites in place:
   for AICE (AI Code Exploration) add-on, including compute, storage, and networking resources in your
   AWS environment
 
+**⚠️ Warning:** Resources managed by Terraform are kept in sync with its state.
+**Manual edits made directly in the cloud will be undone.** For example, changes
+made to the [security group](../../../README.md#71-create-new-security-group))
+will be undone on the next `terraform.sh` run. Therefore, after executing the
+script, it is recommended to reapply these changes to ensure the configuration
+aligns with your desired state.
+
 ## AICE Components Overview
 
 <details>
@@ -124,24 +131,6 @@ means you need add at least `4` to `TF_VAR_demand_max_nodes_count` and
 > You need to re-run [terraform.sh](../../terraform-scripts/terraform.sh) in
 > order to apply new changes.
 
-### Create a new OpenID Client in Keycloak (CHANGE IT)
-
-**TestMate add-on** uses AI/Run&trade; Platform API for the integration, so you
-need to create a new OpenID Client in Keycloak for it.
-
-It should have the following settings:
-
-- Client ID: `aitestmate`
-- To enable Client Credentials flow, enable `Service account roles`.
-- Ensure that `codemie` scope is assigned and set as default scope for this
-  client.
-
-> The detailed guide on how to create a new OpenID Client in Keycloak can be
-> found in the [Keycloak
-> documentation](https://www.keycloak.org/docs/latest/server_admin/#proc-creating-oidc-client_server_administration_guide).
-
-Save the client secret for later use in AI TestMate configuration.
-
 # EPAM AI/Run™ AICE (AI Code Exploration) Components Deployment
 
 ## Overview
@@ -247,12 +236,17 @@ file [deployment.conf](deployment.conf)
         <td>IAM Deployer role ARN</td>
         <td>AI/Run™ Platform installation provides this value under the 'Following role will be used for env creation:'</td>
       </tr>
+<tr>
+        <td>EKS_AWS_ROLE_ARN</td>
+        <td>The ARN of the IAM role that have access to the AWS KMS key and AWS Bedrock</td>
+        <td>Value of EKS_AWS_ROLE_ARN parameter in platform deployment_outputs.env</td>
+      </tr>
 
 </tbody>
 </table>
 
-<details>
-<summary>How to obtain the public key from Keycloak Admin Console</summary>
+
+### How to obtain the public key from Keycloak Admin Console</summary>
 
 - Log in to the Keycloak Admin Console.
 - Select your realm from the left sidebar.
@@ -262,7 +256,7 @@ file [deployment.conf](deployment.conf)
 - Click on the key to view its details.
 - Copy the **Public Key** value displayed.
 
-Save this public key as a `.pem` file in the `../helm-scripts` folder and set its path in the `JWT_PUBLIC_KEY` setting.
+Save this public key as a `.pem` file in the `../helm-scripts` folder and set its path in the `JWT_PUBLIC_KEY` setting in the [deployment.conf](deployment.conf).
 
 ⚠️ Don't forget pem headers, example:
 ```bash
@@ -273,9 +267,9 @@ MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtakdhf8QWTFVjsJb/GteAb91Llz6....
 
 ![publick_key_in_keycloak.png](../../../assets/add-ons/publick_key_in_keycloak.png)
 
-</details>
+[Detailed information how to login into Keycloak](../../../README.md#8-post-installation-configuration)
 
-## There are two options for deploying the system:
+# There are two options for deploying the system:
 
 ## 1. Scripted Components Installation
 
@@ -316,23 +310,32 @@ kubectl -n aice create secret generic aice-postgresql-secret \
             --from-literal=db="<AWS_RDS_DATABASE_NAME>"
 ```
 
-### 2. Navigate helm-scripts folder
+### 2. Amazon S3 bucket for Neo4j plugins:
+
+1. Create an S3 bucket with name `aice_neo4j_plugins` using AWS Console
+2. Grant `s3:GetObject` and `s3:ListBucket` bucket permissions for:
+    - `arn:aws:iam::[current_account_id]:role/[codmie | your planform name]-on-demand-node-group` 
+    - `arn:aws:iam::[current_account_id]:role/[codmie | your planform name]-spot-node-group`
+3. Upload files from `deployment/add-ons/aice/terraform-scripts/aice-aws-s3-neo4j-plugins/plugins`([plugins](terraform-scripts/aice-aws-s3-neo4j-plugins/plugins)) to the bucket.
+
+
+### 3. Navigate helm-scripts folder
 
 ```bash
   cd ../helm-scripts
 ```
-### 3. Create namespace:
+### 4. Create namespace:
 ```bash
   kubectl create namespace aice 
 ```
 
-### 4. Install Redis:
+### 5. Install Redis:
 
 ```bash
   helm upgrade --install aice-redis redis/. --namespace aice --values "redis/values.yaml" --wait --timeout 600s --dependency-update
 ```
 
-### 5. Install Elasticsearch:
+### 6. Install Elasticsearch:
 ```bash
   helm upgrade \
       --install aice-elasticsearch elasticsearch/. \
@@ -342,7 +345,7 @@ kubectl -n aice create secret generic aice-postgresql-secret \
       --timeout 600s \
       --dependency-update 
 ```
-### 6. Install Neo4j:
+### 7. Install Neo4j:
 Create s Secret with Neo4j password:
 ```bash
 kubectl -n $namespace create secret generic aice-neo4j-secret \
@@ -356,38 +359,22 @@ kubectl -n $namespace create secret generic aice-neo4j-secret \
       --install aice-neo4j neo4j/. \
       --namespace aice \
       --values "neo4j/values.yaml" \
-      --set neo4j.auth.password=<pwd> \
+      --set neo4j.s3.plugins="<Neo4j plugins bucket full name>" \
       --wait \
       --timeout 600s \
       --dependency-update 
 ```
-⚠️ Replace '<pwd>' to saved in the Secret.
 
-Copy Neo4j plugins into Pod`s PVS:
-```bash
-    # dozerdb
-    kubectl cp ../artifacts/neo4j/plugins/dozerdb-plugin-5.26.3.0.jar aice-neo4j-0:/plugins -c neo4j -n aice
-    kubectl exec aice-neo4j-0 -c neo4j -n aice -- chown neo4j:neo4j /plugins/dozerdb-plugin-5.26.3.0.jar
-    
-    # apoc
-    kubectl cp $SCRIPT_DIR/artifacts/neo4j/plugins/apoc-5.26.3-core.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
-    kubectl exec aice-neo4j-0 -c neo4j -n aice -- chown neo4j:neo4j /plugins/apoc-5.26.3-core.jar
-
-    # data-science
-    kubectl cp $SCRIPT_DIR/artifacts/neo4j/plugins/neo4j-graph-data-science-2.13.4.jar aice-neo4j-0:/plugins -c neo4j -n "$namespace"
-    kubectl exec aice-neo4j-0 -c neo4j -n aice -- chown neo4j:neo4j /plugins/neo4j-graph-data-science-2.13.4.jar
-```
-
-Restart statefulset for applying plugins:
-```bash
-  kubectl rollout restart statefulset aice-neo4j -n aice
-```
-
-### 7. Install Code Exploration API:
+### 8. Install Code Exploration API:
 Modify `code-exploration-api/values.yaml`:
 - replace %%IMAGE_REPOSITORY%% to AWS ECR repository link.
 - replace %%IMAGE_VERSION%% to proper image version.
 - replace %%DOMAIN%% to proper domain name.
+- replace "%%LLM_QUALITY_MODEL_NAME%%" to proper value.
+- replace "%%LLM_BALANCED_MODEL_NAME%%" to proper value.
+- replace "%%LLM_EFFICIENCY_MODEL_NAME%%" to proper value.
+- replace "%%LLM_EMBEDDING_MODEL_NAME%%" to proper value.
+- replace "%%LLM_AWS_REGION_NAME%%" to proper value.
 
 Install:
 ```bash
@@ -395,15 +382,15 @@ helm upgrade \
       --install aice-code-exploration-api code-exploration-api/. \
       --namespace aice \
       --values "code-exploration-api/values.yaml" \
-      --set environment.llmApiKey="<llm_api_key>" \
+      --set serviceAccount.iamRoleArn="<EKS_AWS_ROLE_ARN>" \
       --set-file jwtPublicKey.keyData="<jwt_public_key>" \
       --wait \
       --timeout 600s \
       --dependency-update
 ```
-⚠️ replace <llm_api_key> and <jwt_public_key> to proper values
+⚠️ replace <EKS_AWS_ROLE_ARN> and <jwt_public_key> to proper values
 
-### 8. Install Code Analysis Datasource:
+### 9. Install Code Analysis Datasource:
 Modify `code-analysis-datasource/values.yaml`:
 - replace %%IMAGE_REPOSITORY%% to AWS ECR repository link.
 - replace %%IMAGE_VERSION%% to proper image version.
@@ -420,7 +407,7 @@ helm upgrade \
       --dependency-update
 ```
 
-### 9. Install Code Exploration UI:
+### 10. Install Code Exploration UI:
 Modify `code-exploration-ui/values.yaml`:
 - replace %%IMAGE_REPOSITORY%% to AWS ECR repository link.
 - replace %%IMAGE_VERSION%% to proper image version.

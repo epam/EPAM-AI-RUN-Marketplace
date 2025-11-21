@@ -159,7 +159,7 @@ This conversational approach makes complex codebase exploration accessible to bo
 
 # Architecture and Technology Stack
 
-![Figure 6. High-level AICE Architecture](../../../assets/add-ons/aice_aws_arch.jpg)
+![AI_Run_For_AWS.drawio.svg](../../../assets/AI_Run_For_AWS.drawio.svg)
 
 *Figure 6. High-level AICE AWS Architecture*
 
