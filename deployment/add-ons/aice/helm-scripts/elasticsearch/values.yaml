@@ -1,0 +1,46 @@
+replicaCount: 1
+
+image:
+  repository: docker.elastic.co/elasticsearch/elasticsearch
+  tag: 8.16.1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9200
+      targetPort: 9200
+      protocol: TCP
+    - name: transport
+      port: 9300
+      targetPort: 9300
+      protocol: TCP
+
+resources:
+  limits:
+    memory: 8Gi
+    cpu: 1
+  requests:
+    memory: 2Gi
+    cpu: 1
+
+persistence:
+  dataSize: 50Gi
+  backupSize: 2Gi
+
+elasticsearch:
+  environment:
+    discovery.type: single-node
+    xpack.security.enabled: "false"
+    ES_JAVA_OPTS: "-Xms750m -Xmx750m"
+    http.cors.enabled: "true"
+    http.cors.allow-origin: "/.*/"
+    http.cors.allow-methods: "OPTIONS, HEAD, GET, POST, PUT, DELETE"
+    http.cors.allow-headers: "X-Requested-With,X-Auth-Token,Content-Type, Content-Length"
+    http.cors.allow-credentials: "true"
+    network.publish_host: "localhost"
+    cluster.routing.allocation.disk.watermark.low: "1b"
+    cluster.routing.allocation.disk.watermark.high: "1b"
+    cluster.routing.allocation.disk.watermark.flood_stage: "1b"
+    path.repo: "/usr/share/elasticsearch/backup"

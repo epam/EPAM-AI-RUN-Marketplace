@@ -1,0 +1,204 @@
+image:
+  repository: %%IMAGE_REPOSITORY%%/add-ons/aice/code-exploration-api
+  tag: %%IMAGE_VERSION%%
+
+imagePullSecrets:
+  - name: aice-ecr-secret
+
+envVars:
+  CODE_ANALYSIS_PROVIDER_BASE_URL: "http://aice-code-analysis-datasource:8001/"
+  NEO4J_URL: "bolt://aice-neo4j:7687/"
+  REDIS_URL: "redis://aice-redis:6379/0"
+  ELASTIC_URL: "http://aice-elasticsearch:9200/"
+  CALLBACK_BASE_URL: "http://aice-code-exploration-api:8080"
+  JWT_PUBLIC_KEY_PATH: "/app/data/keys/jwt_public_key.pem"
+  JWT_COOKIE_NAME: "_oauth2_proxy_0"
+  LLM_PROVIDER: "bedrock"
+  LLM_QUALITY_MODEL_NAME: "%%LLM_QUALITY_MODEL_NAME%%"
+  LLM_BALANCED_MODEL_NAME: "%%LLM_BALANCED_MODEL_NAME%%"
+  LLM_EFFICIENCY_MODEL_NAME: "%%LLM_EFFICIENCY_MODEL_NAME%%"
+  LLM_EMBEDDING_MODEL_NAME: "%%LLM_EMBEDDING_MODEL_NAME%%"
+  LLM_AWS_REGION_NAME: "%%LLM_AWS_REGION_NAME%%"
+  ELASTIC_EMBEDDING_DIMS: "1024"
+  LLM_RATE_LIMIT_REQUESTS_PER_SECOND: "20.0"
+  LLM_RATE_LIMIT_CHECK_EVERY_N_SECONDS: "0.1"
+  LLM_RATE_LIMIT_MAX_BUCKET_SIZE: "40"
+  TOOL_INVOCATION_MANAGER_TYPE: "redis"
+  AICE_SERVER_WORKERS: "4"
+  TASKIQ_WORKERS: "4"
+  CALLBACK_VERIFY_SSL: "false"
+  GRAPH_LOADER_MAX_CONCURRENT_FILES: 20
+  GRAPH_WALKER_ASYNC_CONCURRENCY_LIMIT: 20
+  GRAPH_WALKER_REPOSITORY_CONCURRENCY_LIMIT: 2
+
+extraEnvVars:
+  - name: "NEO4J_USERNAME"
+    valueFrom:
+      secretKeyRef:
+        key: username
+        name: aice-neo4j-secret
+  - name: "NEO4J_PASSWORD"
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: aice-neo4j-secret
+
+  - name: "POSTGRES_HOST"
+    valueFrom:
+      secretKeyRef:
+        key: host
+        name: aice-postgresql-secret
+  - name: "POSTGRES_PORT"
+    value: "5432"
+  - name: "POSTGRES_USER"
+    valueFrom:
+      secretKeyRef:
+        key: user
+        name: aice-postgresql-secret
+  - name: "POSTGRES_PASSWORD"
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: aice-postgresql-secret
+  - name: "POSTGRES_DB"
+    valueFrom:
+      secretKeyRef:
+        key: db
+        name: aice-postgresql-secret
+
+jwtPublicKey:
+  enabled: true
+  existingConfigMap: "code-exploration-public-jwt-key"
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Access-Token,Authorization
+    nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
+    nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.oauth2-proxy.svc.cluster.local:80/oauth2/auth
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+  hosts:
+    - host: codemie.%%DOMAIN%%
+      paths:
+        - path: "/aice/backend/(.*)"
+          pathType: ImplementationSpecific
+  tls: []
+
+service:
+  # -- Code Exploration service type.
+  type: ClusterIP
+  # -- Additional service annotations.
+  annotations: {}
+  # -- Code Exploration service port.
+  port: 8080
+
+# -- Resource limits and requests for the Code Exploration pods.
+resources:
+  api:
+    limits:
+      cpu: 2
+      memory: 4Gi
+    requests:
+      cpu: 1
+      memory: 2Gi
+  worker:
+    limits:
+      cpu: 2
+      memory: 4Gi
+    requests:
+      cpu: 1
+      memory: 2Gi
+
+## Probes for the the Code Exploration
+# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+#
+# Is used to avoid pod restarts when the pod is starting when we are executing the migration script.
+# Pod has 600 seconds to start and execute the migration script.
+# failureThreshold * periodSeconds = 60 * 10 = 600 seconds = 10 minutes
+startupProbe:
+  httpGet:
+    path: /api/v1/health
+    port: 8080
+  # -- Number of seconds after the container has started before probe is initiated
+  initialDelaySeconds: 20
+  # -- Minimum consecutive failures for the probe to be considered failed after having succeeded
+  failureThreshold: 60
+  # -- How often (in seconds) to perform the probe
+  periodSeconds: 10
+
+livenessProbe:
+  httpGet:
+    path: /api/v1/health
+    port: 8080
+  # -- Minimum consecutive failures for the probe to be considered failed after having succeeded
+  failureThreshold: 3
+  # -- Number of seconds after the container has started before probe is initiated
+  initialDelaySeconds: 20
+  # -- How often (in seconds) to perform the probe
+  periodSeconds: 30
+  # -- Minimum consecutive successes for the probe to be considered successful after having failed
+  successThreshold: 1
+  # -- Number of seconds after which the probe times out
+  timeoutSeconds: 1
+
+readinessProbe:
+  httpGet:
+    path: /api/v1/health
+    port: 8080
+  # -- Minimum consecutive failures for the probe to be considered failed after having succeeded
+  failureThreshold: 3
+  # -- Number of seconds after the container has started before probe is initiated
+  initialDelaySeconds: 20
+  # -- How often (in seconds) to perform the probe
+  periodSeconds: 30
+  # -- Minimum consecutive successes for the probe to be considered successful after having failed
+  successThreshold: 1
+  # -- Number of seconds after which the probe times out
+  timeoutSeconds: 1
+
+# -- Additional volumes to the Code Exploration pods.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# -- Additional volumeMounts to the Code Exploration pods.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+# -- Node selector to be added to the Code Exploration pods.
+nodeSelector: {}
+
+# -- Node selector to be added to the Code Exploration pods.
+tolerations: []
+
+# -- Assign affinity rules to the deployment.
+affinity: {}
+
+persistentVolume:
+  # -- Enable persistent data volume
+  enabled: true
+  # -- data Persistent Volume Storage Class
+  storageClass: ""
+  # -- Persistent volume access modes
+  accessModes:
+    - ReadWriteOnce
+  # -- Persistent volume size
+  size: 10Gi
+  # -- Annotations for the volume
+  annotations: {}
+  # -- Labels for the volume
+  labels: {}
+
+postgres:
+  host: "aice-postgresql.aice.svc.cluster.local"
+  port: "5432"
+  user: "aice_user"
+  password: "test_password"
+  db: "aice_db"
