@@ -1,0 +1,189 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "code-exploration.fullname" . }}
+  labels:
+    {{- include "code-exploration.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "code-exploration.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "code-exploration.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "code-exploration.fullname" . }}
+      initContainers:
+        - name: init-workspace
+          image: busybox:1.37.0
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -f /app/data/workspaces.json ]; then
+                echo '{}' > /app/data/workspaces.json
+                echo "Created empty workspaces.json file"
+              else
+                echo "workspaces.json already exists, skipping"
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+        {{- if .Values.jwtPublicKey.enabled }}
+        - name: init-jwt-key
+          image: busybox:1.37.0
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /app/data/keys
+              cp /tmp/jwt_keys/jwt_public_key.pem /app/data/keys/jwt_public_key.pem
+              echo "JWT public key copied to /app/data/keys/jwt_public_key.pem"
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: jwt-public-key
+              mountPath: /tmp/jwt_keys
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-api
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            {{- if .Values.envVars }}
+            {{- range $key, $val := .Values.envVars }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.extraEnvVars }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources.api }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+        - name: {{ .Chart.Name }}-api-worker
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["sh", "-c", "taskiq worker src.taskiq_app:broker --workers ${TASKIQ_WORKERS:-4} --log-level INFO"]
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- if .Values.envVars }}
+            {{- range $key, $val := .Values.envVars }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.extraEnvVars }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.resources.worker }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+      {{- if or .Values.jwtPublicKey.enabled .Values.volumes }}
+      volumes:
+        {{- if or .Values.jwtPublicKey.enabled }}
+        - name: jwt-public-key
+          configMap:
+            name: {{ .Values.jwtPublicKey.existingConfigMap | default (printf "%s-jwt-key" (include "code-exploration.fullname" .)) }}
+        {{- end }}
+        {{- with .Values.volumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.persistentVolume.enabled }}
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: data
+      {{- with .Values.persistentVolume.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.persistentVolume.labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      {{- range .Values.persistentVolume.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistentVolume.size | quote }}
+      {{- if .Values.persistentVolume.storageClassName }}
+      storageClassName: {{ .Values.persistentVolume.storageClassName }}
+      {{- end }}
+  {{- end }}

@@ -1,0 +1,73 @@
+image:
+  repository: %%IMAGE_REPOSITORY%%/add-ons/aice/code-exploration-ui
+  tag: %%IMAGE_VERSION%%
+
+imagePullSecrets:
+  - name: aice-ecr-secret
+
+envVars:
+  AICE_BACKEND_URL: "https://codemie.%%DOMAIN%%/aice/backend"
+  VITE_API_HOST: "https://codemie.%%DOMAIN%%/aice/backend"
+  AICE_THEME: "codemie"
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /aice/$1
+    nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Access-Token,Authorization
+    nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
+    nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.oauth2-proxy.svc.cluster.local:80/oauth2/auth
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
+  hosts:
+    - host: codemie.%%DOMAIN%%
+      paths:
+        - path: "/aice/?(.*)"
+          pathType: ImplementationSpecific
+  tls: []
+
+service:
+  # -- Code Exploration UI service type.
+  type: ClusterIP
+  # -- Additional service annotations.
+  annotations: {}
+  # -- Code Exploration UI service port.
+  port: 80
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+## Probes for the AI/Run UI
+## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /aice/
+    port: 80
+  # -- Minimum consecutive failures for the probe to be considered failed after having succeeded
+  failureThreshold: 3
+  # -- Number of seconds after the container has started before probe is initiated
+  initialDelaySeconds: 10
+   # -- How often (in seconds) to perform the probe
+  periodSeconds: 30
+  # -- Minimum consecutive successes for the probe to be considered successful after having failed
+  successThreshold: 1
+  # -- Number of seconds after which the probe times out
+  timeoutSeconds: 1
+
+readinessProbe:
+  httpGet:
+    path: /aice/
+    port: 80
+  # -- Minimum consecutive failures for the probe to be considered failed after having succeeded
+  failureThreshold: 3
+  # -- Number of seconds after the container has started before probe is initiated
+  initialDelaySeconds: 10
+   # -- How often (in seconds) to perform the probe
+  periodSeconds: 30
+  # -- Minimum consecutive successes for the probe to be considered successful after having failed
+  successThreshold:

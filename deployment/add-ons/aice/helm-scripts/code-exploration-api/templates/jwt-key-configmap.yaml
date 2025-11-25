@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: code-exploration-public-jwt-key
+  labels:
+data:
+  jwt_public_key.pem: |-
+    {{ .Values.jwtPublicKey.keyData | nindent 6 }}

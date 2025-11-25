@@ -1,0 +1,25 @@
+# Default values for redis helm chart
+image:
+  repository: redis
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 6379
+
+resources:
+  limits:
+    memory: 2048Mi
+    cpu: 500m
+  requests:
+    memory: 256Mi
+    cpu: 50m
+
+persistence:
+  size: 8Gi
+  accessMode: ReadWriteOnce
+
+replicas: 1
+
+containerPort: 6379

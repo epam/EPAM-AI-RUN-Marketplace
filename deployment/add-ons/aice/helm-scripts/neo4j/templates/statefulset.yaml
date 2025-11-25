@@ -1,0 +1,150 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  serviceName: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    spec:
+      initContainers:
+        - name: download-plugins
+          image: amazon/aws-cli:2.15.0
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - |
+              echo "S3 bucket path: s3://{{ .Values.neo4j.s3.plugins }}/plugins/"
+              aws s3 cp s3://{{ .Values.neo4j.s3.plugins }}/plugins/ /plugins/ --recursive
+          volumeMounts:
+            - name: plugins
+              mountPath: /plugins
+      containers:
+        - name: neo4j
+          image: "{{ .Values.neo4j.image.repository }}:{{ .Values.neo4j.image.tag }}"
+          imagePullPolicy: {{ .Values.neo4j.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.neo4j.ports.http }}
+              name: http
+            - containerPort: {{ .Values.neo4j.ports.bolt }}
+              name: bolt
+          env:
+            - name: AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: aice-neo4j-secret
+                  key: username
+            - name: AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: aice-neo4j-secret
+                  key: password
+            - name: NEO4J_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: aice-neo4j-secret
+                  key: auth
+            - name: NEO4J_apoc_export_file_enabled
+              value: "true"
+            - name: NEO4J_apoc_import_file_enabled
+              value: "true"
+            - name: NEO4J_apoc_import_file_use__neo4j__config
+              value: "true"
+            - name: NEO4J_dbms_security_procedures_unrestricted
+              value: "algo.*,apoc.*,gds.*"
+            # - name: NEO4J_PLUGINS
+            #   value: '["apoc", "graph-data-science"]'
+            - name: NEO4J_server_config_strict__validation_enabled
+              value: "false"
+            - name: CLASSPATH_PREFIX
+              value: "/plugins/dozerdb-plugin-5.26.3.0.jar"
+            - name: NEO4J_dbms_max__databases
+              value: "200"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: plugins
+              mountPath: /plugins
+            - name: backups
+              mountPath: /backups
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: data
+      {{- with .Values.persistentVolume.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.persistentVolume.labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      {{- range .Values.persistentVolume.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistentVolume.size.data | quote }}
+      {{- if .Values.persistentVolume.storageClassName }}
+      storageClassName: { { .Values.persistentVolume.storageClassName }}
+      {{- end }}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: plugins
+      {{- with .Values.persistentVolume.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.persistentVolume.labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      {{- range .Values.persistentVolume.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistentVolume.size.plugins | quote }}
+      {{- if .Values.persistentVolume.storageClassName }}
+      storageClassName: { { .Values.persistentVolume.storageClassName }}
+      {{- end }}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: backups
+      {{- with .Values.persistentVolume.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.persistentVolume.labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      {{- range .Values.persistentVolume.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistentVolume.size.backups | quote }}
+      {{- if .Values.persistentVolume.storageClassName }}
+      storageClassName: {{ .Values.persistentVolume.storageClassName }}
+      {{- end }}

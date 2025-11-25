@@ -1,0 +1,92 @@
+image:
+  repository: %%IMAGE_REPOSITORY%%/add-ons/aice/code-analysis-datasource
+  tag: %%IMAGE_VERSION%%
+
+imagePullSecrets:
+  - name: aice-ecr-secret
+
+envVars:
+  SERVICE_LOCATION_URL: "http://localhost:8001/api/v1"
+  HOST: "0.0.0.0"
+  PORT: "8001"
+  LOG_LEVEL: "INFO"
+  WORKERS: "4"
+  REDIS_URL: "redis://aice-redis:6379/0"
+  TOOL_INVOCATION_MANAGER_TYPE: "redis"
+  CALLBACK_VERIFY_SSL: "false"
+
+service:
+  # -- Code Analysis DataSource service type.
+  type: ClusterIP
+  # -- Additional service annotations.
+  annotations: {}
+  # -- Code Analysis DataSource service port.
+  port: 8001
+
+persistentVolume:
+  accessModes:
+    - ReadWriteOnce
+  enabled: true
+  size: 10Gi
+
+# -- Additional volumeMounts to the Code Analysis DataSource pods.
+volumeMounts:
+  - name: data
+    mountPath: /app/data
+  - name: data
+    mountPath: /app/cache
+
+resources:
+  limits:
+    cpu: 2
+    memory: 4Gi
+  requests:
+    cpu: 1
+    memory: 2Gi
+
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Access-Token,Authorization
+    nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
+    nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.oauth2-proxy.svc.cluster.local:80/oauth2/auth
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
+  hosts:
+    - host: codemie.%%DOMAIN%%
+      paths:
+        - path: "/aice/datasource/(.*)"
+          pathType: ImplementationSpecific
+  tls: []
+
+livenessProbe:
+  httpGet:
+    path: /api/v1/health
+    port: 8001
+  # -- Minimum consecutive failures for the probe to be considered failed after having succeeded
+  failureThreshold: 3
+  # -- Number of seconds after the container has started before probe is initiated
+  initialDelaySeconds: 20
+  # -- How often (in seconds) to perform the probe
+  periodSeconds: 30
+  # -- Minimum consecutive successes for the probe to be considered successful after having failed
+  successThreshold: 1
+  # -- Number of seconds after which the probe times out
+  timeoutSeconds: 1
+
+readinessProbe:
+  httpGet:
+    path: /api/v1/health
+    port: 8001
+  # -- Minimum consecutive failures for the probe to be considered failed after having succeeded
+  failureThreshold: 3
+  # -- Number of seconds after the container has started before probe is initiated
+  initialDelaySeconds: 20
+  # -- How often (in seconds) to perform the probe
+  periodSeconds: 30
+  # -- Minimum consecutive successes for the probe to be considered successful after having failed
+  successThreshold: 1
+  # -- Number of seconds after which the probe times out
+  timeoutSeconds: 1
