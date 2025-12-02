@@ -17,6 +17,8 @@ codemie:
   extraEnv:
     - name: MODELS_ENV
       value: "amnaairn"
+    - name: CALLBACK_API_BASE_URL
+      value: "%%DOMAIN%%"
     - name: ENV
       value: "prod"
     - name: AMNA_AIRN_PRECREATE_WORKFLOWS
