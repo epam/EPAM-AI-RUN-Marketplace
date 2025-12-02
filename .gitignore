@@ -49,3 +49,5 @@ logs/*
 *.backup
 
 .DS_Store
+/.idea/
+/*.iml
