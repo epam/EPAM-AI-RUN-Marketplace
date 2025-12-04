@@ -14,6 +14,7 @@ envVars:
   REDIS_URL: "redis://aice-redis:6379/0"
   TOOL_INVOCATION_MANAGER_TYPE: "redis"
   CALLBACK_VERIFY_SSL: "false"
+  JWT_SKIP_FOR_LOCAL: "true"
 
 service:
   # -- Code Analysis DataSource service type.
