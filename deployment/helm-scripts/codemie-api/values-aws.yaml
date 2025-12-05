@@ -374,7 +374,7 @@ codemie:
                   settings:
                     name: "User Guide"
                     enabled: true
-                    url: "https://kb.epam.com/pages/viewpage.action?pageId=2548747220"
+                    url: "https://github.com/epam/EPAM-AI-RUN-Marketplace/tree/main/guide"
                 - id: "adminActions"
                   settings:
                     enabled: true
@@ -385,7 +385,7 @@ codemie:
                   settings:
                     name: "Workflow Documentation"
                     enabled: true
-                    url: "https://kb.epam.com/pages/viewpage.action?pageId=2548747220"
+                    url: "https://github.com/epam/EPAM-AI-RUN-Marketplace/blob/main/guide/workflows/README.md"
                 - id: "mcpConnect"
                   settings:
                     enabled: true
@@ -429,10 +429,6 @@ codemie:
                 #    icon_url: "https://raw.githubusercontent.com/alk-epam/test-repo/7f9196e4f37ff576f26cda782d785a3941bfce8c/aice.svg"
               
               preconfigured_assistants:
-                - id: "codemie-onboarding"
-                  settings:
-                    enabled: true
-                    index_name: "codemie-onboarding"
                 - id: "prompt-engineer"
                   settings:
                     enabled: true
