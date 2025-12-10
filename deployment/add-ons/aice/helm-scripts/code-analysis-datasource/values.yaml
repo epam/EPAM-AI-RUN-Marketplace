@@ -6,7 +6,6 @@ imagePullSecrets:
   - name: aice-ecr-secret
 
 envVars:
-  SERVICE_LOCATION_URL: "http://localhost:8001/api/v1"
   HOST: "0.0.0.0"
   PORT: "8001"
   LOG_LEVEL: "INFO"
@@ -15,6 +14,7 @@ envVars:
   TOOL_INVOCATION_MANAGER_TYPE: "redis"
   CALLBACK_VERIFY_SSL: "false"
   JWT_SKIP_FOR_LOCAL: "true"
+  JWT_AUTH_MODE: "disabled"
 
 service:
   # -- Code Analysis DataSource service type.
