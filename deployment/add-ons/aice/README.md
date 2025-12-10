@@ -131,6 +131,10 @@ means you need add at least `4` to `TF_VAR_demand_max_nodes_count` and
 > You need to re-run [terraform.sh](../../terraform-scripts/terraform.sh) in
 > order to apply new changes.
 
+### Add additional configuration to codemie api
+
+Uncomment the AICE configuration section in the [values-aws.yaml](../../helm-scripts/codemie-api/values-aws.yaml) file and apply the changes.
+
 # EPAM AI/Run™ AICE (AI Code Exploration) Components Deployment
 
 ## Overview
@@ -256,7 +260,7 @@ file [deployment.conf](deployment.conf)
 - Click on the key to view its details.
 - Copy the **Public Key** value displayed.
 
-Save this public key as a `.pem` file in the `../helm-scripts` folder and set its path in the `JWT_PUBLIC_KEY` setting in the [deployment.conf](deployment.conf).
+Save this public key as a `jwt_public_key.pem` file in the `../helm-scripts` folder and set its path in the `JWT_PUBLIC_KEY` setting in the [deployment.conf](deployment.conf).
 
 ⚠️ Don't forget pem headers, example:
 ```bash

@@ -133,15 +133,12 @@ AI/Run™ for AWS Migration and Modernization offers pre-built templates to stre
  - Local Python Sonar Issues Fixer Workflow
  - Perl2Python: fully automated conversion
  - .NET: Migration .NET Framework v4.5.2 to .NET 8
- - ISO: ISO to AMI Migration???
  - Linq to SQL
  - OKTA implementation
- - VM: Migration VMWare to AWS???
  - JavaMig: Java Repository Migration/Modernization
  - BeanStalker: AWS Elastic Beanstalk Deployment Automation
  - BeanDestroyer: AWS Elastic Beanstalk Teardown Automation
- - CONTAPP: Containerize the application???
- - Test Cases Generation from Unstructured Data???
+
 
 For detailed instructions on how to use these templates, please refer to our documentation at:
 guide/workflows/templates

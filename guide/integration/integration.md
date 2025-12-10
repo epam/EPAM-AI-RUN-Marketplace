@@ -16,7 +16,6 @@ The platform supports several integration types:
 - **OpenAPI**: Connect to any service with an OpenAPI specification
 - **Email**: Send notifications via SMTP
 - **Telegram**: Connect to Telegram for messaging capabilities
-- **Etc**
 
 ### Setting Up Integrations
 

@@ -17,13 +17,13 @@ Also variables could be set via `TF_VAR_<variable>=<value>` environment variable
 
 1. Initialize Terraform:
    ```bash
-   terraform init
+   terraform init --var-file terraform.tfvars
    ```
 2. Validate and review the plan:
    ```bash
-   terraform plan
+   terraform plan --var-file terraform.tfvars
    ```
 3. Apply the configuration:
    ```bash
-   terraform apply
+   terraform apply --var-file terraform.tfvars
    ```
