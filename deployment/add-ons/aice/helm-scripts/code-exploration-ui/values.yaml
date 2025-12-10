@@ -9,6 +9,8 @@ envVars:
   AICE_BACKEND_URL: "https://codemie.%%DOMAIN%%/aice/backend"
   VITE_API_HOST: "https://codemie.%%DOMAIN%%/aice/backend"
   AICE_THEME: "codemie"
+  MAX_WORKSPACES_PER_PROJECT: 3
+  MAX_WORKSPACES_PER_PERSONAL: 1
 
 ingress:
   enabled: true
