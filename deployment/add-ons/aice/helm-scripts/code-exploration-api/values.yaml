@@ -6,7 +6,7 @@ imagePullSecrets:
   - name: aice-ecr-secret
 
 envVars:
-  CODE_ANALYSIS_PROVIDER_BASE_URL: "http://aice-code-analysis-datasource:8001/"
+  CODE_ANALYSIS_PROVIDER_BASE_URL: "http://aice-code-analysis-datasource:8001"
   NEO4J_URL: "bolt://aice-neo4j:7687/"
   REDIS_URL: "redis://aice-redis:6379/0"
   ELASTIC_URL: "http://aice-elasticsearch:9200/"
@@ -32,6 +32,8 @@ envVars:
   GRAPH_WALKER_REPOSITORY_CONCURRENCY_LIMIT: 2
   GRAPH_WALKER_SKIP_SUMMARIZATION_FOR_EXTERNAL_LIBRARIES: "true"
   GRAPH_WALKER_SKIP_SUMMARIZATION_FOR_RELATIONS: "true"
+  JWT_SKIP_FOR_LOCAL: "true"
+  JWT_AUTH_MODE: "disabled"
   SPI_PROCESSING_WAIT_TIMEOUT: "21600"
 
 extraEnvVars:

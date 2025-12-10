@@ -43,6 +43,8 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
+            - name: SERVICE_LOCATION_URL
+              value: http://{{ include "code-analysis-datasource.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8001/api/v1
             {{- if .Values.envVars }}
               {{- range $key, $val := .Values.envVars }}
               - name: {{ $key }}

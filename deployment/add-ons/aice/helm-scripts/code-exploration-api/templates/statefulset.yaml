@@ -77,6 +77,8 @@ spec:
           env:
             - name: PYTHONUNBUFFERED
               value: "1"
+            - name: SERVICE_LOCATION_URL
+              value: http://{{ include "code-exploration.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:8080/api/v1
             {{- if .Values.envVars }}
             {{- range $key, $val := .Values.envVars }}
             - name: {{ $key }}
