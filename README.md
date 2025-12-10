@@ -47,11 +47,11 @@ application to Amazon EKS and related AWS services. By following these instructi
 * Configure and deploy all EPAM AI/Run™ for AWS Migration and Modernization application components by installing Helm Charts.
 * Integrate and configure Bedrock LLMs.
 
-Additionally, the EPAM AI/Run™ for AWS application supports the installation of supplementary applications that integrate with our system, such as AI TestMate.
+Additionally, the EPAM AI/Run™ for AWS application supports the installation of supplementary applications that integrate with our system, such as AI TestMateo or AICE.
 AI TestMate is an autonomous GenAI solution for automatic unit test generation, acting as a "virtual teammate" within the software development lifecycle (SDLC).
-It analyzes repositories, creates, and commits tests without manual intervention, helping to quickly increase test coverage and reduce team effort.
-The solution leverages an ensemble of large language models (LLMs), an agentic approach, and a secure proxy access layer to the models.
-The installation guide you can for the application you can find by path: ```deployment/add-ons/aitestmate/helm-scripts/README.md```
+The installation guide you can for the application you can find by [path](deployment/add-ons/aitestmate/helm-scripts/README.md)
+AICE (AI Code Exploration) is an advanced code analysis and exploration solution
+The installation guide you can for the application you can find by the [path](deployment/add-ons/aice/README.md)
 
 
 [![Walkthrough Deployment Guide](assets/Deployment_Guide.jpg)](https://youtu.be/MelxbnkoWHo)
@@ -1277,7 +1277,7 @@ Before onboarding users few additional configuration steps are required:
 
 Link to keycloak
 URL = https://keycloak.<TF_VAR_platform_domain_name>/auth/admin.
-Where TF_VAR_platform_domain_name the value is define in `deployment/terraform-scripts/deployment.conf` file.
+Where TF_VAR_platform_domain_name the value is defined in `deployment/terraform-scripts/deployment.conf` file.
 Sample: `https://keycloak.example.com/auth/admin`
 
 You can find creds in AWS Console or in the output of previously run script.
@@ -1397,6 +1397,7 @@ These steps do not affect the AI/Run™ for AWS application.
   - Click Save button
 11. Go to credentials. On the page you can find "Client Secret"
 
+> ℹ️ If you want to use another client type, please do not use uppercase letters or special symbols
 
 # 9. Cost Management
 
