@@ -294,10 +294,12 @@ codemie:
 #          authorized-applications-config.yaml: |
 #            authorized_applications:
 #              - name: service-account-aitestmate
+################ <k8s namespace> do not forgot replace it ################
 #                public_key_url: http://aitestmate-nginx.<k8s namespace>.svc.cluster.local/api/public-key
 #                allowed_resources:
 #                  - datasource
 #              - name: aitestmate
+################ <k8s namespace> do not forgot replace it ################
 #                public_key_url: http://aitestmate-nginx.<k8s namespace>.svc.cluster.local/api/public-key
 #                allowed_resources:
 #                  - datasource
