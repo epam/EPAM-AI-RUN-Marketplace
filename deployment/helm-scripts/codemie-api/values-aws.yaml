@@ -253,7 +253,7 @@ codemie:
       mountPath: /app/config/llms/llm-amnaairn-config.yaml
       subPath: llm-amnaairn-config.yaml
 # #########################################################
-#      Test Mate: uncomment according the official guide
+# #     Test Mate: uncomment according the official guide
 # #########################################################
 #    - name: codemie-authorized-applications
 #      mountPath: /app/config/authorized_applications/authorized-applications-config.yaml
@@ -269,7 +269,7 @@ codemie:
       configMap:
         name: codemie-llm-customer-config
 # #########################################################
-#      Test Mate: uncomment according the official guide
+# #     Test Mate: uncomment according the official guide
 # #########################################################
 #    - name: codemie-authorized-applications
 #      configMap:
@@ -284,7 +284,7 @@ codemie:
   # -- Array of extra K8s manifests to deploy
   extraObjects:
 # #########################################################
-#      Test Mate: uncomment according the official guide
+# #     Test Mate: uncomment according the official guide
 # #########################################################
 #      - apiVersion: v1
 #        kind: ConfigMap
@@ -406,7 +406,7 @@ codemie:
                   settings:
                     enabled: true
                 # #########################################################
-                #      Test Mate: uncomment according the official guide
+                # #     Test Mate: uncomment according the official guide
                 # #########################################################
                 #- id: "applications:test-mate"
                 #  settings:
@@ -418,7 +418,7 @@ codemie:
                 #    created_by: "EPAM"
                 #    icon_url: "https://static.cdn.epam.com/uploads/4e9e888a2fff48ea970beb06bbfd9c72/EPM-EAG/ai_testmate_logo_small.png"
                 # #########################################################
-                #      AICE: uncomment according the official guide
+                # #     AICE: uncomment according the official guide
                 # #########################################################
                 #- id: "applications:aice"
                 #  settings:
@@ -491,6 +491,14 @@ codemie:
                   settings:
                     enabled: true
                 - id: "amna-aws-waf-agent"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-aice-java-dev-migration-assistant"
+                  project: demo
+                  settings:
+                    enabled: true
+                - id: "amna-aice-java-mason-migration-assistant"
                   project: demo
                   settings:
                     enabled: true
