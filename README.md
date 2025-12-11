@@ -1377,6 +1377,7 @@ These steps do not affect the AI/Run™ for AWS application.
    -  Root URL - https://codemie.example.com
    -  Home URL -
    -  Valid Redirect URIs - https://codemie.example.com/*
+   - Valid Post Logout Redirect URIs - +
    -  Web Origins - https://codemie.example.com
 8. Configure Service accounts roles:
    - Navigate to the Service accounts roles tab in the client settings.
@@ -1389,6 +1390,7 @@ These steps do not affect the AI/Run™ for AWS application.
 10. Configure Service account user:
   - Navigate to the Service accounts roles tab in the client settings
   - Click on service-account-aitestmate link
+  - Email verified - ON
   - Input Email : aitestmate@domain.com
   - Input First name: aitestmate
   - Input Last name: project
