@@ -430,3 +430,36 @@ helm upgrade \
 
 </details>
 
+# 11. Post-installation configuration
+
+This section is required to enable the use of AICE in EPAM AI/Run™ for AWS. 
+Specifically, it explains how to add elements to the Datasource Type and External Tools in the assistant settings.
+
+1. Login into EPAM AI/Run™ for AWS application with admin 
+2. Go to AICE application
+3. Click on AI/RUN AICE -> Configure button
+4. Copy descriptor value for Code exploration provider
+5. Go to EPAM AI/Run™ for AWS and open Add Providers page (Profile -> Settings -> Providers management -> Add Provider)
+6. Put Value from step 4 into field
+7. Update "service_location_url" property to "http://aice-code-exploration-api.aice.svc.cluster.local:8080/api/v1"
+8. Update the toolkit_metadata property with the following value, replacing the %%DOMAIN%% placeholder with the value of TF_VAR_platform_domain_name from the deployment/terraform-scripts/deployment.conf file:
+```
+      "toolkit_metadata": {
+        "life_cycle_id": "datasource_id",
+        "managed_fields": {
+          "code_analysis_service_location_url": "https://codemie.%%DOMAIN%%/aice/datasource/api/v1/"
+        }
+      }
+```
+9. Save new provider
+10. Go to AICE application
+11. Click on AI/RUN AICE -> Configure button
+12. Copy descriptor value for Code analysis provider
+13. Go to EPAM AI/Run™ for AWS and open Add Providers page (Profile -> Settings -> Providers management -> Add Provider)
+14. Put Value from step 12 into field
+15. Update "service_location_url" property to "http://aice-code-analysis-datasource.aice.svc.cluster.local:8001/api/v1/"
+16. Save new provider
+17. Go to Create New DataSource Page
+18. Verify that the new items appears in the "Choose Datasource Type" dropdown list.
+19. Go to Create Assistant page
+20. Verify that the new items appears in the External tools tab 
