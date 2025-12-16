@@ -18,7 +18,7 @@ nameOverride: "aitestmate-nginx"
 fullnameOverride: "aitestmate-nginx"
 
 env:
-  # -- proxy backend requests to api
+  # -- proxy backend requests to api when no explicit ingress
   - name: AITESTMATE_NGINX_UPSTREAM0
     value: aitestmate-api:8280
 
