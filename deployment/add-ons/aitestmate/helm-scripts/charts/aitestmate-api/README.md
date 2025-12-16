@@ -28,6 +28,11 @@ AI TestMate API Helm chart for Kubernetes
 | image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/api"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
+| ingress.annotations | object | `{}` |  |
+| ingress.className | string | `""` |  |
+| ingress.enabled | bool | `false` |  |
+| ingress.hosts | list | `[]` |  |
+| ingress.tls | list | `[]` |  |
 | livenessProbe | object | `{}` |  |
 | nameOverride | string | `"aitestmate-api"` |  |
 | nodeSelector | object | `{}` |  |
