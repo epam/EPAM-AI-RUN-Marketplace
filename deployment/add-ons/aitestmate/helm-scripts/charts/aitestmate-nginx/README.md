@@ -9,7 +9,7 @@ AI TestMate Nginx Helm chart for Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| env[0] | object | `{"name":"AITESTMATE_NGINX_UPSTREAM0","value":"aitestmate-api:8280"}` | proxy backend requests to api |
+| env[0] | object | `{"name":"AITESTMATE_NGINX_UPSTREAM0","value":"aitestmate-api:8280"}` | proxy backend requests to api when no explicit ingress |
 | extraEnv | list | `[]` | Additional environment passed into container |
 | fullnameOverride | string | `"aitestmate-nginx"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
