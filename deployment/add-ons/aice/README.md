@@ -441,8 +441,7 @@ Specifically, it explains how to add elements to the Datasource Type and Externa
 4. Copy descriptor value for Code exploration provider
 5. Go to EPAM AI/Run™ for AWS and open Add Providers page (Profile -> Settings -> Providers management -> Add Provider)
 6. Put Value from step 4 into field
-7. Update "service_location_url" property to "http://aice-code-exploration-api.aice.svc.cluster.local:8080/api/v1"
-8. Update the toolkit_metadata property with the following value, replacing the %%DOMAIN%% placeholder with the value of TF_VAR_platform_domain_name from the deployment/terraform-scripts/deployment.conf file:
+7. Update the toolkit_metadata property with the following value, replacing the %%DOMAIN%% placeholder with the value of TF_VAR_platform_domain_name from the deployment/terraform-scripts/deployment.conf file:
 ```
       "toolkit_metadata": {
         "life_cycle_id": "datasource_id",
@@ -451,15 +450,14 @@ Specifically, it explains how to add elements to the Datasource Type and Externa
         }
       }
 ```
-9. Save new provider
-10. Go to AICE application
-11. Click on AI/RUN AICE -> Configure button
-12. Copy descriptor value for Code analysis provider
-13. Go to EPAM AI/Run™ for AWS and open Add Providers page (Profile -> Settings -> Providers management -> Add Provider)
-14. Put Value from step 12 into field
-15. Update "service_location_url" property to "http://aice-code-analysis-datasource.aice.svc.cluster.local:8001/api/v1/"
-16. Save new provider
-17. Go to Create New DataSource Page
-18. Verify that the new items appears in the "Choose Datasource Type" dropdown list.
-19. Go to Create Assistant page
-20. Verify that the new items appears in the External tools tab 
+8. Save new provider
+9. Go to AICE application
+10. Click on AI/RUN AICE -> Configure button
+11. Copy descriptor value for Code analysis provider
+12. Go to EPAM AI/Run™ for AWS and open Add Providers page (Profile -> Settings -> Providers management -> Add Provider)
+13. Put Value from step 12 into field
+14. Save new provider
+15. Go to Create New DataSource Page
+16. Verify that the new items appears in the "Choose Datasource Type" dropdown list.
+17. Go to Create Assistant page
+18. Verify that the new items appears in the External tools tab 
