@@ -1065,7 +1065,7 @@ main() {
     check_nsc
     check_htpasswd
 
-    aws ecr get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin "$image_repository"
+    aws ecr get-login-password --region us-east-1 | helm registry login --username AWS --password-stdin "${image_repository%/*}"
 
     configure_kubectl
     deploy_nginx_ingress_controller "aws"
