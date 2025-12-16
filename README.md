@@ -1394,10 +1394,11 @@ These steps do not affect the AI/Run™ for AWS application.
   - Input Email : aitestmate@domain.com
   - Input First name: aitestmate
   - Input Last name: project
+  - Click on Save button
   - Click on the Attributes tab
   - Type Key: applications and Values name of your project aitestmate
   - Click Save button
-11. Go to credentials. On the page you can find "Client Secret"
+11. Go to your new client. On the credential tab you can find "Client Secret"
 
 > ℹ️ If you want to use another client type, please do not use uppercase letters or special symbols
 
