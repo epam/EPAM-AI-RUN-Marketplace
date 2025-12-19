@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <pid_or_pidfile>"
+    exit 1
+fi
+
+# Check if argument is a .pid file
+if [[ "$1" == *.pid ]] && [ -f "$1" ]; then
+    if [ -r "$1" ]; then
+        pid=$(cat "$1")
+        echo "Reading PID from file: $1"
+    else
+        echo "Error: Cannot read PID file '$1'"
+        exit 1
+    fi
+else
+    # Assume it's a PID number
+    pid="$1"
+fi
+
+# Validate PID is a number
+if ! [[ "$pid" =~ ^[0-9]+$ ]]; then
+    echo "Error: '$pid' is not a valid PID"
+    exit 1
+fi
+echo pid=$pid
+if ps -p $pid > /dev/null; then
+    echo "Process $pid is still running"
+	while ps -p $pid > /dev/null ;do :; done
+fi
+
+echo "Process $pid has finished"
