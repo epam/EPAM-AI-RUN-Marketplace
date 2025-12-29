@@ -1,0 +1,32 @@
+#!/bin/bash
+
+LOG_FILE="${1%.sh}.log"
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <script_path>"
+    exit 1
+fi
+
+if which -s $1; then
+	nohup $@ > $LOG_FILE 2>&1 &
+else
+	if [ ! -f "$1" ]; then
+    	echo "Error: Script '$1' not found"
+    	exit 1
+	fi
+
+	# Make sure the script is executable
+	if [ ! -x "$1" ]; then
+    	echo "Warning: '$1' is not executable. Attempting to run with bash..."
+    	nohup bash $@ > $LOG_FILE 2>&1 &
+	else
+    	nohup $@ > $LOG_FILE 2>&1 &
+	fi
+fi
+
+
+pid=$!
+echo "Started '$1' with PID: $pid"
+echo "Log file: $LOG_FILE"
+echo "PID file: ${1%.sh}.pid"
+echo $pid > "${1%.sh}.pid"

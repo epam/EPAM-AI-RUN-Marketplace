@@ -78,27 +78,6 @@ For Sequential workflows, the YAML configuration includes:
          - id: send_notification
 
 
-### Creating a AWS Workflow
-1. Create an AWS integration by following the instructions in the project guide located at **integration/integration.md**
-2. Follow the official AWS documentation to [Create and configure workflow - Amazon Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/flows-create.html)
-3. Go Settings profile
-   <img src="assets/workflow-guide/go_to_settings.png">
-   <img src="assets/workflow-guide/go_to_settings_2.png">
-4. Find your AWS integration from step 1
-   <img src="assets/workflow-guide/find_aws_integration.png">
-5. Find your AWS workflow from step 2
-   <img src="assets/workflow-guide/find_aws_workflow.png">
-6. Install workflow
-   <img src="assets/workflow-guide/install_workflow.png">
-
-### ⚠️ Warning
-1. Please verify that the AWS credentials you've configured in your integration have sufficient permissions to access and interact with the AWS Bedrock service. Insufficient permissions will prevent successful Knowledge Base integration.
-2. Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
-3. Please monitor your token consumption regularly through the AWS portal. AWS Bedrock services are billed based on token usage, and unexpected high usage may lead to increased costs
-4. Flow MUST have at least 1 alisa and 1 version with status PREPARED
-
-Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
-
 ## Executing Workflows
 
 1. Navigate to the **Explore Workflows** page

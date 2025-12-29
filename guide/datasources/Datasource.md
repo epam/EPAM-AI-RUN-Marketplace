@@ -33,25 +33,6 @@ The platform supports several types of data sources:
 
 > **Important note**: For Google Docs integration, you'll need to share the document with the platform's service account to enable indexing.
 
-### AWS Knowledge Base Integration
-
-To connect an AWS Knowledge Base:
-
-1. Ensure you have an AWS integration configured in your project
-2. Create AWS Knowledge Bases by [AWS documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-create.html) 
-3. Install Knowledge Bases in  EPAM AI/Run™ for AWS Migration and Modernization
-
-[Video Instruction For Set Up AWS Knowledge Base](https://videoportal.epam.com/video/ba2oP5VY)
-
-AWS Knowledge Bases allow you to leverage data you've already indexed within AWS Bedrock, providing a seamless way to utilize your existing AWS data infrastructure with EPAM AI/Run™ for AWS assistants.
-
-### ⚠️ Warning
-1. Please verify that the AWS credentials you've configured in your integration have sufficient permissions to access and interact with the AWS Bedrock service. Insufficient permissions will prevent successful Knowledge Base integration.
-2. Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
-3. Please monitor your token consumption regularly through the AWS portal. AWS Bedrock services are billed based on token usage, and unexpected high usage may lead to increased costs
-4. Knowledge base  must have status ACTIVE, and datasoucres must be synced
-
-Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
 
 ### Managing Data Sources
 

@@ -54,30 +54,6 @@ EPAM AI/Run™ for AWS Migration and Modernization supports two main types of as
 
 4. Click **Create** to finish
 
-## Creating Bedrock Assistants
-1. Create an AWS integration by following the instructions in the project guide located at **integration/README.md**
-2. Create AWS agent in follow the official [AWS documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-create.html)
-3. Go Settings profile
-   <img src="assets/assistant-guide/go_to_settings.png">
-   <img src="assets/assistant-guide/go_to_settings_2.png">
-4. Find your AWS integration from step 1
-   <img src="assets/assistant-guide/find_aws_integration.png">
-5. Find your AWS agent from step 2
-   <img src="assets/assistant-guide/find_aws_agent.png">
-6. Install agent
-   <img src="assets/assistant-guide/install_agent.png">
-
-
-[Video Instruction](https://videoportal.epam.com/video/r7mD3MRJ)
-
-### ⚠️ Warning
-1. Please verify that the AWS credentials you've configured in your integration have sufficient permissions to access and interact with the AWS Bedrock service. Insufficient permissions will prevent successful Knowledge Base integration.
-2. Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
-3. Please monitor your token consumption regularly through the AWS portal. AWS Bedrock services are billed based on token usage, and unexpected high usage may lead to increased costs
-4. Agents MUST have at least 1 alisa and 1 version with status PREPARED
-
-
-Before using entities in our system, thoroughly test them in the AWS portal to ensure they work as expected with your configuration.
 
 ## Using Assistants
 
