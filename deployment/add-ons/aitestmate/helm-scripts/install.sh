@@ -26,6 +26,7 @@ function helm-upgrade() {
 }
 
 helm-upgrade redis         -f "$SCRIPT_DIR/charts/aitestmate-redis/examples/aws/values.yaml"
+helm-upgrade postgres      -f "$SCRIPT_DIR/charts/aitestmate-postgres/examples/aws/values.yaml"
 helm-upgrade rabbitmq      -f "$SCRIPT_DIR/charts/aitestmate-rabbitmq/examples/aws/values.yaml"
 helm-upgrade elasticsearch -f "$SCRIPT_DIR/charts/aitestmate-elasticsearch/examples/aws/values.yaml"
 helm-upgrade kibana        -f "$SCRIPT_DIR/charts/aitestmate-kibana/examples/aws/values.yaml"
