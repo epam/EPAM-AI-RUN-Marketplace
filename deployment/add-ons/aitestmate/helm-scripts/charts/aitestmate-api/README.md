@@ -1,6 +1,6 @@
 # aitestmate-api
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.8.7](https://img.shields.io/badge/AppVersion-1.8.7-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.12.2](https://img.shields.io/badge/AppVersion-1.12.2-informational?style=flat-square)
 
 AI TestMate API Helm chart for Kubernetes
 
@@ -10,9 +10,14 @@ AI TestMate API Helm chart for Kubernetes
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | env[0] | object | `{"name":"ELASTICSEARCH_HOST","value":"http://aitestmate-elasticsearch-headless:9200"}` | host for database connection |
-| env[10] | object | `{"name":"AITESTMATE_LOGLEVEL","value":"INFO"}` | log level |
-| env[11] | object | `{"name":"USE_EMBEDDINGS_HTTP_API","value":"true"}` | use standalone embeddings (see aitestmate-embeddings chart) |
-| env[12] | object | `{"name":"EMBEDDINGS_LLM_BASE_URL","value":"http://aitestmate-embeddings:7070"}` | embeddings endpoint to use (see aitestmate-embeddings chart) |
+| env[10] | object | `{"name":"POSTGRES_HOST","value":"aitestmate-postgres-headless"}` | host for postgres connection |
+| env[11] | object | `{"name":"POSTGRES_PORT","value":"5432"}` | port for postgres connection |
+| env[12] | object | `{"name":"POSTGRES_DB","valueFrom":{"secretKeyRef":{"key":"database","name":"aitestmate-postgres-secret"}}}` | database for postgres connection |
+| env[13] | object | `{"name":"POSTGRES_USER","valueFrom":{"secretKeyRef":{"key":"username","name":"aitestmate-postgres-secret"}}}` | user for postgres connection |
+| env[14] | object | `{"name":"POSTGRES_PASSWORD","valueFrom":{"secretKeyRef":{"key":"password","name":"aitestmate-postgres-secret"}}}` | password for postgres connection |
+| env[15] | object | `{"name":"AITESTMATE_LOGLEVEL","value":"INFO"}` | log level |
+| env[16] | object | `{"name":"USE_EMBEDDINGS_HTTP_API","value":"true"}` | use standalone embeddings (see aitestmate-embeddings chart) |
+| env[17] | object | `{"name":"EMBEDDINGS_LLM_BASE_URL","value":"http://aitestmate-embeddings:7070"}` | embeddings endpoint to use (see aitestmate-embeddings chart) |
 | env[1] | object | `{"name":"ELASTICSEARCH_USER","valueFrom":{"secretKeyRef":{"key":"username","name":"aitestmate-elasticsearch-secret"}}}` | user for database connection |
 | env[2] | object | `{"name":"ELASTICSEARCH_PASSWORD","valueFrom":{"secretKeyRef":{"key":"password","name":"aitestmate-elasticsearch-secret"}}}` | password for database connection |
 | env[3] | object | `{"name":"RABBITMQ_HOST","value":"aitestmate-rabbitmq-headless"}` | host for rabbitmq connection |

@@ -1,0 +1,57 @@
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: aitestmate-postgres
+  labels:
+    # {{ include "aitestmate-postgres.labels" . | nindent 4 }}
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      # {{ include "aitestmate-postgres.selectorLabels" . | nindent 6 }}
+  serviceName: aitestmate-postgres-headless
+  template:
+    metadata:
+      labels:
+        # {{ include "aitestmate-postgres.labels" . | nindent 8 }}
+    spec:
+      # {{ with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      automountServiceAccountToken: false
+      # {{ with .Values.podSecurityContext }}
+      securityContext:
+        # {{ toYaml . | nindent 8 }}
+      # {{ end }}
+      containers:
+        - name: aitestmate-postgres
+          image: >-
+            {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: >-
+            {{ .Values.image.pullPolicy }}
+          ports:
+            - name: postgres
+              containerPort: {{ .Values.port }}
+          # {{ with (concat (default list .Values.env) (default list .Values.extraEnv) | uniq) }}
+          env:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          # {{ with .Values.resources }}
+          resources:
+            # {{ toYaml . | nindent 12 }}
+          # {{ end }}
+          volumeMounts:
+          - name: aitestmate-postgres-data
+            mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: aitestmate-postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 256Mi
