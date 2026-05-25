@@ -38,6 +38,9 @@ AI TestMate Worker Helm chart for Kubernetes
 | livenessProbe | object | `{}` |  |
 | nameOverride | string | `"aitestmate-worker"` |  |
 | nodeSelector | object | `{}` |  |
+| persistence.gradle.size | string | `"20Gi"` | Size of the gradle cache persistent volume mounted at /var/lib/aitestmate/.gradle |
+| persistence.m2.size | string | `"20Gi"` | Size of the maven repo cache persistence volume mounted at /var/lib/aitestmate/.m2 |
+| persistence.ws.size | string | `"30Gi"` | Size of the workspace persistent volume mounted at /var/lib/aitestmate/ws |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |

@@ -214,6 +214,18 @@ readinessProbe: {}
   # path: /
   # port: http
 
+# Dedicated persistent storage for worker writable directories under /var/lib/aitestmate.
+persistence:
+  ws:
+    # -- Size of the workspace persistent volume mounted at /var/lib/aitestmate/ws
+    size: 30Gi
+  m2:
+    # -- Size of the maven repo cache persistence volume mounted at /var/lib/aitestmate/.m2
+    size: 20Gi
+  gradle:
+    # -- Size of the gradle cache persistent volume mounted at /var/lib/aitestmate/.gradle
+    size: 20Gi
+
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
