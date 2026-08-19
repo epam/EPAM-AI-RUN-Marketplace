@@ -1,5 +1,17 @@
 # EPAM AI/Run™ for AWS Migration and Modernization Deployment Guide
 
+> [!CAUTION]
+> ## This Repository Is Deprecated
+>
+> **This repository is no longer maintained and has been archived.**
+>
+> All active development, documentation, and releases have been migrated to the official successor repository:
+>
+> **[codemie-ai/codemie-aws-marketplace](https://github.com/codemie-ai/codemie-aws-marketplace)**
+>
+> Please update any bookmarks, forks, or pipelines to reference the new location.
+> Issues and pull requests on this repository will not be reviewed or merged.
+
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Introduction
