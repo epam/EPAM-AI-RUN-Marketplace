@@ -21,12 +21,7 @@ ingress:
   hosts:
     - host: codemie.example.com
       paths:
-        - backend:
-            service:
-              name: aitestmate-nginx
-              port:
-                number: 80
-          path: /aitestmate
+        - path: /aitestmate
           pathType: ImplementationSpecific
 
 # Set resources for aitestmate-nginx
