@@ -1,6 +1,6 @@
 # aitestmate-nginx
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.8.7](https://img.shields.io/badge/AppVersion-1.8.7-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.12.2](https://img.shields.io/badge/AppVersion-1.12.2-informational?style=flat-square)
 
 AI TestMate Nginx Helm chart for Kubernetes
 
@@ -9,7 +9,7 @@ AI TestMate Nginx Helm chart for Kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| env[0] | object | `{"name":"AITESTMATE_NGINX_UPSTREAM0","value":"aitestmate-api:8280"}` | proxy backend requests to api |
+| env[0] | object | `{"name":"AITESTMATE_NGINX_UPSTREAM0","value":"aitestmate-api:8280"}` | proxy backend requests to api when no explicit ingress |
 | extraEnv | list | `[]` | Additional environment passed into container |
 | fullnameOverride | string | `"aitestmate-nginx"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |

@@ -67,6 +67,30 @@ env:
       secretKeyRef:
         name: aitestmate-redis-secret
         key: password
+  # -- host for postgres connection
+  - name: POSTGRES_HOST
+    value: aitestmate-postgres-headless
+  # -- port for postgres connection
+  - name: POSTGRES_PORT
+    value: "5432"
+  # -- database for postgres connection
+  - name: POSTGRES_DB
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: database
+  # -- user for postgres connection
+  - name: POSTGRES_USER
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: username
+  # -- password for postgres connection
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: password
   # -- log level
   - name: AITESTMATE_LOGLEVEL
     value: INFO
@@ -103,9 +127,7 @@ env:
   # - name: LLM_PROVIDER_CONFIG_PROJECT_ID
   #   value: google-cloud-project-id
   # - name: LLM_MODEL_CONFIG_NAME
-  #   value: gemini-2.5-pro
-  # - name: LLM_MODEL_CONFIG_TRACING_NAME
-  #   value: gemini-2.5-pro
+  #   value: gemini-3-flash-preview
   # - name: LLM_MODEL_CONFIG_STRUCTURED_OUTPUT_SUPPORT
   #   value: "true"
   # - name: LLM_MODEL_CONFIG_TOOL_CHOICE
@@ -191,6 +213,18 @@ readinessProbe: {}
   # httpGet:
   # path: /
   # port: http
+
+# Dedicated persistent storage for worker writable directories under /var/lib/aitestmate.
+persistence:
+  ws:
+    # -- Size of the workspace persistent volume mounted at /var/lib/aitestmate/ws
+    size: 30Gi
+  m2:
+    # -- Size of the maven repo cache persistence volume mounted at /var/lib/aitestmate/.m2
+    size: 20Gi
+  gradle:
+    # -- Size of the gradle cache persistent volume mounted at /var/lib/aitestmate/.gradle
+    size: 20Gi
 
 # Additional volumes on the output Deployment definition.
 volumes: []

@@ -64,6 +64,30 @@ env:
       secretKeyRef:
         name: aitestmate-redis-secret
         key: password
+  # -- host for postgres connection
+  - name: POSTGRES_HOST
+    value: aitestmate-postgres-headless
+  # -- port for postgres connection
+  - name: POSTGRES_PORT
+    value: "5432"
+  # -- database for postgres connection
+  - name: POSTGRES_DB
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: database
+  # -- user for postgres connection
+  - name: POSTGRES_USER
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: username
+  # -- password for postgres connection
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: password
   # -- log level
   - name: AITESTMATE_LOGLEVEL
     value: INFO

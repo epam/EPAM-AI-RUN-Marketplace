@@ -1,30 +1,30 @@
-# aitestmate-rabbitmq
+# aitestmate-postgres
 
 ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.12.2](https://img.shields.io/badge/AppVersion-1.12.2-informational?style=flat-square)
 
-AI TestMate RabbitMQ Helm chart for Kubernetes
+AI TestMate PostgreSQL Helm chart for Kubernetes
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| env[0] | object | `{"name":"RABBITMQ_NODE_IP_ADDRESS","value":"0.0.0.0"}` | listen on all interfaces |
-| env[1] | object | `{"name":"RABBITMQ_DEFAULT_USER","valueFrom":{"secretKeyRef":{"key":"username","name":"aitestmate-rabbitmq-secret"}}}` | default user |
-| env[2] | object | `{"name":"RABBITMQ_DEFAULT_PASS","valueFrom":{"secretKeyRef":{"key":"password","name":"aitestmate-rabbitmq-secret"}}}` | default password |
-| env[3] | object | `{"name":"RABBITMQ_DEFAULT_VHOST","valueFrom":{"secretKeyRef":{"key":"vhost","name":"aitestmate-rabbitmq-secret"}}}` | default vhost |
-| extraEnv | list | `[]` | Additional environment passed into container |
-| fullnameOverride | string | `"aitestmate-rabbitmq"` |  |
+| env[0] | object | `{"name":"POSTGRES_DB","valueFrom":{"secretKeyRef":{"key":"database","name":"aitestmate-postgres-secret"}}}` | Default database name |
+| env[1] | object | `{"name":"POSTGRES_USER","valueFrom":{"secretKeyRef":{"key":"username","name":"aitestmate-postgres-secret"}}}` | Default database user |
+| env[2] | object | `{"name":"POSTGRES_PASSWORD","valueFrom":{"secretKeyRef":{"key":"password","name":"aitestmate-postgres-secret"}}}` | Set password from auto generated secret |
+| extraEnv | list | `[]` |  |
+| fullnameOverride | string | `"aitestmate-postgres"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/rabbitmq"` |  |
+| image.repository | string | `"artifactoryspb.epam.com/epm-eag-docker/aitestmate/postgres"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | livenessProbe | object | `{}` |  |
-| nameOverride | string | `"aitestmate-rabbitmq"` |  |
+| nameOverride | string | `"aitestmate-postgres"` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
+| port | int | `5432` | PostgreSQL service port |
 | readinessProbe | object | `{}` |  |
 | resources | object | `{}` |  |
 | securityContext | object | `{}` |  |

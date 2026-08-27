@@ -6,6 +6,14 @@
 # image:
 #   repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/nginx
 
+# extraEnv:
+#   - name: AITESTMATE_NGINX_CSP
+#     value: >-
+#       default-src 'self';
+#       style-src 'self' https://fonts.googleapis.com;
+#       font-src 'self' https://fonts.gstatic.com https://static.cdn.epam.com;
+#       img-src 'self' https://static.cdn.epam.com;
+
 # It is recommended to expose AI TestMate via Codemie
 ingress:
   enabled: true
@@ -21,12 +29,7 @@ ingress:
   hosts:
     - host: codemie.example.com
       paths:
-        - backend:
-            service:
-              name: aitestmate-nginx
-              port:
-                number: 80
-          path: /aitestmate
+        - path: /aitestmate
           pathType: ImplementationSpecific
 
 # Set resources for aitestmate-nginx

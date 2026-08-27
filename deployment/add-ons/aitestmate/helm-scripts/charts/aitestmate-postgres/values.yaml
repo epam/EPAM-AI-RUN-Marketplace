@@ -1,12 +1,9 @@
 ---
 
-# AI TestMate Nginx Server
-
-replicaCount: 1
+# AI TestMate PostgreSQL Server
 
 image:
-  repository: 000000000000.dkr.ecr.us-east-1.amazonaws.com/epam-systems/add-ons/aitestmate/nginx
-  # This sets the pull policy for images.
+  repository: artifactoryspb.epam.com/epm-eag-docker/aitestmate/postgres
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -14,15 +11,33 @@ image:
 imagePullSecrets: []
 
 # This is to override the chart name.
-nameOverride: "aitestmate-nginx"
-fullnameOverride: "aitestmate-nginx"
+nameOverride: "aitestmate-postgres"
+fullnameOverride: "aitestmate-postgres"
+
+# -- PostgreSQL service port
+port: 5432
 
 env:
-  # -- proxy backend requests to api when no explicit ingress
-  - name: AITESTMATE_NGINX_UPSTREAM0
-    value: aitestmate-api:8280
+  # -- Default database name
+  - name: POSTGRES_DB
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: database
+  # -- Default database user
+  - name: POSTGRES_USER
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: username
+  # -- Set password from auto generated secret
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: aitestmate-postgres-secret
+        key: password
 
-# -- Additional environment passed into container
+# Additional environment passed into container
 extraEnv: []
 
 # This is for setting Kubernetes Annotations to a Pod.
@@ -43,38 +58,6 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 80
-
-# Ingress could be enabled to serve aitestmate directly or behind codemie
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts: []
-    # Expose it directly (not recommended)
-    # - host: aitestmate.example.com
-    #   paths:
-    #     - path: /
-    #       pathType: ImplementationSpecific
-    #
-    # Expose it via codemie
-    # - host: codemie.example.com
-    #   paths:
-    #     - path: /aitestmate
-    #       pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -88,15 +71,12 @@ resources: {}
   #   memory: 128Mi
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe:
-  initialDelaySeconds: 60
-  httpGet:
-    path: /
-    port: http
+livenessProbe: {}
+  # tcpSocket:
+  #   port: 5432
 readinessProbe: {}
-  # httpGet:
-  #   path: /
-  #   port: http
+  # tcpSocket:
+  #   port: 5432
 
 # Additional volumes on the output Deployment definition.
 volumes: []
